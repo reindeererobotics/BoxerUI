@@ -7,14 +7,16 @@
 // This define is set in the example .vcxproj file and need to be replicated in your app or by adding it to your imconfig.h file.
 
 #include "imgui.h"
-#include "implot/implot.h"
-#include "implot/implot_internal.h"
+#include "BoxerUI_Controller.h"
+#include "BoxerUI_Model.h"
+#include "BoxerUI_View.h"
+//#include "implot/implot.h"
+//#include "implot/implot_internal.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx12.h"
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <tchar.h>
-
 
 #ifdef _DEBUG
 #define DX12_ENABLE_DEBUG_LAYER
@@ -24,8 +26,6 @@
 #include <dxgidebug.h>
 #pragma comment(lib, "dxguid.lib")
 #endif
-#include <stdio.h>
-
 
 struct FrameContext
 {
@@ -39,17 +39,17 @@ static FrameContext                 g_frameContext[NUM_FRAMES_IN_FLIGHT] = {};
 static UINT                         g_frameIndex = 0;
 
 static int const                    NUM_BACK_BUFFERS = 3;
-static ID3D12Device*                g_pd3dDevice = NULL;
-static ID3D12DescriptorHeap*        g_pd3dRtvDescHeap = NULL;
-static ID3D12DescriptorHeap*        g_pd3dSrvDescHeap = NULL;
-static ID3D12CommandQueue*          g_pd3dCommandQueue = NULL;
-static ID3D12GraphicsCommandList*   g_pd3dCommandList = NULL;
-static ID3D12Fence*                 g_fence = NULL;
+static ID3D12Device* g_pd3dDevice = NULL;
+static ID3D12DescriptorHeap* g_pd3dRtvDescHeap = NULL;
+static ID3D12DescriptorHeap* g_pd3dSrvDescHeap = NULL;
+static ID3D12CommandQueue* g_pd3dCommandQueue = NULL;
+static ID3D12GraphicsCommandList* g_pd3dCommandList = NULL;
+static ID3D12Fence* g_fence = NULL;
 static HANDLE                       g_fenceEvent = NULL;
 static UINT64                       g_fenceLastSignaledValue = 0;
-static IDXGISwapChain3*             g_pSwapChain = NULL;
+static IDXGISwapChain3* g_pSwapChain = NULL;
 static HANDLE                       g_hSwapChainWaitableObject = NULL;
-static ID3D12Resource*              g_mainRenderTargetResource[NUM_BACK_BUFFERS] = {};
+static ID3D12Resource* g_mainRenderTargetResource[NUM_BACK_BUFFERS] = {};
 static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[NUM_BACK_BUFFERS] = {};
 
 // Forward declarations of helper functions
@@ -87,12 +87,24 @@ int main(int, char**)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    //io.ConfigViewportsNoAutoMerge = true;
+    //io.ConfigViewportsNoTaskBarIcon = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -121,6 +133,11 @@ int main(int, char**)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    BoxerUI_Model boxerModel = BoxerUI_Model();
+    BoxerUI_View boxerView;
+    BoxerUI_Controller boxerController = BoxerUI_Controller(boxerView, boxerModel);
+    boxerController.payloadRecv();
+
     // Main loop
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
@@ -142,79 +159,80 @@ int main(int, char**)
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
+ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-            const char* table="table";            
-            const char* setUpColumn="setUpColumn";            
-            //char *selectItem[32]=("Item: ");
-            bool selected = false;
-            ImGuiSelectableFlags selectFlags=ImGuiSelectableFlags_AllowDoubleClick;
+            static ImGuiSelectableFlags selectFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiSelectableFlags_AllowDoubleClick;
             ImGuiTableFlags tableFlag = ImGuiTableColumnFlags_IsHovered;
-            
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-            
-            //ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            //ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            //ImGui::Checkbox("Another Window", &show_another_window);
 
-            //ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            //if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            //    counter++;
-            //ImGui::SameLine();
-            //ImGui::Text("counter = %d", counter);
-
+            { ImGui::Begin("Application Framerate");                          // Create a window called "Hello, world!" and append into it.
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
-            
-            ImGui::Begin("My Test");
+            ImGui::End(); }
 
-            ImGui::BeginTable("table",4);
 
-            ImGui::TableHeadersRow();            
-            ImGui::TableNextRow();
+            bool p_open = false;
+            static int counter = 0;
+            static bool setTempBttn = false;
+            { ImGui::Begin("My Table Test", &p_open);// , ImGuiWindowFlags_AlwaysAutoResize);
 
-            ImGui::TableNextColumn();
-            ImGui::Text("Sensors");
-            ImGui::TableNextColumn();
-            ImGui::Text("Current");
-            ImGui::TableNextColumn();
-            ImGui::Text("Max");
-            ImGui::TableNextColumn();
-            ImGui::Text("Min");
+            boxerController.updateBSView();
 
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("Item 1");
-            ImGui::TableNextColumn();
-            ImGui::Text("Item 2"); 
-            ImGui::TableNextColumn();
-            ImGui::Text("Item 3"); 
-            ImGui::TableNextColumn();
-            ImGui::Text("Item 4");
+            if (Button("change temperature")) {
+                boxerController.setModelTemperature(19.3);
+                setTempBttn = true;
+            }
+            if (setTempBttn) {
+                ImGui::SameLine();
+                ImGui::Text("Thanks for clicking me! Counter: %d", counter);
+            }
 
-            ImGui::EndTable();
 
-            
- 
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            //for each (char *header in tableHeader)
+            //{
+            //    TableSetupColumn(header, ImGuiTableColumnFlags_WidthStretch);
+            //    
+            //    
+            //    
+            //    
+            //}
+            //TableHeadersRow();
+            //for (int row = 0; row < 5; row++)
+            //{
+            //    ImGui::TableNextRow();
+            //    for (int column = 0; column < 4; column++)
+            //    {
+            //        ImGui::TableSetColumnIndex(column);
+            //        ImGui::Text("%s %d,%d", (column >= 3) ? "Stretch" : "Fixed", column, row);
+            //        if (ImGui::TableGetColumnIndex() == 0)
+            //            Button(sensors[row]);
+            //               //ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(0, 100, 0, 255));
+            //    }
+            //}
+
+
+
             ImGuiListClipper clipper;
-               clipper.Begin(10);         // We have 1000 elements, evenly spaced.               
-               while (clipper.Step())
-                   for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
-                       table = ("line number %d");// , i);
-                       ImGui::Text("line number %d", i);
-                      
-                   }
-           
-            ImGui::End();
+            clipper.Begin(10);         // We have 1000 elements, evenly spaced.               
+            while (clipper.Step())
+                for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                    ImGui::Text("line number %d", i);
+                }
+
+            ImGui::End(); }
+
+            boxerController.updateBCView();
+            
+
         }
 
         // 3. Show another simple window.
@@ -235,12 +253,12 @@ int main(int, char**)
         frameCtx->CommandAllocator->Reset();
 
         D3D12_RESOURCE_BARRIER barrier = {};
-        barrier.Type                   = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-        barrier.Flags                  = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-        barrier.Transition.pResource   = g_mainRenderTargetResource[backBufferIdx];
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        barrier.Transition.pResource = g_mainRenderTargetResource[backBufferIdx];
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-        barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
         g_pd3dCommandList->Reset(frameCtx->CommandAllocator, NULL);
         g_pd3dCommandList->ResourceBarrier(1, &barrier);
 
@@ -250,11 +268,18 @@ int main(int, char**)
         g_pd3dCommandList->SetDescriptorHeaps(1, &g_pd3dSrvDescHeap);
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_pd3dCommandList);
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-        barrier.Transition.StateAfter  = D3D12_RESOURCE_STATE_PRESENT;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
         g_pd3dCommandList->ResourceBarrier(1, &barrier);
         g_pd3dCommandList->Close();
 
         g_pd3dCommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&g_pd3dCommandList);
+
+        // Update and Render additional Platform Windows
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault(NULL, (void*)g_pd3dCommandList);
+        }
 
         g_pSwapChain->Present(1, 0); // Present with vsync
         //g_pSwapChain->Present(0, 0); // Present without vsync
