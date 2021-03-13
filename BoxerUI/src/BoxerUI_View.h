@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "implot/implot.h"
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -31,61 +32,45 @@ public:
 		TableNextColumn(); Text("%f", temperature);
 		TableNextRow();
 		TableNextColumn(); Text("Battery"); TableNextColumn();
-
 		Text("%f", battery);
 
-		//for each (char* header in tableHeader)
-		//{
-		//    TableSetupColumn(header, ImGuiTableColumnFlags_WidthStretch);
-
-		//}
-		//TableHeadersRow();
-		//for (int row = 0; row < 5; row++)
-		//{
-		//    ImGui::TableNextRow();
-		//    for (int column = 0; column < 4; column++)
-		//    {
-		//        ImGui::TableSetColumnIndex(column);
-		//        ImGui::Text("%s %d,%d", (column >= 3) ? "Stretch" : "Fixed", column, row);
-		//        if (ImGui::TableGetColumnIndex() == 0)
-		//            Button(sensors[row]);
-		//        //ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, IM_COL32(0, 100, 0, 255));
-		//    }
-		//}
 		ImGui::EndTable();
 	}
-	static void cameraStream() {
-		//bool p_open = false;
-		//Begin("Canvas Test", &p_open);
-		//ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();      // ImDrawList API uses screen coordinates!
-		//ImVec2 canvas_sz = ImGui::GetContentRegionAvail();   // Resize canvas to what's available
-		//if (canvas_sz.x < 50.0f) canvas_sz.x = 50.0f;
-		//if (canvas_sz.y < 50.0f) canvas_sz.y = 50.0f;
-		//ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+	static void plotStream() {
+	
+		bool show_imgui_style_editor = false;
+		//int   bar_data_A[11] = {3,11,1,5,6,1,1,9,7 };
+		//int   bar_data_B[11] = {0, 1,2,3,4,5,6,7,8,9,10 };
 
-		//// Draw border and background color
-		//ImGuiIO& io = ImGui::GetIO();
-		//ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		//draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
-		//draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(255, 255, 255, 255));
 
-		/*cv::VideoCapture cap(0);
-		if (!cap.isOpened()) {
-			cout << "Change camera port number";
-
-		}*/
-		//while (true)
-		{
-			//cv::Mat frame;
-			//cap.read(frame);
-			//cv::imshow("Camera", frame);
-			//if (cv::waitKey(30) == 27) {
-			//	cout << "Something Happened I Guess";
-			//}
+		float xs1[1001], ys1[1001];
+		for (int i = 0; i < 1001; ++i) {
+			xs1[i] = i * 0.001f;
+			ys1[i] = 0.5f + 0.5f * sinf(50 * (xs1[i] + (float)ImGui::GetTime() / 10));
+		}
+		static float xs2[11], ys2[11];
+		for (int i = 0; i < 11; ++i) {
+			xs2[i] = i * 0.1f;
+			ys2[i] = xs2[i] * xs2[i];
 		}
 
+		ImPlot::CreateContext();
+		ImGui::Begin("ImPlot Test", &show_imgui_style_editor);
 
 
-		//End();
+		if (ImPlot::BeginPlot("My Plot", "my x label", "my y label")) {
+
+			//ImPlot::PlotBars("My Bar Plot", bar_data, 11);
+			ImPlot::PlotLine("My Line Plot1", xs1, ys1, 1001);
+			ImPlot::SetNextMarkerStyle(ImPlotMarker_Diamond);
+			ImPlot::PlotLine("My Line Plot2", xs2, ys2, 11);
+			ImPlot::EndPlot();
+		}
+
+		ImGui::End();
+		ImPlot::DestroyContext();
+	}
+	static void cameraStream() {
+
 	}
 };

@@ -79,6 +79,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>.\Debug\$(Platform)\out</OutDir>
+    <IntDir>$(Solution)\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -159,11 +161,10 @@
     <ClCompile Include="header\imgui\imgui_tables.cpp" />
     <ClCompile Include="header\imgui\imgui_widgets.cpp" />
     <ClCompile Include="header\imgui\lib\gl3w\GL\gl3w.c" />
+    <ClCompile Include="header\implot\implot.cpp" />
+    <ClCompile Include="header\implot\implot_demo.cpp" />
+    <ClCompile Include="header\implot\implot_items.cpp" />
     <ClCompile Include="header\jsoncpp\jsoncpp.cpp" />
-    <ClCompile Include="receiver.cpp" />
-    <ClCompile Include="src\BoxerUI_Controller.cpp" />
-    <ClCompile Include="src\BoxerUI_Model.cpp" />
-    <ClCompile Include="src\BoxerUI_View.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,9 +176,10 @@
     <ClInclude Include="header\imgui\imstb_rectpack.h" />
     <ClInclude Include="header\imgui\imstb_textedit.h" />
     <ClInclude Include="header\imgui\imstb_truetype.h" />
+    <ClInclude Include="header\implot\implot.h" />
+    <ClInclude Include="header\implot\implot_internal.h" />
     <ClInclude Include="header\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="header\jsoncpp\json\json.h" />
-    <ClInclude Include="socketLibrary.h" />
     <ClInclude Include="src\BoxerUI_Controller.h" />
     <ClInclude Include="src\BoxerUI_Model.h" />
     <ClInclude Include="src\BoxerUI_Sockets.h" />

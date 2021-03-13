@@ -56,9 +56,9 @@ public:
 		 boxerView.displaySensors(boxerModel.getTemperature(), boxerModel.getBattery());
 	}
 
-	void updateBCView(){
+	void plotView(){
 		//boxerSocket.payloadRecv(4, *"payload", 0);
-		//boxerView.cameraStream();
+		boxerView.plotStream();
 	}
 };
 
