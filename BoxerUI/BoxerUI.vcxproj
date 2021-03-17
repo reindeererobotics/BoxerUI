@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>.\Debug\$(Platform)\out</OutDir>
+    <OutDir>.\Debug\$(Platform)\out\</OutDir>
     <IntDir>$(Solution)\$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,9 +185,6 @@
     <ClInclude Include="src\BoxerUI_Sockets.h" />
     <ClInclude Include="src\BoxerUI_View.h" />
     <ClInclude Include="src\resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\BoxerUI.rc" />

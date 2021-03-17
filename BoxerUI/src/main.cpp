@@ -4,6 +4,7 @@
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
 #include "imgui.h"
+//#include "imgui_internal.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 //#include <stdio.h>
@@ -195,7 +196,9 @@ int main(int, char**)
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-	io.ConfigViewportsNoAutoMerge = false;
+	//io.ConfigViewportsNoAutoMerge = false;
+	io.ConfigDockingWithShift = true;
+	//io.ConfigDockingAlwaysTabBar = false;
 	//io.ConfigViewportsNoTaskBarIcon = false;
 	//io.ConfigViewportsNoDefaultParent = false;
 
@@ -209,6 +212,7 @@ int main(int, char**)
 	{
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+
 	}
 
 	// Setup Platform/Renderer backends
@@ -232,7 +236,9 @@ int main(int, char**)
 
 	// Our state
 	bool show_demo_window = true;
-	bool show_another_window = false;
+	bool show_index_window = true;
+	bool show_boxer_windows = false;
+	bool p_open = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	//Initialize Boxer controller object. 
@@ -245,7 +251,7 @@ int main(int, char**)
 	cv::VideoCapture cap(0, cv::CAP_ANY);
 	cv::Mat frame;
 	if (!cap.isOpened()) { cout << "Change camera port number"; }
-	cout << cap.getBackendName() << endl;
+	//cout << cap.getBackendName() << endl;
 
 	//cap.set(cv::CAP_PROP_FPS, (GetTime()/10));
 	//cap.set(cv::CAP_PROP_AUTO_EXPOSURE,);
@@ -255,6 +261,7 @@ int main(int, char**)
 	GLuint my_frame_texture;
 	//STARTUPINFO pid;
 	// Main loop
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// Poll and handle events (inputs, window resize, etc.)
@@ -269,64 +276,69 @@ int main(int, char**)
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		//	ImGuiWindowClass *windowClass=new ImGuiWindowClass ;
+		//(*windowClass).DockingAlwaysTabBar = true;
+		//	
+		//ImGuiDockNodeFlags nodeFlags =  ImGuiDockNodeFlags_NoTabBar ;
+		//windowClass->DockNodeFlagsOverrideSet = nodeFlags;
+		////windowClass->DockingAlwaysTabBar = false;
+		//SetNextWindowClass(windowClass);
+
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		/*if(&show_demo_window)
+			boxerController.demoWindows(show_demo_window);*/
+			// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+		{ImGuiWindowClass* windowClass = new ImGuiWindowClass;
+		(*windowClass).DockingAlwaysTabBar = true;
+		ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar;
+		windowClass->DockNodeFlagsOverrideSet = nodeFlags;
 
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
+		if (&show_index_window)
+			boxerController.displayIndexWindow(*windowClass, show_index_window, p_open);
+		else if (!&show_index_window)
 		{
-			bool p_open = false;
-			if (&show_demo_window)
+			//nodeFlags -= ImGuiDockNodeFlags_NoTabBar | ImGuiWindowFlags_NoSavedSettings;
+			windowClass->DockNodeFlagsOverrideClear;//= nodeFlags;
+			SetNextWindowClass(windowClass);
+			show_index_window = false;
+			//SetNextWindowViewport();
+			boxerController.displayFPS();
+			boxerController.demoWindows(show_demo_window);
 			{
-				ImPlot::CreateContext();
-				ImPlot::ShowDemoWindow(&p_open);
-				ImPlot::DestroyContext();
-			}
-		}
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-		{
-			/*  static ImGuiSelectableFlags selectFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiSelectableFlags_AllowDoubleClick;
-			  ImGuiTableFlags tableFlag = ImGuiTableColumnFlags_IsHovered;*/
+				static int counter = 0;
+				static bool setTempBttn = false;
+				{
+					ImGui::Begin("My Table Test", &p_open);// , ImGuiWindowFlags_AlwaysAutoResize);
 
-			{ ImGui::Begin("Application Framerate");                          // Create a window called "Hello, world!" and append into it.
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End(); }
+					boxerController.updateBSView();
 
+					if (Button("change temperature")) {
+						boxerController.setModelTemperature(19.3);
+						setTempBttn = true;
+						//pid = CreateProcess();
+					}
+					if (setTempBttn) {
+						ImGui::SameLine();
+						ImGui::Text("Thanks for clicking me! Counter: %d", counter);
+					}
+					if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+						counter++;
+					ImGui::SameLine();
+					ImGui::Text("counter = %d", counter);
+					ImGuiListClipper clipper;
+					clipper.Begin(10);         // We have 1000 elements, evenly spaced.               
+					while (clipper.Step())
+						for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+							ImGui::Text("line number %d", i);
+						}
 
-			bool p_open = false;
-			static int counter = 0;
-			static bool setTempBttn = false;
-			{ ImGui::Begin("My Table Test", &p_open);// , ImGuiWindowFlags_AlwaysAutoResize);
-
-			boxerController.updateBSView();
-
-			if (Button("change temperature")) {
-				boxerController.setModelTemperature(19.3);
-				setTempBttn = true;
-				//pid = CreateProcess();
-			}
-			if (setTempBttn) {
-				ImGui::SameLine();
-				ImGui::Text("Thanks for clicking me! Counter: %d", counter);
-			}
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-			ImGuiListClipper clipper;
-			clipper.Begin(10);         // We have 1000 elements, evenly spaced.               
-			while (clipper.Step())
-				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
-					ImGui::Text("line number %d", i);
+					ImGui::End();
 				}
-
-			ImGui::End(); }
+			}
 			boxerController.plotView();
 
 			////if(cap.grab())
 			{
-
-
 				/*if (pid == 0)
 				{*/
 				cap.retrieve(frame);
@@ -340,20 +352,11 @@ int main(int, char**)
 				//}
 			}
 			//else { cout << "Could not grab frame" << endl; }
-
-
+		}
 
 		}
 
-		// 3. Show another simple window.
-		if (show_another_window)
-		{
-			ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				show_another_window = false;
-			ImGui::End();
-		}
+
 		// Rendering
 		ImGui::Render();
 		int display_w, display_h;

@@ -52,10 +52,19 @@ public:
 	boxerModel.setTemperature(jsonPayload["Temperature"].asDouble());
 	}
 
+	 void displayIndexWindow(ImGuiWindowClass windowClass,bool boxer_analytics, bool p_open) {
+		//return
+			boxerView.indexwindow(&windowClass,boxer_analytics, p_open);
+	}
+	void displayFPS() {
+		boxerView.appFrameRate();
+	}
+	void demoWindows(bool demo_window) {
+		boxerView.showdemos(&demo_window);
+	}
 	void updateBSView() {
 		 boxerView.displaySensors(boxerModel.getTemperature(), boxerModel.getBattery());
 	}
-
 	void plotView(){
 		//boxerSocket.payloadRecv(4, *"payload", 0);
 		boxerView.plotStream();

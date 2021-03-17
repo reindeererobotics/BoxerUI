@@ -121,9 +121,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\imgui.ini" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="src\BoxerUI.rc">
       <Filter>Source Files</Filter>
     </ResourceCompile>
