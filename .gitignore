@@ -1,2 +1,8 @@
 .vs
 Debug/
+*BoxerUI/header/imgui/
+!*/BoxerUI/header/imgui/backends/imgui_impl_glfw.cpp
+!*/BoxerUI/header/imgui/backends/imgui_impl_glfw.h
+!*/BoxerUI/header/imgui/examples/libs/
+BoxerUI/header/implot/LICENSE
+BoxerUI/header/implot/README.md
