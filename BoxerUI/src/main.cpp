@@ -9,7 +9,6 @@
 #include "imgui_impl_opengl3.h"
 //#include <stdio.h>
 //#include <sys/types.h> 
-//#include <windows.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -47,9 +46,8 @@ using namespace gl;
 #endif
 
 // Include glfw3.h after our OpenGL definitions
-
 #include <GLFW/glfw3.h>
-//#include <GL/GL.h>
+
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -63,43 +61,8 @@ static void glfw_error_callback(int error, const char* description)
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-//bool LoadTextureFromFile(GLuint* out_texture, int* out_width, int* out_height)
-//{
-//    // Load from file
-//    int image_width = 0;
-//    int image_height = 0;
-//    //unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
-//    //if (image_data == NULL)
-//       // return false;
-//
-//    // Create a OpenGL texture identifier
-//    GLuint image_texture;
-//    
-//    glGenTextures(1, &image_texture);
-//    glBindTexture(GL_TEXTURE_2D, image_texture);
-//    
-//    // Setup filtering parameters for display
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
-//    
-//    // Upload pixels into texture
-//#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
-//    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-//#endif
-//    gl3wTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, out_texture);
-//   // stbi_image_free(image_data);
-//
-//    *out_texture = image_texture;
-//    *out_width = image_width;
-//    *out_height = image_height;
-//
-//    return true;
-//};
 void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
 {
-
 	if (image.empty()) {
 		std::cout << "image empty" << std::endl;
 	}
@@ -158,7 +121,9 @@ int main(int, char**)
 #endif
 
 	// Create window with graphics context
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Reheindeer Robotics - BoxerUI", NULL, NULL);
+	int ui_window_width = 1280, ui_window_height = 720;
+	GLFWwindow* window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
+	glfwGetWindowSize(window, &ui_window_width, &ui_window_height);
 	if (window == NULL)
 		return 1;
 	glfwMakeContextCurrent(window);
@@ -235,7 +200,7 @@ int main(int, char**)
 	//IM_ASSERT(font != NULL);
 
 	// Our state
-	bool show_demo_window = true;
+	//bool show_demo_window = true;
 	bool show_index_window = true;
 	bool show_boxer_windows = false;
 	bool p_open = true;
@@ -247,21 +212,24 @@ int main(int, char**)
 	BoxerUI_Controller boxerController = BoxerUI_Controller(boxerView, boxerModel);
 	//boxerController.payloadRecv();
 
-
-	cv::VideoCapture cap(0, cv::CAP_ANY);
+	bool show_camera = false;
+	int capture_camera = 0;
+	cv::VideoCapture cap = cv::VideoCapture(capture_camera, cv::CAP_ANY);
 	cv::Mat frame;
-	if (!cap.isOpened()) { cout << "Change camera port number"; }
-	//cout << cap.getBackendName() << endl;
-
-	//cap.set(cv::CAP_PROP_FPS, (GetTime()/10));
-	//cap.set(cv::CAP_PROP_AUTO_EXPOSURE,);
-	cout << cap.get(cv::CAP_PROP_FPS) << endl;
-	float my_image_width = 0.0f;
-	float my_image_height = 0.0f;
 	GLuint my_frame_texture;
-	//STARTUPINFO pid;
-	// Main loop
+	cout << cap.getBackendName() << endl;
+	cout << cap.get(cv::CAP_PROP_POS_FRAMES) << endl;
+	cap.set(3, ui_window_width / 4); //frame width
+	cap.set(4, ui_window_height / 4); //fram height
 
+	//cap.set(cv::CAP_PROP_HW_ACCELERATION, cv::VIDEO_ACCELERATION_NONE);
+	//cout << "FPS: "<<cap.get(cv::CAP_PROP_FPS)<<"\nAutoFocus: "<<cv::CAP_PROP_AUTOFOCUS << endl;
+	//cap.get(cv::CAP_PROP_SETTINGS);
+	//cap.set(cv::CAP_PROP_AUTO_EXPOSURE,cap.get(cv::CAP_PROP_BRIGHTNESS*15));
+	//cout << cap.get(cv::CAP_PROP_FPS) << endl;
+
+
+	// Main loop
 	while (!glfwWindowShouldClose(window))
 	{
 		// Poll and handle events (inputs, window resize, etc.)
@@ -284,75 +252,54 @@ int main(int, char**)
 		////windowClass->DockingAlwaysTabBar = false;
 		//SetNextWindowClass(windowClass);
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-		/*if(&show_demo_window)
-			boxerController.demoWindows(show_demo_window);*/
-			// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-		{ImGuiWindowClass* windowClass = new ImGuiWindowClass;
-		(*windowClass).DockingAlwaysTabBar = true;
-		ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar;
-		windowClass->DockNodeFlagsOverrideSet = nodeFlags;
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar);
+		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
-		if (&show_index_window)
-			boxerController.displayIndexWindow(*windowClass, show_index_window, p_open);
-		else if (!&show_index_window)
 		{
-			//nodeFlags -= ImGuiDockNodeFlags_NoTabBar | ImGuiWindowFlags_NoSavedSettings;
-			windowClass->DockNodeFlagsOverrideClear;//= nodeFlags;
-			SetNextWindowClass(windowClass);
-			show_index_window = false;
-			//SetNextWindowViewport();
-			boxerController.displayFPS();
-			boxerController.demoWindows(show_demo_window);
+			if (show_index_window) {				
+				//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);				
+				boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
+			}
+			else 
 			{
-				static int counter = 0;
-				static bool setTempBttn = false;
+				//SetNextWindowViewport();
+				boxerController.displayFPS();
+				boxerController.demoWindows();// show_demo_window);
+				boxerController.updateBSView();
+				boxerController.plotView();
+
+				//if(cap.grab())
 				{
-					ImGui::Begin("My Table Test", &p_open);// , ImGuiWindowFlags_AlwaysAutoResize);
+					/*if (pid == 0)
+					{*/
+					ImGui::Begin("OpenGL/OpenCV Camera Test");
+					if (Button("Show Camera"))
+					{
+						show_camera = !show_camera;
+						//TODO: create a process for the camera
+					}if (show_camera) {
+						//switch camera in drop down
+						const char* list_cameras[] = { "0","1" };
+						static int item_current = 0;
+						ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras));
+						capture_camera = item_current;
+						ImGui::SameLine(); /*HelpMarker(
+							"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
+							"and demonstration of various flags.\n");*/
+							//TODO: place camera in process
 
-					boxerController.updateBSView();
-
-					if (Button("change temperature")) {
-						boxerController.setModelTemperature(19.3);
-						setTempBttn = true;
-						//pid = CreateProcess();
+						cap.retrieve(frame);
+						BindCVMat2GLTexture(frame, my_frame_texture);
+						ImGui::Text("pointer = %p", my_frame_texture);
+						ImGui::Text("size = %d x %d", frame.cols, frame.rows);
+						ImGui::Image((void*)(intptr_t)my_frame_texture, ImVec2((float)frame.cols, (float)frame.rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+						frame.release();
 					}
-					if (setTempBttn) {
-						ImGui::SameLine();
-						ImGui::Text("Thanks for clicking me! Counter: %d", counter);
-					}
-					if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-						counter++;
-					ImGui::SameLine();
-					ImGui::Text("counter = %d", counter);
-					ImGuiListClipper clipper;
-					clipper.Begin(10);         // We have 1000 elements, evenly spaced.               
-					while (clipper.Step())
-						for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
-							ImGui::Text("line number %d", i);
-						}
-
 					ImGui::End();
+					//}
 				}
+				//else { cout << "Could not grab frame" << endl; }
 			}
-			boxerController.plotView();
-
-			////if(cap.grab())
-			{
-				/*if (pid == 0)
-				{*/
-				cap.retrieve(frame);
-				ImGui::Begin("OpenGL/OpenCV Texture Test");
-				BindCVMat2GLTexture(frame, my_frame_texture);
-				ImGui::Text("pointer = %p", my_frame_texture);
-				ImGui::Text("size = %d x %d", my_image_width, my_image_height);
-				ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(my_frame_texture)), ImVec2((float)frame.cols, (float)frame.rows));
-				ImGui::End();
-				frame.release();
-				//}
-			}
-			//else { cout << "Could not grab frame" << endl; }
-		}
 
 		}
 

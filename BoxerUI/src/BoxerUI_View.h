@@ -10,7 +10,6 @@
 using namespace ImGui;
 using namespace std;
 
-
 class BoxerUI_View
 {
 public:
@@ -19,9 +18,10 @@ public:
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End(); }
 	}
-	static void showdemos(bool show_demo_window) {
+	static void showdemos() {//bool show_demo_window) {
 
 		bool show_another_window = false;
+		bool show_demo_window = true;
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		if (&show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
@@ -45,27 +45,53 @@ public:
 		}
 	}
 	static void displaySensors(double temperature, double battery) {
+		static int counter = 0;
+		static bool setTempBttn = false;
+		{
+			ImGui::Begin("My Table Test");// , ImGuiWindowFlags_AlwaysAutoResize);
 
-		static ImGuiSelectableFlags selectFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiSelectableFlags_AllowDoubleClick;
+			{
+				static ImGuiSelectableFlags selectFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiSelectableFlags_AllowDoubleClick;
+				ImGui::BeginTable("table", 2);
 
+				//static char *tableHeader[] = { "Sensors","Current","Max","Min" };
+				//static char* sensors[] = { "Temperature","Battery","Tires","Min", "Min" };
 
-		ImGui::BeginTable("table", 2);
+				TableSetupColumn("Sensors", ImGuiTableColumnFlags_WidthStretch);
+				TableSetupColumn("Values", ImGuiTableColumnFlags_WidthStretch);
+				TableHeadersRow();
+				TableNextRow();
+				TableNextColumn();
+				Text("Temperature");
+				TableNextColumn(); Text("%f", temperature);
+				TableNextRow();
+				TableNextColumn(); Text("Battery"); TableNextColumn();
+				Text("%f", battery);
 
-		//static char *tableHeader[] = { "Sensors","Current","Max","Min" };
-		//static char* sensors[] = { "Temperature","Battery","Tires","Min", "Min" };
+				ImGui::EndTable(); }
 
-		TableSetupColumn("Sensors", ImGuiTableColumnFlags_WidthStretch);
-		TableSetupColumn("Values", ImGuiTableColumnFlags_WidthStretch);
-		TableHeadersRow();
-		TableNextRow();
-		TableNextColumn();
-		Text("Temperature");
-		TableNextColumn(); Text("%f", temperature);
-		TableNextRow();
-		TableNextColumn(); Text("Battery"); TableNextColumn();
-		Text("%f", battery);
+			if (Button("change temperature")) {
+				//boxerController.setModelTemperature(19.3);
+				setTempBttn = true;
+				//pid = CreateProcess();
+			}
+			if (setTempBttn) {
+				ImGui::SameLine();
+				ImGui::Text("Thanks for clicking me! Counter: %d", counter);
+			}
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+				counter++;
+			ImGui::SameLine();
+			ImGui::Text("counter = %d", counter);
+			ImGuiListClipper clipper;
+			clipper.Begin(10);         // We have 1000 elements, evenly spaced.               
+			while (clipper.Step())
+				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+					ImGui::Text("line number %d", i);
+				}
 
-		ImGui::EndTable();
+			ImGui::End();
+		}
 	}
 	static void plotStream() {
 
@@ -104,25 +130,35 @@ public:
 	static void cameraStream() {
 
 	}
-	static void indexwindow(ImGuiWindowClass* windowClass, bool boxer_analytics, bool p_open) {
-		ImGuiWindowFlags indexFlags =  ImGuiWindowFlags_NoMove |ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings ;
-		//
-		//ImGuiWindowClass* windowClass = new ImGuiWindowClass;
-		(*windowClass).DockingAlwaysTabBar = true;
-		ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar ;
+	static void indexwindow(bool& boxer_analytics) {//, int ui_window_width, int ui_window_height) {
+		bool p_open = true;
+		ImGuiWindowFlags indexFlags =  ImGuiWindowFlags_NoSavedSettings;
+		ImGuiWindowClass* windowClass = new ImGuiWindowClass;
+		ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_CentralNode ;
 		windowClass->DockNodeFlagsOverrideSet = nodeFlags;
-		//windowClass->DockingAlwaysTabBar = false;
+		//(*windowClass).DockingAlwaysTabBar = false;
+		//windowClass->DockingAllowUnclassed=true;
 		SetNextWindowClass(windowClass);
-		
 
-		//GetWindowWidth();
-		Begin("Index",&p_open,indexFlags);
+		
+		/*ImGuiWindow *index_window=NULL;
+		ImGuiID nodeID=index_window->GetID("Index");
+		DockBuilderGetCentralNode(nodeID);
+		SetWindowDock(index_window, nodeID,ImGuiCond_FirstUseEver);*/
+
+		////GetWindowWidth();
+		////ImGuiWindow* indexWindow;
+		//index_window->GetID("index");
+		//BeginDocked(index_window, &p_open);
+
+		Begin("Index", &p_open , indexFlags);
 		Text("Boxr");
 		if (Button("Open boxer analytics", ImVec2(200, 100))) {
 			boxer_analytics = false;
 			cout << boxer_analytics << endl;
 		}
 		End();
+
 		//WindowClass
 		//return boxer_analytics;
 	}
