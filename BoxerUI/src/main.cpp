@@ -71,8 +71,8 @@ void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
 		cv::cvtColor(image, image, cv::COLOR_BGR2RGBA);
 
 		GLuint image_texture;
-		glGenTextures(1, &image_texture);
-		glBindTexture(GL_TEXTURE_2D, image_texture);
+		glGenTextures(1, &imageTexture);
+		glBindTexture(GL_TEXTURE_2D, imageTexture);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -92,7 +92,7 @@ void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
 			GL_UNSIGNED_BYTE,    // Image data type
 			image.data);        // The actual image data itself
 
-		imageTexture = image_texture;
+		//imageTexture = image_texture;
 	}
 }
 
