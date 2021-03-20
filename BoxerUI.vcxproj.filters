@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="BoxerUI\Source Files\BoxerUI_Controller.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\BoxerUI_Model.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\BoxerUI_View.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\main.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\implot\implot.cpp">
+      <Filter>implot</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\implot\implot_demo.cpp">
+      <Filter>implot</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\implot\implot_items.cpp">
+      <Filter>implot</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxerUI\Header Files\jsoncpp\jsoncpp.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BoxerUI\Source Files\BoxerUI_Controller.h" />
+    <ClInclude Include="BoxerUI\Source Files\BoxerUI_Model.h" />
+    <ClInclude Include="BoxerUI\Source Files\BoxerUI_View.h" />
+    <ClInclude Include="BoxerUI\Header Files\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\imgui\backends\imgui_impl_dx12.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\imgui\backends\imgui_impl_win32.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\implot\implot.h">
+      <Filter>implot</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\implot\implot_internal.h">
+      <Filter>implot</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\jsoncpp\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxerUI\Header Files\jsoncpp\json\json-forwards.h">
+      <Filter>json</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BoxerUI\Source Files\BoxerUI.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{761d2c3d-9b2f-43df-85a6-3ba02709b50c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="implot">
+      <UniqueIdentifier>{f6e931bd-ced0-4a2c-8445-72e236ed997f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{3461d0e8-914d-486d-b0a0-cc8132a83f39}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

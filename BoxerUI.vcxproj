@@ -102,13 +102,13 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>BoxerUI;BoxerUI\Header Files;Header Files\imgui;Header Files\imgui\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)BoxerUI\;$(SolutionDir)BoxerUI\Header Files;$(SolutionDir)BoxerUI\Header Files\imgui;$(SolutionDir)BoxerUI\Header Files\imgui\backends;$(SolutionDir)BoxerUI\Source Files;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ImTextureID=ImU64;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opencv_world451.lib;d3d12.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Shenanigans\Documents\BoxerUI Project\BoxerUI;Header Files;Source Files;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)BoxerUI\;$(SolutionDir)BoxerUI\Header Files;$(SolutionDir)BoxerUI\Header Files\imgui;$(SolutionDir)BoxerUI\Header Files\imgui\backends;$(SolutionDir)BoxerUI\Source Files;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -149,39 +149,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BoxerUI_Controller.h" />
-    <ClInclude Include="BoxerUI_Model.h" />
-    <ClInclude Include="BoxerUI_Sockets.h" />
-    <ClInclude Include="BoxerUI_View.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_dx12.h" />
-    <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="implot\implot.h" />
-    <ClInclude Include="implot\implot_internal.h" />
-    <ClInclude Include="jsoncpp\json\json-forwards.h" />
-    <ClInclude Include="jsoncpp\json\json.h" />
+    <ClInclude Include="BoxerUI\Source Files\BoxerUI_Controller.h" />
+    <ClInclude Include="BoxerUI\Source Files\BoxerUI_Model.h" />
+    <ClInclude Include="BoxerUI\Source Files\BoxerUI_View.h" />
+    <ClInclude Include="BoxerUI\Header Files\imgui\imconfig.h" />
+    <ClInclude Include="BoxerUI\Header Files\imgui\imgui.h" />
+    <ClInclude Include="BoxerUI\Header Files\imgui\imgui_internal.h" />
+    <ClInclude Include="BoxerUI\Header Files\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="BoxerUI\Header Files\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="BoxerUI\Header Files\implot\implot.h" />
+    <ClInclude Include="BoxerUI\Header Files\implot\implot_internal.h" />
+    <ClInclude Include="BoxerUI\Header Files\jsoncpp\json\json-forwards.h" />
+    <ClInclude Include="BoxerUI\Header Files\jsoncpp\json\json.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BoxerUI_Controller.cpp" />
-    <ClCompile Include="BoxerUI_Model.cpp" />
-    <ClCompile Include="BoxerUI_View.cpp" />
-    <ClCompile Include="imgui\imgui.cpp" />
-    <ClCompile Include="imgui\imgui_demo.cpp" />
-    <ClCompile Include="imgui\imgui_draw.cpp" />
-    <ClCompile Include="imgui\imgui_tables.cpp" />
-    <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_dx12.cpp" />
-    <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="implot\implot.cpp" />
-    <ClCompile Include="implot\implot_demo.cpp" />
-    <ClCompile Include="implot\implot_items.cpp" />
-    <ClCompile Include="jsoncpp\jsoncpp.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\BoxerUI_Controller.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\BoxerUI_Model.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\BoxerUI_View.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_demo.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_draw.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_tables.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\implot\implot.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\implot\implot_demo.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\implot\implot_items.cpp" />
+    <ClCompile Include="BoxerUI\Header Files\jsoncpp\jsoncpp.cpp" />
+    <ClCompile Include="BoxerUI\Source Files\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="BoxerUI.rc" />
+    <ResourceCompile Include="BoxerUI\Source Files\BoxerUI.rc" />
   </ItemGroup>
   <!-- <ItemGroup>
     <None Include="..\README.txt" />
