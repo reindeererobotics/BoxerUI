@@ -1,6 +1,9 @@
 .vs
 Debug/
 
+# Cereal
+BoxerUI/header/cereal/*
+
 #Imgui
 BoxerUI/header/imgui/*
 !/*BoxerUI/header/imgui/*.cpp
