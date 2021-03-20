@@ -1,6 +1,7 @@
 .vs
 Debug/
 
+
 #Imgui
 BoxerUI/header/imgui/*
 !/*BoxerUI/header/imgui/*.cpp
