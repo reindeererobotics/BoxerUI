@@ -39,9 +39,6 @@
     <ClCompile Include="header\jsoncpp\jsoncpp.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="header\imgui\lib\gl3w\GL\gl3w.c">
-      <Filter>Header Files\libs</Filter>
-    </ClCompile>
     <ClCompile Include="header\imgui\imgui_demo.cpp">
       <Filter>Header Files\imgui</Filter>
     </ClCompile>
@@ -65,6 +62,9 @@
     </ClCompile>
     <ClCompile Include="header\imgui\imgui.cpp">
       <Filter>Header Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="header\imgui\examples\libs\gl3w\GL\gl3w.c">
+      <Filter>Header Files\libs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
