@@ -252,7 +252,7 @@ int main(int, char**)
 		////windowClass->DockingAlwaysTabBar = false;
 		//SetNextWindowClass(windowClass);
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar);
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoCloseButton);
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
