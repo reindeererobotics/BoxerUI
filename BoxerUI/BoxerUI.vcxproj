@@ -119,14 +119,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)header;$(ProjectDir)resource;$(ProjectDir);$(ProjectDir)header\imgui;$(ProjectDir)header\imgui\backends;$(ProjectDir)header\imgui\examples\libs\;$(ProjectDir)header\imgui\examples\libs\glfw\include;$(ProjectDir)header\imgui\examples\libs\glfw\lib-vc2010-64;$(ProjectDir)header\imgui\examples\libs\gl3w;$(ProjectDir)header\jsoncpp;$(ProjectDir)header\jsoncpp\json;C:\Program Files\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)header;$(ProjectDir)resource;$(ProjectDir);$(ProjectDir)header\imgui;$(ProjectDir)header\imgui\backends;$(ProjectDir)header\imgui\examples\libs\;$(ProjectDir)header\imgui\examples\libs\glfw\include;$(ProjectDir)header\imgui\examples\libs\glfw\lib-vc2010-64;$(ProjectDir)header\imgui\examples\libs\gl3w;$(ProjectDir)header\implot;$(ProjectDir)header\jsoncpp;$(ProjectDir)header\jsoncpp\json;C:\Program Files\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)src;$(ProjectDir)header;$(ProjectDir)resource;$(ProjectDir);$(ProjectDir)header\imgui;$(ProjectDir)header\imgui\backends;$(ProjectDir)header\imgui\examples\libs\glfw;$(ProjectDir)header\imgui\examples\libs\glfw\include;$(ProjectDir)header\imgui\examples\libs\glfw\lib-vc2010-64;$(ProjectDir)header\jsoncpp;$(ProjectDir)header\jsoncpp\json;C:\Program Files\opencv\build\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)src;$(ProjectDir)header;$(ProjectDir)resource;$(ProjectDir);$(ProjectDir)header\imgui;$(ProjectDir)header\imgui\backends;$(ProjectDir)header\imgui\examples\libs\glfw;$(ProjectDir)header\imgui\examples\libs\glfw\include;$(ProjectDir)header\imgui\examples\libs\glfw\lib-vc2010-64;$(ProjectDir)header\implot;$(ProjectDir)header\jsoncpp;$(ProjectDir)header\jsoncpp\json;C:\Program Files\opencv\build\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;opencv_world451d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>
