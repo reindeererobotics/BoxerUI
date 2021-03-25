@@ -133,12 +133,12 @@ public:
 	static void indexwindow(bool& boxer_analytics) {//, int ui_window_width, int ui_window_height) {
 		bool p_open = true;
 		ImGuiWindowFlags indexFlags =  ImGuiWindowFlags_NoSavedSettings;
-		ImGuiWindowClass* windowClass = new ImGuiWindowClass;
-		ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_CentralNode ;
-		windowClass->DockNodeFlagsOverrideSet = nodeFlags;
+		//ImGuiWindowClass* windowClass = new ImGuiWindowClass;
+		//ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_CentralNode ;
+		//windowClass->DockNodeFlagsOverrideSet = nodeFlags;
 		//(*windowClass).DockingAlwaysTabBar = false;
 		//windowClass->DockingAllowUnclassed=true;
-		SetNextWindowClass(windowClass);
+		//SetNextWindowClass(windowClass);
 
 		
 		/*ImGuiWindow *index_window=NULL;

@@ -1,6 +1,7 @@
 .vs
 Debug/
 
+BoxerUI/header/cereal/*
 
 #Imgui
 BoxerUI/header/imgui/*
