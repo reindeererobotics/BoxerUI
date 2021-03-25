@@ -2,7 +2,7 @@
 
 #include "imgui.h"
 #include "imgui_internal.h"
-#include "implot/implot.h"
+#include "implot.h"
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
