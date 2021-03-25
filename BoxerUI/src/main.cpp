@@ -215,12 +215,13 @@ int main(int, char**)
 	bool show_camera = false;
 	int capture_camera = 0;
 	cv::VideoCapture cap = cv::VideoCapture(capture_camera, cv::CAP_ANY);
+	if(!cap.isOpened()){cout<<"Camera not opened"<<endl; return -1;}
 	cv::Mat frame;
 	GLuint my_frame_texture;
 	cout << cap.getBackendName() << endl;
 	cout << cap.get(cv::CAP_PROP_POS_FRAMES) << endl;
-	cap.set(3, ui_window_width / 4); //frame width
-	cap.set(4, ui_window_height / 4); //fram height
+	cap.set(3, ui_window_width / 3); //frame width
+	cap.set(4, ui_window_height / 3); //fram height
 
 	//cap.set(cv::CAP_PROP_HW_ACCELERATION, cv::VIDEO_ACCELERATION_NONE);
 	//cout << "FPS: "<<cap.get(cv::CAP_PROP_FPS)<<"\nAutoFocus: "<<cv::CAP_PROP_AUTOFOCUS << endl;
@@ -256,11 +257,11 @@ int main(int, char**)
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			if (show_index_window) {				
-				//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);				
-				boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
-			}
-			else 
+			// if (show_index_window) {				
+			// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);				
+			// 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
+			// }
+			// else 
 			{
 				//SetNextWindowViewport();
 				boxerController.displayFPS();
@@ -282,7 +283,7 @@ int main(int, char**)
 						const char* list_cameras[] = { "0","1" };
 						static int item_current = 0;
 						ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras));
-						capture_camera = item_current;
+						// capture_camera = item_current;
 						ImGui::SameLine(); /*HelpMarker(
 							"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
 							"and demonstration of various flags.\n");*/

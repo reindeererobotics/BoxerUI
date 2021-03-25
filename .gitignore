@@ -1,4 +1,5 @@
 .vs
+.vscode/*
 Debug/
 
 BoxerUI/header/cereal/*
@@ -26,3 +27,8 @@ BoxerUI/header/imgui/examples/libs/glfw/COPYING.txt
 #Implot
 BoxerUI/header/implot/LICENSE
 BoxerUI/header/implot/README.md
+
+build/*
+# !/*build/BoxerUI_app
+
+
