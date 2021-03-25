@@ -2,7 +2,7 @@
 .vscode/*
 Debug/
  
-#Imgui
+#Imgui 
 BoxerUI/header/imgui/*
 !/*BoxerUI/header/imgui/*.cpp
 !/*BoxerUI/header/imgui/*.h
