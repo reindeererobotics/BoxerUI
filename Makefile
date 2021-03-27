@@ -29,9 +29,9 @@ UNAME_S := $(shell uname -s)
 CXXFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMPLOT_DIR) #-I/usr/local/include/opencv4
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
-# packages = opencv4
-# CXXFLAGS += $(shell pkg-config --cflags $(packages))
-# LIBS = $(shell pkg-config --libs $(packages))
+packages = opencv4
+CXXFLAGS += $(shell pkg-config --cflags $(packages))
+LIBS += $(shell pkg-config --libs $(packages))
 
 ##---------------------------------------------------------------------
 ## OPENGL LOADER
@@ -70,10 +70,10 @@ CXXFLAGS += -I BoxerUI/header/imgui/examples/libs/gl3w -DIMGUI_IMPL_OPENGL_LOADE
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
 	LIBS += -lGL -ldl `pkg-config --static --libs glfw3`
-	# LIBS += -lGL `pkg-config --static --libs opencv4` 
+	LIBS += `pkg-config --static --libs opencv4` 
 
 	CXXFLAGS += `pkg-config --cflags glfw3`
-	# CXXFLAGS += `pkg-config --cflags --libs opencv4` 
+	CXXFLAGS += `pkg-config --cflags opencv4` 
 	# I have 2 options. I can either try using opencv in this makefile since i know i compiles sucessfully but opencv doesn't work well. or use the cmake where i know 
 	# (From stackoverflow) it will compile and build with the intended library. in essence opencv works with my cmakelists.txt but not this one although it compiles
 	# No

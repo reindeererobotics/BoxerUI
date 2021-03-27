@@ -8,13 +8,13 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 //#include <stdio.h>
-//#include <sys/types.h> 
+//#include <sys/types.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/utility.hpp>
 
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
 #include "BoxerUI_Controller.h"
 #include "BoxerUI_Model.h"
 #include "BoxerUI_View.h"
@@ -24,21 +24,21 @@
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
 //  You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>            // Initialize with gl3wInit()
+#include <GL/gl3w.h> // Initialize with gl3wInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>            // Initialize with glewInit()
+#include <GL/glew.h> // Initialize with glewInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>          // Initialize with gladLoadGL()
+#include <glad/glad.h> // Initialize with gladLoadGL()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD2)
-#include <glad/gl.h>            // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
+#include <glad/gl.h> // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
-#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/Binding.h>  // Initialize with glbinding::Binding::initialize()
+#define GLFW_INCLUDE_NONE	   // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+#include <glbinding/Binding.h> // Initialize with glbinding::Binding::initialize()
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
-#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/glbinding.h>// Initialize with glbinding::initialize()
+#define GLFW_INCLUDE_NONE		 // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+#include <glbinding/glbinding.h> // Initialize with glbinding::initialize()
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #else
@@ -48,7 +48,6 @@ using namespace gl;
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
 
-
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
 // Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
@@ -56,14 +55,15 @@ using namespace gl;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-static void glfw_error_callback(int error, const char* description)
+static void glfw_error_callback(int error, const char *description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
+void BindCVMat2GLTexture(cv::Mat &image, GLuint &imageTexture)
 {
-	if (image.empty()) {
+	if (image.empty())
+	{
 		std::cout << "image empty" << std::endl;
 	}
 	else
@@ -82,38 +82,57 @@ void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_READ_COLOR);
 
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.cols, image.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.ptr());
-		glTexImage2D(GL_TEXTURE_2D,         // Type of texture
-			0,                   // Pyramid level (for mip-mapping) - 0 is the top level
-			GL_RGB,              // colour format to convert to
-			image.cols,          // Image width
-			image.rows,          // Image height
-			0,                   // Border width in pixels (can either be 1 or 0)
-			GL_RGBA,              // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
-			GL_UNSIGNED_BYTE,    // Image data type
-			image.data);        // The actual image data itself
+		glTexImage2D(GL_TEXTURE_2D,	   // Type of texture
+					 0,				   // Pyramid level (for mip-mapping) - 0 is the top level
+					 GL_RGB,		   // colour format to convert to
+					 image.cols,	   // Image width
+					 image.rows,	   // Image height
+					 0,				   // Border width in pixels (can either be 1 or 0)
+					 GL_RGBA,		   // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
+					 GL_UNSIGNED_BYTE, // Image data type
+					 image.data);	   // The actual image data itself
 
 		imageTexture = image_texture;
 	}
 }
+void disp_frame(cv::Mat &frame, GLuint &my_frame_texture)
+{
+	cv::Mat frames_buf[5];
+	for (int i = 0; i < 5; i++)
+	{
+		frames_buf[i] = frame;
+		frame.~Mat();
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		cv::Mat disp_frame = cv::Mat(100, 100, CV_64FC1);
 
-int main(int, char**)
+		disp_frame = frames_buf[i];
+		BindCVMat2GLTexture(disp_frame, my_frame_texture);
+		ImGui::Text("pointer = %p", my_frame_texture);
+		ImGui::Text("size = %d x %d", disp_frame.cols, disp_frame.rows);
+		ImGui::Image((void *)(intptr_t)my_frame_texture, ImVec2((float)disp_frame.cols, (float)disp_frame.rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+		disp_frame.release();
+	}
+}
+int main(int, char **)
 {
 	// Setup window
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 		return 1;
 
-	// Decide GL+GLSL versions
+		// Decide GL+GLSL versions
 #ifdef __APPLE__
 	// GL 3.2 + GLSL 150
-	const char* glsl_version = "#version 150";
+	const char *glsl_version = "#version 150";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);		   // Required on Mac
 #else
 	// GL 3.0 + GLSL 130
-	const char* glsl_version = "#version 130";
+	const char *glsl_version = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
@@ -122,7 +141,7 @@ int main(int, char**)
 
 	// Create window with graphics context
 	int ui_window_width = 1280, ui_window_height = 720;
-	GLFWwindow* window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
+	GLFWwindow *window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
 	glfwGetWindowSize(window, &ui_window_width, &ui_window_height);
 	if (window == NULL)
 		return 1;
@@ -143,7 +162,7 @@ int main(int, char**)
 	glbinding::Binding::initialize();
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
 	bool err = false;
-	glbinding::initialize([](const char* name) { return (glbinding::ProcAddress)glfwGetProcAddress(name); });
+	glbinding::initialize([](const char *name) { return (glbinding::ProcAddress)glfwGetProcAddress(name); });
 #else
 	bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
 #endif
@@ -156,11 +175,12 @@ int main(int, char**)
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+	ImGuiIO &io = ImGui::GetIO();
+	(void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	// Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 	//io.ConfigViewportsNoAutoMerge = false;
 	io.ConfigDockingWithShift = true;
 	//io.ConfigDockingAlwaysTabBar = false;
@@ -172,12 +192,11 @@ int main(int, char**)
 	//ImGui::StyleColorsClassic();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
+	ImGuiStyle &style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-
 	}
 
 	// Setup Platform/Renderer backends
@@ -206,7 +225,7 @@ int main(int, char**)
 	bool p_open = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	//Initialize Boxer controller object. 
+	//Initialize Boxer controller object.
 	BoxerUI_Model boxerModel = BoxerUI_Model();
 	BoxerUI_View boxerView;
 	BoxerUI_Controller boxerController = BoxerUI_Controller(boxerView, boxerModel);
@@ -215,12 +234,20 @@ int main(int, char**)
 	bool show_camera = false;
 	int capture_camera = 0;
 	cv::VideoCapture cap = cv::VideoCapture(capture_camera, cv::CAP_ANY);
-	if(!cap.isOpened()){cout<<"Camera not opened"<<endl; return -1;}
+	if (!cap.isOpened())
+	{
+		cout << "Camera not opened" << endl;
+		return -1;
+	}
+	else
+	{
+		cout << "Camera opened at: " << capture_camera << endl;
+	}
 	cv::Mat frame;
 	GLuint my_frame_texture;
 	cout << cap.getBackendName() << endl;
 	cout << cap.get(cv::CAP_PROP_POS_FRAMES) << endl;
-	cap.set(3, ui_window_width / 3); //frame width
+	cap.set(3, ui_window_width / 3);  //frame width
 	cap.set(4, ui_window_height / 3); //fram height
 
 	//cap.set(cv::CAP_PROP_HW_ACCELERATION, cv::VIDEO_ACCELERATION_NONE);
@@ -228,7 +255,6 @@ int main(int, char**)
 	//cap.get(cv::CAP_PROP_SETTINGS);
 	//cap.set(cv::CAP_PROP_AUTO_EXPOSURE,cap.get(cv::CAP_PROP_BRIGHTNESS*15));
 	//cout << cap.get(cv::CAP_PROP_FPS) << endl;
-
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -247,7 +273,7 @@ int main(int, char**)
 		ImGui::NewFrame();
 		//	ImGuiWindowClass *windowClass=new ImGuiWindowClass ;
 		//(*windowClass).DockingAlwaysTabBar = true;
-		//	
+		//
 		//ImGuiDockNodeFlags nodeFlags =  ImGuiDockNodeFlags_NoTabBar ;
 		//windowClass->DockNodeFlagsOverrideSet = nodeFlags;
 		////windowClass->DockingAlwaysTabBar = false;
@@ -257,15 +283,15 @@ int main(int, char**)
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			// if (show_index_window) {				
-			// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);				
+			// if (show_index_window) {
+			// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);
 			// 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
 			// }
-			// else 
+			// else
 			{
 				//SetNextWindowViewport();
 				boxerController.displayFPS();
-				boxerController.demoWindows();// show_demo_window);
+				boxerController.demoWindows(); // show_demo_window);
 				boxerController.updateBSView();
 				boxerController.plotView();
 
@@ -274,36 +300,39 @@ int main(int, char**)
 					/*if (pid == 0)
 					{*/
 					ImGui::Begin("OpenGL/OpenCV Camera Test");
-					if (Button("Show Camera"))
-					{
-						show_camera = !show_camera;
-						//TODO: create a process for the camera
-					}if (show_camera) {
-						//switch camera in drop down
-						const char* list_cameras[] = { "0","1" };
+					//switch camera in drop down
+						const char *list_cameras[] = {"0", "1"};
 						static int item_current = 0;
 						ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras));
 						// capture_camera = item_current;
-						ImGui::SameLine(); /*HelpMarker(
+						//ImGui::SameLine(); 
+						/*HelpMarker(
 							"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
 							"and demonstration of various flags.\n");*/
-							//TODO: place camera in process
-
+										   //TODO: place camera in process
+					if (Button("Show Camera"))
+					{
+						show_camera = !show_camera;
+						//TODO: Maybe putting the camera stream will improve performance & increase fps
+						
+					}
+					if (show_camera)
+					{
+						
+#ifdef _WIN32
 						cap.retrieve(frame);
-						BindCVMat2GLTexture(frame, my_frame_texture);
-						ImGui::Text("pointer = %p", my_frame_texture);
-						ImGui::Text("size = %d x %d", frame.cols, frame.rows);
-						ImGui::Image((void*)(intptr_t)my_frame_texture, ImVec2((float)frame.cols, (float)frame.rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
-						frame.release();
+#else
+						cap.read(frame);
+						disp_frame(frame, my_frame_texture);
+#endif
+						// cv::Mat6
 					}
 					ImGui::End();
 					//}
 				}
 				//else { cout << "Could not grab frame" << endl; }
 			}
-
 		}
-
 
 		// Rendering
 		ImGui::Render();
@@ -319,7 +348,7 @@ int main(int, char**)
 		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			GLFWwindow *backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
