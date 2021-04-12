@@ -18,7 +18,11 @@
 #include "BoxerUI_Controller.h"
 #include "BoxerUI_Model.h"
 #include "BoxerUI_View.h"
+// #include "/home/username/opencv-master/include/opencv2/opencv.hpp"
+// #include "/home/username/opencv-master/modules/highgui/include/opencv2/highgui/highgui.hpp"
+// #include "/home/username/opencv-master/modules/core/include/opencv2/core/utility.hpp"
 
+// #include "/home/username/opencv-master/modules/imgproc/include/opencv2/imgproc/imgproc.hpp"
 // About Desktop OpenGL function loaders:
 //  Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
