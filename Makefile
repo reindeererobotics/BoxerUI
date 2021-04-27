@@ -21,6 +21,7 @@ SOURCES = BoxerUI/src/main.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 SOURCES +=  $(IMPLOT_DIR)/implot.cpp $(IMPLOT_DIR)/implot_demo.cpp $(IMPLOT_DIR)/implot_items.cpp
+LINUX_GL_LIBS = -lGL
 
 # SOURCES += 
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
@@ -29,9 +30,9 @@ UNAME_S := $(shell uname -s)
 CXXFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMPLOT_DIR) #-I/usr/local/include/opencv4
 CXXFLAGS += -g -Wall -Wformat
 LIBS =
-# packages = opencv4
-# CXXFLAGS += $(shell pkg-config --cflags $(packages))
-# LIBS = $(shell pkg-config --libs $(packages))
+packages = opencv4
+CXXFLAGS += $(shell pkg-config --cflags $(packages))
+LIBS += $(shell pkg-config --libs $(packages))
 
 ##---------------------------------------------------------------------
 ## OPENGL LOADER
@@ -69,14 +70,11 @@ CXXFLAGS += -I BoxerUI/header/imgui/examples/libs/gl3w -DIMGUI_IMPL_OPENGL_LOADE
 
 ifeq ($(UNAME_S), Linux) #LINUX
 	ECHO_MESSAGE = "Linux"
-	LIBS += -lGL -ldl `pkg-config --static --libs glfw3`
-	# LIBS += -lGL `pkg-config --static --libs opencv4` 
+	LIBS += $(LINUX_GL_LIBS) `pkg-config --static --libs glfw3`
+	LIBS += `pkg-config --static --libs opencv4` 
 
 	CXXFLAGS += `pkg-config --cflags glfw3`
-	# CXXFLAGS += `pkg-config --cflags --libs opencv4` 
-	# I have 2 options. I can either try using opencv in this makefile since i know i compiles sucessfully but opencv doesn't work well. or use the cmake where i know 
-	# (From stackoverflow) it will compile and build with the intended library. in essence opencv works with my cmakelists.txt but not this one although it compiles
-	# No
+	CXXFLAGS += `pkg-config --cflags opencv4` 
 	CFLAGS = $(CXXFLAGS)
 endif
 

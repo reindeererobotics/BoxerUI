@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "BoxerUI_View.h"
+
 //#include "BoxerUI_Sockets.h"
 using namespace std;
 class BoxerUI_Controller
@@ -27,28 +27,21 @@ public:
 		return boxerModel.getTemperature();
 	}
 	void setModelBattery(double batteryVal) {
-		 boxerModel.setbattery(batteryVal);
+		 boxerModel.setBattery(batteryVal);
 	}
 	
 	void setModelTemperature(double temperatureVal) {
 		boxerModel.setTemperature(temperatureVal);
 	}
 
-	//void payloadRecv() {
-	//	//receive data from socket
-	//	ifstream file("sensors.json");
-	//	Json::Value jsonPayload;
-	//	Json::Reader reader;
-	//	
-	//	reader.parse(file, jsonPayload);
-
-	//	decomposePayload(jsonPayload);
-	//	file.close();
-	//}
+	void cameraPayloadRecv() {
+	//TODO: Call to socket function to receive frame buffers, send to model for processing
+	// boxerModel.cameraStreamProc();
+	}
 
 	void decomposePayload(Json::Value jsonPayload) {
 		// converts json to model data attributes
-	boxerModel.setbattery(jsonPayload["Battery"].asDouble());
+	boxerModel.setBattery(jsonPayload["Battery"].asDouble());
 	boxerModel.setTemperature(jsonPayload["Temperature"].asDouble());
 	}
 
