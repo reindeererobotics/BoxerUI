@@ -321,8 +321,7 @@ int main(int, char **)
 						
 					}
 					if (show_camera)
-					{
-						
+					{	
 #ifdef _WIN32
 						cap.retrieve(frame);
 #else
