@@ -66,9 +66,6 @@
     <ClCompile Include="header\imgui\examples\libs\gl3w\GL\gl3w.c">
       <Filter>Header Files\libs</Filter>
     </ClCompile>
-    <ClCompile Include="src\Boxer_FW\src\BoxerUI\camera_stream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\resource.h">

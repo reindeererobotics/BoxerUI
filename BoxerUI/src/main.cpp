@@ -7,7 +7,7 @@
 //#include "imgui_internal.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-//#include <stdio.h>
+#include <stdio.h>
 //#include <sys/types.h>
 
 #include <opencv2/opencv.hpp>
@@ -23,26 +23,28 @@
 // #include "/home/username/opencv-master/modules/core/include/opencv2/core/utility.hpp"
 
 // #include "/home/username/opencv-master/modules/imgproc/include/opencv2/imgproc/imgproc.hpp"
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <GLES2/gl2.h>
 // About Desktop OpenGL function loaders:
 //  Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
 //  You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h> // Initialize with gl3wInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+#include <GL/gl3w.h>            // Initialize with gl3wInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h> // Initialize with glewInit()
+#include <GL/glew.h>            // Initialize with glewInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h> // Initialize with gladLoadGL()
+#include <glad/glad.h>          // Initialize with gladLoadGL()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD2)
-#include <glad/gl.h> // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
+#include <glad/gl.h>            // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
-#define GLFW_INCLUDE_NONE	   // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/Binding.h> // Initialize with glbinding::Binding::initialize()
+#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+#include <glbinding/Binding.h>  // Initialize with glbinding::Binding::initialize()
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
-#define GLFW_INCLUDE_NONE		 // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/glbinding.h> // Initialize with glbinding::initialize()
+#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+#include <glbinding/glbinding.h>// Initialize with glbinding::initialize()
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #else
@@ -59,12 +61,12 @@ using namespace gl;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-static void glfw_error_callback(int error, const char *description)
+static void glfw_error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-void BindCVMat2GLTexture(cv::Mat &image, GLuint &imageTexture)
+void BindCVMat2GLTexture(cv::Mat& image, GLuint& imageTexture)
 {
 	if (image.empty())
 	{
@@ -87,19 +89,19 @@ void BindCVMat2GLTexture(cv::Mat &image, GLuint &imageTexture)
 
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.cols, image.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.ptr());
 		glTexImage2D(GL_TEXTURE_2D,	   // Type of texture
-					 0,				   // Pyramid level (for mip-mapping) - 0 is the top level
-					 GL_RGB,		   // colour format to convert to
-					 image.cols,	   // Image width
-					 image.rows,	   // Image height
-					 0,				   // Border width in pixels (can either be 1 or 0)
-					 GL_RGBA,		   // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
-					 GL_UNSIGNED_BYTE, // Image data type
-					 image.data);	   // The actual image data itself
+			0,				   // Pyramid level (for mip-mapping) - 0 is the top level
+			GL_RGB,		   // colour format to convert to
+			image.cols,	   // Image width
+			image.rows,	   // Image height
+			0,				   // Border width in pixels (can either be 1 or 0)
+			GL_RGBA,		   // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
+			GL_UNSIGNED_BYTE, // Image data type
+			image.data);	   // The actual image data itself
 
-		//imageTexture = image_texture;
+//imageTexture = image_texture;
 	}
 }
-void disp_frame(cv::Mat &frame, GLuint &my_frame_texture)
+void disp_frame(cv::Mat& frame, GLuint& my_frame_texture)
 {
 	cv::Mat frames_buf[5];
 	for (int i = 0; i < 5; i++)
@@ -115,38 +117,64 @@ void disp_frame(cv::Mat &frame, GLuint &my_frame_texture)
 		BindCVMat2GLTexture(disp_frame, my_frame_texture);
 		ImGui::Text("pointer = %p", my_frame_texture);
 		ImGui::Text("size = %d x %d", disp_frame.cols, disp_frame.rows);
-		ImGui::Image((void *)(intptr_t)my_frame_texture, ImVec2((float)disp_frame.cols, (float)disp_frame.rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+		ImGui::Image((void*)(intptr_t)my_frame_texture, ImVec2((float)disp_frame.cols, (float)disp_frame.rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
 		disp_frame.release();
 	}
 }
-int main(int, char **)
+int main(int, char**)
 {
 	// Setup window
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 		return 1;
 
-		// Decide GL+GLSL versions
-#ifdef __APPLE__
+	// Decide GL+GLSL versions
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+	// GL ES 2.0 + GLSL 100
+	const char* glsl_version = "#version 100";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+#elif defined(__APPLE__)
 	// GL 3.2 + GLSL 150
-	const char *glsl_version = "#version 150";
+	const char* glsl_version = "#version 150";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);		   // Required on Mac
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
 #else
 	// GL 3.0 + GLSL 130
-	const char *glsl_version = "#version 130";
+	const char* glsl_version = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
+	glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
 	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
 
 	// Create window with graphics context
 	int ui_window_width = 1280, ui_window_height = 720;
-	GLFWwindow *window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
 	glfwGetWindowSize(window, &ui_window_width, &ui_window_height);
+
+	GLFWmonitor* monitor = glfwGetWindowMonitor(window);
+	//const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	//glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
+	std::string image_path = cv::samples::findFile("C:/Users/Shenanigans/Documents/BoxerUI Project/BoxerUI/BoxerUI/boxer.jpg");
+	cv::Mat img = cv::imread(image_path);// , cv::IMREAD_COLOR);
+
+
+	GLFWimage images[2];
+	images[0].pixels = img.ptr();// load_icon("my_icon.png");
+	images[0].height = 48;
+	images[0].width = 48;
+	//images[1] = load_icon("my_icon_small.png");
+	glfwSetWindowIcon(window, 1, images);
+
+
 	if (window == NULL)
 		return 1;
 	glfwMakeContextCurrent(window);
@@ -166,7 +194,7 @@ int main(int, char **)
 	glbinding::Binding::initialize();
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
 	bool err = false;
-	glbinding::initialize([](const char *name) { return (glbinding::ProcAddress)glfwGetProcAddress(name); });
+	glbinding::initialize([](const char* name) { return (glbinding::ProcAddress)glfwGetProcAddress(name); });
 #else
 	bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
 #endif
@@ -179,14 +207,15 @@ int main(int, char **)
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	// Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 	//io.ConfigViewportsNoAutoMerge = false;
-	io.ConfigDockingWithShift = true;
+	//io.ConfigDockingWithShift = true;
+	//io.ConfigFlags |=ImGuiConfigFlags_shift	
 	//io.ConfigDockingAlwaysTabBar = false;
 	//io.ConfigViewportsNoTaskBarIcon = false;
 	//io.ConfigViewportsNoDefaultParent = false;
@@ -196,7 +225,7 @@ int main(int, char **)
 	//ImGui::StyleColorsClassic();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle &style = ImGui::GetStyle();
+	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style.WindowRounding = 0.0f;
@@ -269,8 +298,8 @@ int main(int, char **)
 		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
 		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
 		glfwPollEvents();
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		// glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		// glClear(GL_COLOR_BUFFER_BIT);
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -305,30 +334,31 @@ int main(int, char **)
 					{*/
 					ImGui::Begin("OpenGL/OpenCV Camera Test");
 					//switch camera in drop down
-						const char *list_cameras[] = {"0", "1"};
-						static int item_current = 0;
-						ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras));
-						// capture_camera = item_current;
-						//ImGui::SameLine(); 
-						/*HelpMarker(
-							"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
-							"and demonstration of various flags.\n");*/
-										   //TODO: place camera in process
+					const char* list_cameras[] = { "0", "1" };
+					static int item_current = 0;
+					ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras));
+					// capture_camera = item_current;
+					//ImGui::SameLine(); 
+					/*HelpMarker(
+						"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
+						"and demonstration of various flags.\n");*/
+						//TODO: place camera in process
 					if (Button("Show Camera"))
 					{
 						show_camera = !show_camera;
 						//TODO: Maybe putting the camera stream will improve performance & increase fps
-						
+
 					}
 					if (show_camera)
 					{
-						
+
 #ifdef _WIN32
 						cap.retrieve(frame);
 #else
 						cap.read(frame);
-						disp_frame(frame, my_frame_texture);
+
 #endif
+						disp_frame(frame, my_frame_texture);
 						// cv::Mat6
 					}
 					ImGui::End();
@@ -343,7 +373,7 @@ int main(int, char **)
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
-		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -352,7 +382,7 @@ int main(int, char **)
 		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			GLFWwindow *backup_current_context = glfwGetCurrentContext();
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
