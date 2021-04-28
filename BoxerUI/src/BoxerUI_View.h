@@ -4,14 +4,83 @@
 #include "imgui_internal.h"
 #include "implot.h"
 #include <iostream>
-// #include <opencv2/opencv.hpp>
-// #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
+
+#define BUFFER_SIZE 5
 
 using namespace ImGui;
 using namespace std;
 
 class BoxerUI_View
 {
+	bool freeze_frame = false;
+	cv::VideoCapture cap;
+	cv::Mat frame, freeze_frame_img;
+	GLuint my_frame_texture;
+private:
+	static void dispFrame(cv::Mat* frame)
+	{
+		//creates a buffer of 5 frames before binding cv::Mat type to GLTexture
+		cv::Mat frames_buf[BUFFER_SIZE];
+		//GLuint my_frame_texture;
+		for (int i = 0; i < BUFFER_SIZE; i++)
+		{
+			frames_buf[i] = *frame;
+			(*frame).~Mat();
+		}
+		for (int i = 0; i < 5; i++)
+		{
+			cv::Mat disp_frame = cv::Mat(100, 100, CV_64FC1);
+
+			disp_frame = frames_buf[i];
+			BindCVMat2GLTexture(&disp_frame);// , & my_frame_texture);
+
+			disp_frame.release();
+		}
+	}
+
+	static void BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_texture)
+	{
+		GLuint image_texture;
+		if ((*disp_frame).empty())
+		{
+			std::cout << "image empty" << std::endl;
+		}
+		else
+		{
+			cv::cvtColor(*disp_frame, *disp_frame, cv::COLOR_BGR2RGBA);
+
+
+			glGenTextures(1, &image_texture);
+			glBindTexture(GL_TEXTURE_2D, image_texture);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// Set texture clamping method
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_READ_COLOR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_READ_COLOR);
+
+			//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.cols, image.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.ptr());
+			glTexImage2D(GL_TEXTURE_2D,	   // Type of texture
+				0,				   // Pyramid level (for mip-mapping) - 0 is the top level
+				GL_RGB,		   // colour format to convert to
+				(*disp_frame).cols,	   // Image width
+				(*disp_frame).rows,	   // Image height
+				0,				   // Border width in pixels (can either be 1 or 0)
+				GL_RGBA,		   // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
+				GL_UNSIGNED_BYTE, // Image data type
+				(*disp_frame).data);	   // The actual image data itself
+			ImGui::Text("pointer = %p", image_texture);
+			ImGui::Text("size = %d x %d", (*disp_frame).cols, (*disp_frame).rows);
+			ImGui::Image((void*)(intptr_t)image_texture, ImVec2((float)(*disp_frame).cols, (float)(*disp_frame).rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+		}
+
+	}
 public:
 	static void appFrameRate() {
 		{ ImGui::Begin("Application Framerate");                          // Create a window called "Hello, world!" and append into it.
@@ -127,12 +196,9 @@ public:
 		ImGui::End();
 		ImPlot::DestroyContext();
 	}
-	static void cameraStream() {
-
-	}
 	static void indexwindow(bool& boxer_analytics) {//, int ui_window_width, int ui_window_height) {
 		bool p_open = true;
-		ImGuiWindowFlags indexFlags =  ImGuiWindowFlags_NoSavedSettings;
+		ImGuiWindowFlags indexFlags = ImGuiWindowFlags_NoSavedSettings;
 		//ImGuiWindowClass* windowClass = new ImGuiWindowClass;
 		//ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_CentralNode ;
 		//windowClass->DockNodeFlagsOverrideSet = nodeFlags;
@@ -140,7 +206,7 @@ public:
 		//windowClass->DockingAllowUnclassed=true;
 		//SetNextWindowClass(windowClass);
 
-		
+
 		/*ImGuiWindow *index_window=NULL;
 		ImGuiID nodeID=index_window->GetID("Index");
 		DockBuilderGetCentralNode(nodeID);
@@ -151,7 +217,7 @@ public:
 		//index_window->GetID("index");
 		//BeginDocked(index_window, &p_open);
 
-		Begin("Index", &p_open , indexFlags);
+		Begin("Index", &p_open, indexFlags);
 		Text("Boxr");
 		if (Button("Open boxer analytics", ImVec2(200, 100))) {
 			boxer_analytics = false;
@@ -162,4 +228,64 @@ public:
 		//WindowClass
 		//return boxer_analytics;
 	}
+
+	void setCamera(bool* show_camera, int* w, int* h) {
+		if (show_camera)
+		{
+			cap = cv::VideoCapture(0, cv::CAP_ANY);
+			if (!cap.isOpened())
+			{
+				cout << "Camera not opened" << endl;
+				//return -1;
+			}
+			else
+			{
+				cout << "Camera opened at: " << 0 << endl;
+			}
+
+			cout << cap.getBackendName() << endl;
+			cout << cap.get(cv::CAP_PROP_POS_FRAMES) << endl;
+			cap.set(3, *w / 3);  //frame width
+			cap.set(4, *h / 3); //fram height
+			//return 1;
+		}
+		else
+		{
+			cap.~VideoCapture();
+			frame.~Mat();
+		}
+
+
+	}
+	void streamCamera() {
+		ImGui::BeginChild("child", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_AlwaysAutoResize);
+		//GLuint frame_texture;
+
+#ifdef _WIN32
+		cap.retrieve(frame);
+#else
+		cap.read(frame);
+#endif
+		if (Button("Freeze Frame")) {
+			freeze_frame = !freeze_frame;
+			if(freeze_frame)
+				cap.read(freeze_frame_img);
+		}
+		if (freeze_frame)
+		{
+			cout << "Freeze frame: " << freeze_frame << endl;
+			//cv::Mat freeze_frame_img;
+			//freeze_frame_img=frame.clone();
+			
+			BindCVMat2GLTexture(&freeze_frame_img);// , & frame_texture);
+
+		}
+		else
+		{
+			dispFrame(&frame);
+		}
+		ImGui::EndChild();
+	}
+
+
 };
