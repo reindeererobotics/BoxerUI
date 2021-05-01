@@ -38,14 +38,14 @@ MESSAGE(STATUS "LINK LIBRARIES ${OpenCV_LIBS}")
 add_subdirectory("/home/username/Documents/glfw/" "/home/username/Documents/glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
 # add_subdirectory("/home/username/opencv-master" "/home/username/opencv-build") #Attempt at using setup as for glfw. works haven't figured out how to build static for just modules req, & what the link target is
 # add_library(glfw3 STATIC "${IMGUI_DIR}examples/libs/glfw/include/GLFW/glfw3.h")#uses gl3w file included. might be old. ALso this alternative doesn't work
-#adds the dir for src files when compiling. Allows cmake to find where header files are located
-include_directories("${IMGUI_DIR}" "${IMGUI_BACKENDS_DIR}" "${IMPLOT_DIR}" "${IMGUI_DIR}examples/libs/gl3w/" 
-# "/home/username/opencv-master/modules/"
-    "${OpenCV_INCLUDE_DIRS}"
-    # "/usr/local/include/opencv4/"
-      "${IMPLOT_DIR}")
+
+
 #Executable target name and src files
 add_executable(BoxerUI_app "${SOURCE}")
+
+#adds the dir for src files when compiling. Allows cmake to find where header files are located
+target_include_directories(BoxerUI_app PUBLIC "${IMGUI_DIR}" "${IMGUI_BACKENDS_DIR}" "${IMPLOT_DIR}" "${IMGUI_DIR}examples/libs/gl3w/" "${OpenCV_INCLUDE_DIRS}")
+
 #Links the libraries to build target set in add_executable command
 target_link_libraries(BoxerUI_app  OpenGL::GL glfw "${OpenCV_LIBS}"  )
 
