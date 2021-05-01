@@ -66,7 +66,6 @@ static void glfw_error_callback(int error, const char* description)
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-
 int main(int, char**)
 {
 	// Setup window
@@ -281,24 +280,7 @@ int main(int, char**)
 					}
 					if (show_camera)
 					{
-						boxerController.streamCameraView();// &cap, & freeze_frame, & frame, & my_frame_texture);
-						//{
-						//	ImGui::BeginChild("child", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_AlwaysAutoResize);
-						//if (Button("Freeze Frame")) {
-						//	freeze_frame = !freeze_frame;
-						//}
-						//if (freeze_frame)
-						//{
-						//	cout << "Freeze frame: " << freeze_frame << endl;
-						//	frame.copyTo(freeze_frame_img);
-						//	disp_frame(freeze_frame_img, my_frame_texture);
-						//}
-						//else
-						//{
-						//	disp_frame(frame, my_frame_texture);
-						//}
-						//ImGui::EndChild();// cv::Mat6
-						//}
+						boxerController.streamCameraView();
 
 					}
 					ImGui::End();
