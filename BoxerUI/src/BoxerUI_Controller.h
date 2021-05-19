@@ -1,4 +1,4 @@
-#pragma once
+
 #include "BoxerUI_View.h"
 #include "BoxerUI_Model.h"
 #include "jsoncpp/json/json.h"
@@ -59,11 +59,14 @@ public:
 		//boxerSocket.payloadRecv(4, *"payload", 0);
 		boxerView.plotStream();
 	}
-	void streamCameraView(){//cv::VideoCapture *cap,bool* freeze_frame, cv::Mat* frame, GLuint* my_frame_texture) {
-		boxerView.streamCamera();// cap, freeze_frame, frame, my_frame_texture);
+	void streamCameraView(int* camera){//cv::VideoCapture *cap,bool* freeze_frame, cv::Mat* frame, GLuint* my_frame_texture) {
+		boxerView.streamCamera(camera);// cap, freeze_frame, frame, my_frame_texture);
 	}
-	void initCameraView(bool* show_camera, int* w, int* h) {
-		boxerView.setCamera( show_camera, w, h);
+	void initCameraView(bool* show_camera, float* w, float* h) {
+		boxerView.initCamera(show_camera, w, h);
+	}
+	void destroyCameraView(int* current_cam) {
+		boxerView.destroyCamera(current_cam);
 	}
 	
 };

@@ -10,14 +10,10 @@
 #include <stdio.h>
 //#include <sys/types.h>
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/utility.hpp>
-
-#include <opencv2/imgproc/imgproc.hpp>
 #include "BoxerUI_Controller.h"
 #include "BoxerUI_Model.h"
 #include "BoxerUI_View.h"
+#include "TextTheme.h"
 // #include "/home/username/opencv-master/include/opencv2/opencv.hpp"
 // #include "/home/username/opencv-master/modules/highgui/include/opencv2/highgui/highgui.hpp"
 // #include "/home/username/opencv-master/modules/core/include/opencv2/core/utility.hpp"
@@ -200,7 +196,7 @@ int main(int, char**)
 	// Our state
 	//bool show_demo_window = true;
 	bool show_index_window = true;
-	bool show_boxer_windows = false;
+	bool show_boxer_windows = false, show_camera = false;
 	bool p_open = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -210,13 +206,7 @@ int main(int, char**)
 	BoxerUI_Controller boxerController = BoxerUI_Controller();// = BoxerUI_Controller(boxerView, boxerModel);
 	//boxerController.payloadRecv();
 
-	bool show_camera = false;
 
-	//cap.set(cv::CAP_PROP_HW_ACCELERATION, cv::VIDEO_ACCELERATION_NONE);
-	//cout << "FPS: "<<cap.get(cv::CAP_PROP_FPS)<<"\nAutoFocus: "<<cv::CAP_PROP_AUTOFOCUS << endl;
-	//cap.get(cv::CAP_PROP_SETTINGS);
-	//cap.set(cv::CAP_PROP_AUTO_EXPOSURE,cap.get(cv::CAP_PROP_BRIGHTNESS*15));
-	//cout << cap.get(cv::CAP_PROP_FPS) << endl;
 
 	// Main loop
 	while (!glfwWindowShouldClose(window))
@@ -245,11 +235,11 @@ int main(int, char**)
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			// if (show_index_window) {
+			 if (show_index_window) {
 			// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);
-			// 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
-			// }
-			// else
+			 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
+			 }
+			 else
 			{
 				//SetNextWindowViewport();
 				boxerController.displayFPS();
@@ -261,26 +251,32 @@ int main(int, char**)
 				{
 					/*if (pid == 0)
 					{*/
+
 					ImGui::Begin("OpenGL/OpenCV Camera Test");
+
+					if (Button("Show Camera"))
+					{
+						show_camera = !show_camera;
+						boxerController.initCameraView(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
+					}
+
 					//switch camera in drop down
-					const char* list_cameras[] = { "0", "1" };
+					const char* list_cameras[] = { "1", "2" };
 					static int item_current = 0;
-					ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras));
+					if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)) && show_camera) {
+						//boxerController.destroyCameraView(&item_current); //if the camera is currently streaming
+						boxerController.streamCameraView(&item_current);
+					}
 					// capture_camera = item_current;
 					//ImGui::SameLine(); 
 					/*HelpMarker(
 						"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
 						"and demonstration of various flags.\n");*/
 						//TODO: place camera in process
-					if (Button("Show Camera"))
-					{
-						show_camera = !show_camera;
-						boxerController.initCameraView(&show_camera, &ui_window_width, &ui_window_height);
 
-					}
-					if (show_camera)
+					if (show_camera)//||item_current>=0)
 					{
-						boxerController.streamCameraView();
+						boxerController.streamCameraView(&item_current);
 
 					}
 					ImGui::End();

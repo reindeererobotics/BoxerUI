@@ -119,10 +119,21 @@
     <ClInclude Include="header\implot\implot_internal.h">
       <Filter>Header Files\implot</Filter>
     </ClInclude>
+    <ClInclude Include="TextTheme.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CameraStream_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\BoxerUI.rc">
       <Filter>Source Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="resource\fonts\PantonDemo-Black.otf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

@@ -3,7 +3,8 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "implot.h"
-#include <iostream>
+
+//#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -11,15 +12,24 @@
 #include <GLFW/glfw3.h>
 
 #define BUFFER_SIZE 5
+#define NUM_CAMERAS 5  //0 is screenshot default
+#define FREEZE_FRAME_IMG 0
+
+//#include "TextTheme.h"
+
+
 
 using namespace ImGui;
 using namespace std;
 
 class BoxerUI_View
 {
-	bool freeze_frame = false;
-	cv::VideoCapture cap;
-	cv::Mat frame, freeze_frame_img;
+
+	//ImGuiIO& io = ImGui::GetIO();
+	//ImFont* default_font= io.Fonts->AddFontDefault();
+	bool freeze_frame = false, enhance = false;
+	cv::VideoCapture cameras[NUM_CAMERAS];// = {};//forward_capture, right_side_capture, left_side_capture, rear_capture;
+	cv::Mat frames[NUM_CAMERAS];// , freeze_frame_img;
 	GLuint my_frame_texture;
 private:
 	static void dispFrame(cv::Mat* frame)
@@ -41,6 +51,9 @@ private:
 
 			disp_frame.release();
 		}
+
+		/*BindCVMat2GLTexture(frame);
+		frame->release();*/
 	}
 
 	static void BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_texture)
@@ -116,6 +129,9 @@ public:
 	static void displaySensors(double temperature, double battery) {
 		static int counter = 0;
 		static bool setTempBttn = false;
+		//ImFont* title_style{};
+		//titleStyle(title_style);
+
 		{
 			ImGui::Begin("My Table Test");// , ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -123,15 +139,19 @@ public:
 				static ImGuiSelectableFlags selectFlags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiSelectableFlags_AllowDoubleClick;
 				ImGui::BeginTable("table", 2);
 
+
 				//static char *tableHeader[] = { "Sensors","Current","Max","Min" };
 				//static char* sensors[] = { "Temperature","Battery","Tires","Min", "Min" };
-
+				//titleStyle();
 				TableSetupColumn("Sensors", ImGuiTableColumnFlags_WidthStretch);
 				TableSetupColumn("Values", ImGuiTableColumnFlags_WidthStretch);
 				TableHeadersRow();
 				TableNextRow();
 				TableNextColumn();
+				//ImGui::PushFont(title_style);
 				Text("Temperature");
+				//ImGui::PopFont();
+				//ImGui::PushFont(default_font);
 				TableNextColumn(); Text("%f", temperature);
 				TableNextRow();
 				TableNextColumn(); Text("Battery"); TableNextColumn();
@@ -206,7 +226,6 @@ public:
 		//windowClass->DockingAllowUnclassed=true;
 		//SetNextWindowClass(windowClass);
 
-
 		/*ImGuiWindow *index_window=NULL;
 		ImGuiID nodeID=index_window->GetID("Index");
 		DockBuilderGetCentralNode(nodeID);
@@ -217,7 +236,15 @@ public:
 		//index_window->GetID("index");
 		//BeginDocked(index_window, &p_open);
 
-		Begin("Index", &p_open, indexFlags);
+
+		static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+		// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
+		// Based on your use case you may want one of the other.
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
+
+		Begin("Index", &p_open, flags);//, indexFlags);
 		Text("Boxr");
 		if (Button("Open boxer analytics", ImVec2(200, 100))) {
 			boxer_analytics = false;
@@ -229,63 +256,192 @@ public:
 		//return boxer_analytics;
 	}
 
-	void setCamera(bool* show_camera, int* w, int* h) {
-		if (show_camera)
-		{
-			cap = cv::VideoCapture(0, cv::CAP_ANY);
-			if (!cap.isOpened())
-			{
-				cout << "Camera not opened" << endl;
-				//return -1;
-			}
-			else
-			{
-				cout << "Camera opened at: " << 0 << endl;
-			}
+	static void sideNav() {
+		ImGui::Begin("Settings");
+		//See FAQ regarding ID for swapping items. Keyboard
+		//ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
+		Text("SOme setting", 1, 1, 1);
 
-			cout << cap.getBackendName() << endl;
-			cout << cap.get(cv::CAP_PROP_POS_FRAMES) << endl;
-			cap.set(3, *w / 3);  //frame width
-			cap.set(4, *h / 3); //fram height
-			//return 1;
-		}
-		else
-		{
-			cap.~VideoCapture();
-			frame.~Mat();
-		}
-
-
+		ImGui::End();
 	}
-	void streamCamera() {
-		ImGui::BeginChild("child", ImVec2(0.0f, 0.0f), true, ImGuiWindowFlags_AlwaysAutoResize);
-		//GLuint frame_texture;
+}
+
+static void settings() {//settings that will replace the sideNav upon toggle
+	ImGui::Begin("Settings");
+	//See FAQ regarding ID for swapping items. Keyboard
+	//ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
+	Text("SOme setting", 1, 1, 1);
+
+	ImGui::End();
+}
+
+void initCamera(bool* show_camera, float* w, float* h) {
+	if (show_camera)
+	{
+		float capture_width, capture_height;
+		for (int i = 1; i < NUM_CAMERAS; i++)
+		{
+			int temp_size = (ImGui::GetCurrentWindow()->ContentSize.x);
+			//set and initialize the cameras
+			//If index is 1, set the width & hwight to half its passed value. Else set it to a third of its value
+			capture_width = (*w) / (i == 1 ? temp_size : 5);
+			capture_height = (*h) / (i == 1 ? temp_size : 5);
+
+			//set the camera properties
+			setCameraProp(&i, &cameras[i], (&capture_width), (&capture_height));
+		}
+	}
+	else
+	{
+		for (int i = 0; i < NUM_CAMERAS; i++)
+		{
+			destroyCamera(&i);
+		}
+	}
+}
+
+//destroy the frame & cap objects then release from memory
+void destroyCamera(int* index) {
+	cameras[*index].~VideoCapture();
+	frames[*index].~Mat();
+}
+
+
+void setCameraProp(int* camera, cv::VideoCapture* capture, float* w, float* h) { //This method establishes the properties of each individual camera based on its initialization from initCamera() method
+	//change param of line below from 0 to *camera
+	*(capture) = cv::VideoCapture(*camera == 1 ? 1 : 0, cv::CAP_ANY);
+	if (!(*capture).isOpened())
+	{
+		cout << "Camera not opened" << endl;
+	}
+	else
+	{
+		cout << "Camera opened at: " << 0 << endl;
+		cout << (*capture).getBackendName() << endl;
+		cout << (*capture).get(cv::CAP_PROP_POS_FRAMES) << endl;
+		(*capture).set(3, *w);  //frame width
+		(*capture).set(4, *h); //fram height
+	}
+}
+
+
+void streamCamera(int* camera) {//cv::VideoCapture* cap,cv::Mat* frame) {//stream the data and bind to unique Mat objects
+
+	if (Button("Freeze Frame")) {//if freeze frame is clicked. capture the current frame...
+		freeze_frame = !freeze_frame;
+		//if (freeze_frame)
+		cameras[*camera].read(frames[FREEZE_FRAME_IMG]);
+
+	}if (freeze_frame) { freezeFrame(); }
+	else { destroyCamera(FREEZE_FRAME_IMG); }
+
+	//if (*camera == 0)
+	{
+		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
+		//camera == 0 ?
+		setCamContext(*camera);
+		//: setCamContext(*camera);
+		ImGui::EndChild();
+		ImGui::SameLine();
+	}
+
+	ImGui::BeginChild("childCam", ImVec2(0.0f, 0.0f), true);
+	for (int i = 1; i < NUM_CAMERAS; i++)
+	{
+		if ((*camera) == i) {
+			continue;
+		}
+		else { setCamContext(i); }
+	}
+	ImGui::EndChild();
+
+}
+
+void setCamContext(int context = 1) {
 
 #ifdef _WIN32
-		cap.retrieve(frame);
+	//context==0?setCameraProp(context, cameras[context],)
+	cameras[context].retrieve(frames[context]);
 #else
-		cap.read(frame);
+	cameras[context].read(frames[context]);
 #endif
-		if (Button("Freeze Frame")) {
-			freeze_frame = !freeze_frame;
-			if(freeze_frame)
-				cap.read(freeze_frame_img);
-		}
-		if (freeze_frame)
-		{
-			cout << "Freeze frame: " << freeze_frame << endl;
-			//cv::Mat freeze_frame_img;
-			//freeze_frame_img=frame.clone();
-			
-			BindCVMat2GLTexture(&freeze_frame_img);// , & frame_texture);
 
-		}
-		else
+	dispFrame(&frames[context]);
+}
+
+void freezeFrame() {
+	//if (freeze_frame)
+	//{
+		//... and render onto screen through similar process as streaming as video
+	cout << "Freeze frame: " << freeze_frame << endl;
+	//cv::Mat freeze_frame_img;
+	//freeze_frame_img=frame.clone();
+	BindCVMat2GLTexture(&frames[FREEZE_FRAME_IMG]);// , & frame_texture);
+	static int  zoom_vert, zoom_hor = 0, zoom = 3;
+	if (Button("Enhance")) {
+		//TODO: resize the image & sharpen to increase quality upon zoom
+		//cv::resize(freeze_frame_img, freeze_frame_img, cv::Size(), 0.5, 0.5, cv::INTER_LINEAR);
+		enhance = !enhance;
+	}
+	if (enhance) {//TODO: Enhance image. i.e impl zooming into image without loosing image quality
+		//ImGui::VSliderInt("Vertical", ImVec2(18, 160), &zoom_vert, 1, 5);
+		//ImGui::SliderInt("Horizontal", &zoom_hor, 1, 5);
+		//ImGui::SliderInt("Zoom", &zoom, 1, 5);
+		//for (int i = 0; i < zoom_val; i++)
+			//ImGui::Text("%*sThis is line %d", i * 4, "", i);
+		//cv::Rect2d roi = //(zoom_vert, zoom_vert, freeze_frame_img.cols/2, freeze_frame_img.rows/2);
+
+		//freeze_frame_img = freeze_frame_img(cv::selectROI(freeze_frame_img, false, false));
+	}
+	//}
+}
+
+
+void swapCamViews() {//TODO: Resume later. This is to allow the dragging and dropping of cam views on the UI to swap them out
+
+	for (int n = 0; n < IM_ARRAYSIZE(cameras); n++)
+	{
+		ImGui::PushID(n);
+		if (n != 0)
+			ImGui::SameLine();
+		//ImGui::Button(viewCameras[n], ImVec2(60, 60));
+		//streamCamera(&cameras[n],&frames[n]);
+
+
+		// Our buttons are both drag sources and drag targets here!
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 		{
-			dispFrame(&frame);
+			// Set payload to carry the index of our item (could be anything)
+			ImGui::SetDragDropPayload("DND_DEMO_CELL", &n, sizeof(cv::VideoCapture));
+
+			// Display preview (could be anything, e.g. when dragging an image we could decide to display
+			// the filename and a small preview of the image, etc.)
+			//if (mode == Mode_Copy) { ImGui::Text("Copy %s", names[n]); }
+			//if (mode == Mode_Move) { ImGui::Text("Move %s", names[n]); }
+			//if (mode == Mode_Swap) { ImGui::Text("Swap %s", names[n]); }
+
+			//n == 0 ? cameraContext() :
+
+			ImGui::EndDragDropSource();
 		}
-		ImGui::EndChild();
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(int));
+				int payload_n = *(const int*)payload->Data;
+
+				//Swap the camera streams
+				const cv::VideoCapture tmp = cameras[n];
+				cameras[n] = cameras[payload_n];
+				cameras[payload_n] = tmp;
+
+			}
+			ImGui::EndDragDropTarget();
+		}
+		ImGui::PopID();
 	}
 
+}
 
 };
