@@ -195,8 +195,8 @@ int main(int, char**)
 
 	// Our state
 	//bool show_demo_window = true;
-	bool show_index_window = true;
-	bool show_boxer_windows = false, show_camera = false;
+	static int item_current = 0;
+	bool show_boxer_windows = false, show_camera = false,show_index_window = true;
 	bool p_open = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -223,23 +223,17 @@ int main(int, char**)
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		//	ImGuiWindowClass *windowClass=new ImGuiWindowClass ;
-		//(*windowClass).DockingAlwaysTabBar = true;
-		//
-		//ImGuiDockNodeFlags nodeFlags =  ImGuiDockNodeFlags_NoTabBar ;
-		//windowClass->DockNodeFlagsOverrideSet = nodeFlags;
-		////windowClass->DockingAlwaysTabBar = false;
-		//SetNextWindowClass(windowClass);
+		
 
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoCloseButton);
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			 if (show_index_window) {
-			// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);
-			 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
-			 }
-			 else
+			// if (show_index_window) {
+			//// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);
+			// 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
+			// }
+			// else
 			{
 				//SetNextWindowViewport();
 				boxerController.displayFPS();
@@ -261,11 +255,13 @@ int main(int, char**)
 					}
 
 					//switch camera in drop down
-					const char* list_cameras[] = { "1", "2" };
-					static int item_current = 0;
-					if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)) && show_camera) {
+					const char* list_cameras[] = { "1", "2","3","4" };
+					
+					if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)) ) {
+						// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
 						//boxerController.destroyCameraView(&item_current); //if the camera is currently streaming
-						boxerController.streamCameraView(&item_current);
+						//show_camera = true;
+						cout <<"item_current: "<< item_current << endl;
 					}
 					// capture_camera = item_current;
 					//ImGui::SameLine(); 
