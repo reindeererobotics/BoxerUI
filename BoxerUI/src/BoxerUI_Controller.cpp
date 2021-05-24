@@ -50,7 +50,7 @@ void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,
 
 	camera_stream.streamCamera(camera);// cap, freeze_frame, frame, my_frame_texture);
 }
-void BoxerUI_Controller::initCameraView(bool show_camera, float w, float h) {
+void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
 	//camera_stream.CameraStream::smh();
 	cout << show_camera << endl;
 	camera_stream.initCamera(show_camera, w, h);

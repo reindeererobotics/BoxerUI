@@ -76,7 +76,7 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_tex
 which video capture object we are accessing, and the applications width and height
 @return No values are returned. This is mearly a test and can be useful later.
 **/
-void CameraStream::initCamera(bool show_camera, float w, float h) {
+void CameraStream::initCamera(bool* show_camera, float* w, float* h) {
 	if (show_camera)
 	{
 		float capture_width, capture_height;
@@ -89,7 +89,7 @@ void CameraStream::initCamera(bool show_camera, float w, float h) {
 			capture_height = (*h) / (i == 0 ? temp_size : 5);
 
 			//set the camera properties
-
+			//TODO change "i==0?1:0" --> i==0?*camera:0
 			cameras[i] = cv::VideoCapture(i == 0 ? 1 : 0, cv::CAP_ANY);
 			setCameraProp(&i, &cameras[i], (&capture_width), (&capture_height));
 		}

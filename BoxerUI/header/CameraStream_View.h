@@ -46,7 +46,7 @@ private:
 	void BindCVMat2GLTexture(cv::Mat* disp_frame);
 
 public:
-	void initCamera(bool show_camera, float w, float h);
+	void initCamera(bool* show_camera, float* w, float* h);
 
 	//destroy the frame & cap objects then release from memory
 	void destroyCamera(int* index) {};

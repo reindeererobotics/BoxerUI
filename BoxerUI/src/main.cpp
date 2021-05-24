@@ -247,7 +247,7 @@ int main(int, char**)
 					if (Button("Show Camera"))
 					{
 						show_camera = !show_camera;
-						boxerController.initCameraView(show_camera,ImGui::GetCurrentWindow()->ContentSize.x, ImGui::GetCurrentWindow()->ContentSize.y);
+						boxerController.initCameraView(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
 					}
 
 					//switch camera in drop down

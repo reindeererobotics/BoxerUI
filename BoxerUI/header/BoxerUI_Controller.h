@@ -34,7 +34,7 @@ public:
 
 	void plotView();
 	void streamCameraView(int* camera);
-	void initCameraView(bool show_camera, float w, float h) ;
+	void initCameraView(bool* show_camera, float* w, float* h);
 	void destroyCameraView(int* current_cam);
 
 };

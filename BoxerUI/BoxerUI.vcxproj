@@ -127,7 +127,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)libs;$(ProjectDir)src;$(ProjectDir)header;$(ProjectDir)resource;$(ProjectDir);$(ProjectDir)libs\imgui;$(ProjectDir)libs\imgui\backends;$(ProjectDir)libs\imgui\examples\libs\glfw;$(ProjectDir)libs\imgui\examples\libs\glfw\include;$(ProjectDir)libs\imgui\examples\libs\glfw\lib-vc2010-64;$(ProjectDir)libs\implot;$(ProjectDir)libs\jsoncpp;$(ProjectDir)libs\jsoncpp\json;C:\Program Files\opencv\build\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;opencv_world451d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;opencv_world451.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
