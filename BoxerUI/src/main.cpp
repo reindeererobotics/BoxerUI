@@ -2,23 +2,19 @@
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
+#include "Boxer.h"
+#include "CustomComponents_View.h"
 
-#include "imgui.h"
-//#include "imgui_internal.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 //#include <sys/types.h>
 
 #include "BoxerUI_Controller.h"
-#include "BoxerUI_Model.h"
-#include "BoxerUI_View.h"
 #include "TextTheme.h"
-// #include "/home/username/opencv-master/include/opencv2/opencv.hpp"
-// #include "/home/username/opencv-master/modules/highgui/include/opencv2/highgui/highgui.hpp"
-// #include "/home/username/opencv-master/modules/core/include/opencv2/core/utility.hpp"
 
-// #include "/home/username/opencv-master/modules/imgproc/include/opencv2/imgproc/imgproc.hpp"
+
+
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 // About Desktop OpenGL function loaders:
@@ -251,7 +247,7 @@ int main(int, char**)
 					if (Button("Show Camera"))
 					{
 						show_camera = !show_camera;
-						boxerController.initCameraView(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
+						boxerController.initCameraView(show_camera,ImGui::GetCurrentWindow()->ContentSize.x, ImGui::GetCurrentWindow()->ContentSize.y);
 					}
 
 					//switch camera in drop down
@@ -265,9 +261,9 @@ int main(int, char**)
 					}
 					// capture_camera = item_current;
 					//ImGui::SameLine(); 
-					/*HelpMarker(
+					HelpMarker(
 						"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
-						"and demonstration of various flags.\n");*/
+						"and demonstration of various flags.\n");
 						//TODO: place camera in process
 
 					if (show_camera)//||item_current>=0)
