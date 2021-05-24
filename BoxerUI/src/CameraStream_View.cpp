@@ -1,5 +1,7 @@
 #include "CameraStream_View.h"
 #include "Boxer.h"
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>//
 using namespace ImGui;
 using namespace std;
 
@@ -168,7 +170,6 @@ void CameraStream::setCamContext(int context = 0) {
 #else
 	cameras[context].read(frames[context]);
 #endif
-
 	dispFrame(&frames[context]);
 }
 

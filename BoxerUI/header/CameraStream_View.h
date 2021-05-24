@@ -1,5 +1,4 @@
-#pragma once
-
+//#pragma once
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>//Note: no need to include these headers in the working file. These will be handled automatically by linker
@@ -30,9 +29,9 @@
 //MyClass::~MyClass()
 //{
 //}
-//#define BUFFER_SIZE 5
-//#define NUM_CAMERAS 4
-//#define FREEZE_FRAME_IMG 5
+#define BUFFER_SIZE 5
+#define NUM_CAMERAS 4
+#define FREEZE_FRAME_IMG 5
 
 class CameraStream
 {bool freeze_frame = false, enhance = false;
@@ -49,7 +48,7 @@ public:
 	void initCamera(bool* show_camera, float* w, float* h);
 
 	//destroy the frame & cap objects then release from memory
-	void destroyCamera(int* index) {};
+	void destroyCamera(int* index) ;
 
 	void setCameraProp(int* camera, cv::VideoCapture* capture, float* w, float* h);
 
