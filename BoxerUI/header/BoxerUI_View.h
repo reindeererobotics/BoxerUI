@@ -1,14 +1,15 @@
 #pragma once
 
-#include "Boxer.h"
+#include "CustomComponents_View.h"
 #include "implot.h"
-
 //#include <iostream>
 //#include "TextTheme.h"
+#ifndef _INPUTS_H
+//#define _INPUTS_H
+#include "Inputs.h"
+#endif
 
 
-using namespace ImGui;
-using namespace std;
 
 class BoxerUI_View
 {
@@ -23,7 +24,8 @@ public:
 
 	static void sideNav();
 
-	static void settings();
+	static bool settings();
 
 	
 };
+//extern void HelpMarker(const char* desc);

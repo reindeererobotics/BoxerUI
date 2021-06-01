@@ -1,5 +1,6 @@
-//#pragma once
-
+#pragma once
+#include "Boxer.h"
+#include "CustomComponents_View.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>//Note: no need to include these headers in the working file. These will be handled automatically by linker
 
@@ -33,28 +34,29 @@
 #define NUM_CAMERAS 4
 #define FREEZE_FRAME_IMG 5
 
+
 class CameraStream
-{bool freeze_frame = false, enhance = false;
-	cv::VideoCapture cameras[5];
-	cv::Mat frames[5 + 1];
-	//GLuint my_frame_texture;
+{
+	bool freeze_frame = false, enhance = false;
+	cv::VideoCapture cameras[NUM_CAMERAS];
+	cv::Mat frames[NUM_CAMERAS + 1];//Last frame in array is dedicated to store freeze frame
 private:
-	
+
 	void dispFrame(cv::Mat* frame);
 
 	void BindCVMat2GLTexture(cv::Mat* disp_frame);
 
 public:
-	void initCamera(bool* show_camera, float* w, float* h);
+	void initCameraTest(bool* show_camera, float* w, float* h);
 
 	//destroy the frame & cap objects then release from memory
-	void destroyCamera(int* index) ;
+	void destroyCamera(int* index);
 
-	void setCameraProp(int* camera, cv::VideoCapture* capture, float* w, float* h);
+	void setCameraPropTest(int* camera, cv::VideoCapture* capture, float* w, float* h);
 
-	void streamCamera(int* camera) {};
+	void streamCamera(int* camera);
 
-	void setCamContext(int context = 0);
+	void setCamContext(int context);
 
 	void freezeFrame();
 
