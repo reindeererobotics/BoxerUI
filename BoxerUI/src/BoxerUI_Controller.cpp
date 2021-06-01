@@ -60,7 +60,7 @@ void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,
 }
 void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
 	//Retrieve from network(boxerModel) then send to view to display
-	boxerModel.cameraStreamProc();
+	//boxerModel.cameraStreamProc();
 	
 	//For internal testing purposes only
 	camera_stream.initCameraTest(show_camera, w, h);
