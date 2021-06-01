@@ -1,7 +1,8 @@
 #include "BoxerUI_View.h"
-#include "implot.h"
+
 
 #include <iostream>
+#include <Inputs.h>
 
 //#include "TextTheme.h"
 
@@ -133,28 +134,9 @@ void BoxerUI_View::plotStream() {
 }
 void BoxerUI_View::indexwindow(bool* boxer_analytics) {//, int ui_window_width, int ui_window_height) {
 	bool p_open = true;
-	ImGuiWindowFlags indexFlags = ImGuiWindowFlags_NoSavedSettings;
-	//ImGuiWindowClass* windowClass = new ImGuiWindowClass;
-	//ImGuiDockNodeFlags nodeFlags = ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_CentralNode ;
-	//windowClass->DockNodeFlagsOverrideSet = nodeFlags;
-	//(*windowClass).DockingAlwaysTabBar = false;
-	//windowClass->DockingAllowUnclassed=true;
-	//SetNextWindowClass(windowClass);
-
-	/*ImGuiWindow *index_window=NULL;
-	ImGuiID nodeID=index_window->GetID("Index");
-	DockBuilderGetCentralNode(nodeID);
-	SetWindowDock(index_window, nodeID,ImGuiCond_FirstUseEver);*/
-
-	////GetWindowWidth();
-	////ImGuiWindow* indexWindow;
-	//index_window->GetID("index");
-	//BeginDocked(index_window, &p_open);
-
 
 	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
-	// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
-	// Based on your use case you may want one of the other.
+
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(viewport->WorkPos);
 	ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -166,42 +148,61 @@ void BoxerUI_View::indexwindow(bool* boxer_analytics) {//, int ui_window_width, 
 		cout << *boxer_analytics << endl;
 	}
 	End();
-
-	//WindowClass
-	//return boxer_analytics;
 }
 
 void BoxerUI_View::sideNav() {
-	ImGui::Begin("Settings");
+	static bool toggle_settings = false;
+
+	ImGui::Begin("##sideNav");
 	//See FAQ regarding ID for swapping items. Keyboard
 	//ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
-	Text("SOme setting", 1, 1, 1);
+
+
+	//Settings
+	if (ImGui::Button("Toggle Settings##settings")) { toggle_settings = !toggle_settings; }
+	if (toggle_settings)
+		toggle_settings = settings();
 
 	ImGui::End();
 }
 
-void BoxerUI_View::settings() {//settings that will replace the sideNav upon toggle
-	ImGui::Begin("Settings");
+bool BoxerUI_View::settings() {//settings that will replace the sideNav upon toggle
+	bool in_settings = true;
+	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
+
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
+
+
+
+	ImGui::Begin("Settings", 0, flags);
 	//See FAQ regarding ID for swapping items. Keyboard
 	//ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
+	//ArrowButton("return")
+
+
+	ImGui::AlignTextToFramePadding();
+	if (ArrowButton("##left", ImGuiDir_Left))
+		in_settings = false;
+	Spacing();
+	Text("Setting"); SameLine();
+	HelpMarker("Set values here");
+	static bool keyboard = false;
+
+	
+		//static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
+		if (ImGui::Checkbox("Keyboard",&keyboard))// &flags, ImGuiItemStatusFlags_Focused))
 		{
-			if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
-			if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Do stuff */ }
-			//if (ImGui::MenuItem("Close", "Ctrl+W")) { my_tool_active = false; }
-			ImGui::EndMenu();
+			//keyboard = !keyboard;
+			cout << keyboard << endl;
+			
+
 		}
-		ImGui::EndMenuBar();
-	}
-
-	//if (io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard)
-	{
-		ImGui::NewFrame();
-
-
-	}
+		keyboard?input_type = InputType::Keyboard:input_type = InputType::None;
+		/*else{cout << "Keyboard Not Selected" << endl;
+			}*/
+	
 
 	// Edit a color (stored as ~4 floats)
 	//ImGui::ColorEdit4("Color", my_color);
@@ -214,4 +215,6 @@ void BoxerUI_View::settings() {//settings that will replace the sideNav upon tog
 	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Important Stuff");
 
 	ImGui::End();
+	return in_settings;
 }
+

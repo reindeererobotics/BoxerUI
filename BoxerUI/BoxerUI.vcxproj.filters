@@ -39,13 +39,7 @@
     <ClCompile Include="src\BoxerUI_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CustomComponents_View.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BoxerUI_Controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\BoxerUI_Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="libs\imgui\imgui.cpp">
@@ -84,14 +78,23 @@
     <ClCompile Include="libs\jsoncpp\jsoncpp.cpp">
       <Filter>Include Files\jsoncpp</Filter>
     </ClCompile>
+    <ClCompile Include="src\CameraStream_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CustomComponents_View.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Inputs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Boxer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoxerUI_Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\CameraStream_View.cpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Boxer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="libs\imgui\imconfig.h">
       <Filter>Include Files\imgui</Filter>
     </ClInclude>
@@ -134,19 +137,22 @@
     <ClInclude Include="header\BoxerUI_Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="header\BoxerUI_Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="header\Boxer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\CameraStream_View.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="header\TextTheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="header\CustomComponents_View.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="header\TextTheme.h">
+    <ClInclude Include="header\Inputs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\BoxerUI_Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

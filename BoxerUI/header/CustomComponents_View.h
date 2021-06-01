@@ -2,4 +2,4 @@
 
 #include "Boxer.h"
 
-void HelpMarker(const char* desc);
+extern void HelpMarker(const char* desc);

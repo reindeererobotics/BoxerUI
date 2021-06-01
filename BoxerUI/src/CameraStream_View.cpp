@@ -1,13 +1,7 @@
 #include "CameraStream_View.h"
-#include "Boxer.h"
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>//
+
 using namespace ImGui;
 using namespace std;
-
-#define BUFFER_SIZE 5
-#define NUM_CAMERAS 4
-#define FREEZE_FRAME_IMG 5
 
 void CameraStream::dispFrame(cv::Mat* frame)
 {
@@ -35,6 +29,7 @@ void CameraStream::dispFrame(cv::Mat* frame)
 
 void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_texture)
 {
+	ImGuiIO& io = ImGui::GetIO();
 	GLuint image_texture;
 	if ((*disp_frame).empty())
 	{
@@ -42,8 +37,8 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_tex
 	}
 	else
 	{
+		cv::Mat x = cv::Mat(100, 100, CV_32FC2);
 		cv::cvtColor(*disp_frame, *disp_frame, cv::COLOR_BGR2RGBA);
-
 
 		glGenTextures(1, &image_texture);
 		glBindTexture(GL_TEXTURE_2D, image_texture);
@@ -67,7 +62,41 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_tex
 			(*disp_frame).data);	   // The actual image data itself
 		ImGui::Text("pointer = %p", image_texture);
 		ImGui::Text("size = %d x %d", (*disp_frame).cols, (*disp_frame).rows);
-		ImGui::Image((void*)(intptr_t)image_texture, ImVec2((float)(*disp_frame).cols, (float)(*disp_frame).rows)); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+
+		ImTextureID my_tex_id = (void*)(intptr_t)image_texture;
+		float my_tex_w = (float)io.Fonts->TexWidth;
+		float my_tex_h = (float)io.Fonts->TexHeight;
+		{
+			ImGui::Text("%.0fx%.0f", (*disp_frame).cols, (float)(*disp_frame).rows);
+			ImVec2 pos = ImGui::GetCursorScreenPos();
+			ImVec2 uv_min = ImVec2(0.0f, 0.0f);                 // Top-left
+			ImVec2 uv_max = ImVec2(1.0f, 1.0f);                 // Lower-right
+			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);   // No tint
+			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 50% opaque white
+			ImGui::Image(my_tex_id, ImVec2((float)(*disp_frame).cols, (float)(*disp_frame).rows), uv_min, uv_max, tint_col, border_col); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+
+			//ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), uv_min, uv_max, tint_col, border_col);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				float region_sz = 32.0f;
+				float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
+				float region_y = io.MousePos.y - pos.y - region_sz * 0.5f;
+				float zoom = 4.0f;
+				if (region_x < 0.0f) { region_x = 0.0f; }
+				else if (region_x > (*disp_frame).cols - region_sz) { region_x = (*disp_frame).cols - region_sz; }
+				if (region_y < 0.0f) { region_y = 0.0f; }
+				else if (region_y > (float)(*disp_frame).rows - region_sz) { region_y = (float)(*disp_frame).rows - region_sz; }
+				ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
+				ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
+				ImVec2 uv0 = ImVec2((region_x) / (*disp_frame).cols, (region_y) / (float)(*disp_frame).rows);
+				ImVec2 uv1 = ImVec2((region_x + region_sz) / (*disp_frame).cols, (region_y + region_sz) / (float)(*disp_frame).rows);
+				ImGui::Image(my_tex_id, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, tint_col, border_col);
+				ImGui::EndTooltip();
+			}
+		}
+
+
 	}
 
 }
@@ -78,13 +107,14 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_tex
 which video capture object we are accessing, and the applications width and height
 @return No values are returned. This is mearly a test and can be useful later.
 **/
-void CameraStream::initCamera(bool* show_camera, float* w, float* h) {
+void CameraStream::initCameraTest(bool* show_camera, float* w, float* h) {
+	return;
 	if (show_camera)
 	{
 		float capture_width, capture_height;
 		for (int i = 0; i < NUM_CAMERAS; i++)
 		{
-			int temp_size = (ImGui::GetCurrentWindow()->ContentSize.x);
+			float temp_size = (ImGui::GetCurrentWindow()->ContentSize.x);
 			//set and initialize the cameras
 			//If index is 1, set the width & hwight to half its passed value. Else set it to a third of its value
 			capture_width = (*w) / (i == 0 ? temp_size : 5);
@@ -93,7 +123,7 @@ void CameraStream::initCamera(bool* show_camera, float* w, float* h) {
 			//set the camera properties
 			//TODO change "i==0?1:0" --> i==0?*camera:0
 			cameras[i] = cv::VideoCapture(i == 0 ? 1 : 0, cv::CAP_ANY);
-			setCameraProp(&i, &cameras[i], (&capture_width), (&capture_height));
+			setCameraPropTest(&i, &cameras[i], (&capture_width), (&capture_height));
 		}
 	}
 	else
@@ -107,14 +137,16 @@ void CameraStream::initCamera(bool* show_camera, float* w, float* h) {
 }
 
 void CameraStream::destroyCamera(int* index) {
-
-	cameras[*index].~VideoCapture();
 	frames[*index].~Mat();
+	return;
+	
+	//for internal testing purposes only
+	cameras[*index].~VideoCapture();
+
 }
 
-void CameraStream::setCameraProp(int* camera, cv::VideoCapture* capture, float* w, float* h) { //This method establishes the properties of each individual camera based on its initialization from initCamera() method
-	//change param of line below from 0 to *camera
-	//*(capture) = cv::VideoCapture(*camera == 0 ? 1 : 0, cv::CAP_ANY); Delete this
+void CameraStream::setCameraPropTest(int* camera, cv::VideoCapture* capture, float* w, float* h) {
+	//This method establishes the properties of each individual camera based on its initialization from initCamera() method
 	if (!(*capture).isOpened())
 	{
 		cout << "Camera not opened" << endl;
@@ -133,15 +165,14 @@ void CameraStream::streamCamera(int* camera) {//cv::VideoCapture* cap,cv::Mat* f
 
 	if (Button("Freeze Frame")) {//if freeze frame is clicked. capture the current frame...
 		freeze_frame = !freeze_frame;
-		//if (freeze_frame)
-		cameras[*camera].read(frames[FREEZE_FRAME_IMG]);
+		
+		//TODO: clone the main context frame to freeze frame then display
+		//cameras[*camera].retrieve(frames[FREEZE_FRAME_IMG]);
 
 	}
-	//if (freeze_frame) { freezeFrame(); }
-	// else { destroyCamera(FREEZE_FRAME_IMG); }
 
-	//if (*camera == 0)
-	{
+
+	{//Main "viewport"/context stream
 		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
 		//camera == 0 ?
 		freeze_frame ? freezeFrame() : setCamContext(*camera);
@@ -150,26 +181,28 @@ void CameraStream::streamCamera(int* camera) {//cv::VideoCapture* cap,cv::Mat* f
 		ImGui::SameLine();
 	}
 
-	ImGui::BeginChild("childCams", ImVec2(0.0f, 0.0f), true);
-	for (int i = 0; i < NUM_CAMERAS; i++)
-	{
-		if ((*camera) == i) {//i.e. if the current index camera is in context, skip it in iteration and set its context to secondary in the side queue 
-			continue;
+	{//Queue of streams on side child window
+		ImGui::BeginChild("childCams", ImVec2(0.0f, 0.0f), true);
+		for (int i = 0; i < NUM_CAMERAS; i++)
+		{
+			if ((*camera) == i) {//i.e. if the current index camera is in context, skip it in iteration and set its context to secondary in the side queue 
+				continue;
+			}
+			else { setCamContext(i); }//TODO set the cameras prop so current context stream is appropriatly sized
 		}
-		else { setCamContext(i); }//TODO set the cameras prop so current context stream is appropriatly sized
+		ImGui::EndChild();
 	}
-	ImGui::EndChild();
 
 }
 
 void CameraStream::setCamContext(int context = 0) {
 
-#ifdef _WIN32
-	//context==0?setCameraProp(context, cameras[context],)
-	cameras[context].retrieve(frames[context]);
-#else
-	cameras[context].read(frames[context]);
-#endif
+	//#ifdef _WIN32
+	//	//context==0?setCameraProp(context, cameras[context],)
+	//	cameras[context].retrieve(frames[context]);
+	//#else
+	//	cameras[context].read(frames[context]);
+	//#endif
 	dispFrame(&frames[context]);
 }
 

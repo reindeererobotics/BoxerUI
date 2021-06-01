@@ -127,7 +127,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)libs;$(ProjectDir)src;$(ProjectDir)header;$(ProjectDir)resource;$(ProjectDir);$(ProjectDir)libs\imgui;$(ProjectDir)libs\imgui\backends;$(ProjectDir)libs\imgui\examples\libs\glfw;$(ProjectDir)libs\imgui\examples\libs\glfw\include;$(ProjectDir)libs\imgui\examples\libs\glfw\lib-vc2010-64;$(ProjectDir)libs\implot;$(ProjectDir)libs\jsoncpp;$(ProjectDir)libs\jsoncpp\json;C:\Program Files\opencv\build\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;opencv_world451.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;opencv_world451d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
@@ -165,10 +165,13 @@
     <ClCompile Include="libs\implot\implot_demo.cpp" />
     <ClCompile Include="libs\implot\implot_items.cpp" />
     <ClCompile Include="libs\jsoncpp\jsoncpp.cpp" />
+    <ClCompile Include="src\Boxer.cpp" />
     <ClCompile Include="src\BoxerUI_Controller.cpp" />
     <ClCompile Include="src\BoxerUI_Model.cpp" />
     <ClCompile Include="src\BoxerUI_View.cpp" />
+    <ClCompile Include="src\CameraStream_View.cpp" />
     <ClCompile Include="src\CustomComponents_View.cpp" />
+    <ClCompile Include="src\Inputs.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,9 +181,8 @@
     <ClInclude Include="header\BoxerUI_View.h" />
     <ClInclude Include="header\CameraStream_View.h" />
     <ClInclude Include="header\CustomComponents_View.h" />
+    <ClInclude Include="header\Inputs.h" />
     <ClInclude Include="header\TextTheme.h" />
-    <ClInclude Include="src\Boxer.h" />
-    <ClInclude Include="src\CameraStream_View.cpp" />
     <ClInclude Include="libs\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="libs\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="libs\imgui\imconfig.h" />

@@ -3,15 +3,15 @@
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 #include "Boxer.h"
-#include "CustomComponents_View.h"
-
+//#include "CustomComponents_View.h"//has imgui.h & imgui_internals.h
+//#include "Inputs.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 //#include <sys/types.h>
 
 #include "BoxerUI_Controller.h"
-#include "TextTheme.h"
+//#include "TextTheme.h"
 
 
 
@@ -232,19 +232,22 @@ int main(int, char**)
 			// else
 			{
 				//SetNextWindowViewport();
+
+				boxerController.inputHandlerModel();
 				boxerController.displayFPS();
 				boxerController.demoWindows(); // show_demo_window);
 				boxerController.updateBSView();
 				boxerController.plotView();
 
+				boxerController.navView();
 				//if(cap.grab())
 				{
 					/*if (pid == 0)
 					{*/
 
-					ImGui::Begin("OpenGL/OpenCV Camera Test");
+					ImGui::Begin("OpenGL/OpenCV Camera Test###camstream");
 
-					if (Button("Show Camera"))
+					if (ImGui::Button("Show Camera"))
 					{
 						show_camera = !show_camera;
 						boxerController.initCameraView(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
@@ -257,10 +260,10 @@ int main(int, char**)
 						// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
 						//boxerController.destroyCameraView(&item_current); //if the camera is currently streaming
 						//show_camera = true;
-						cout <<"item_current: "<< item_current << endl;
+						std::cout <<"item_current: "<< item_current << std::endl;
 					}
 					// capture_camera = item_current;
-					//ImGui::SameLine(); 
+					ImGui::SameLine(); 
 					HelpMarker(
 						"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
 						"and demonstration of various flags.\n");
@@ -269,7 +272,7 @@ int main(int, char**)
 					if (show_camera)//||item_current>=0)
 					{
 						boxerController.streamCameraView(&item_current);
-
+						
 					}
 					ImGui::End();
 					//}

@@ -1,6 +1,5 @@
 #include "BoxerUI_Model.h"
 
-
 double BoxerUI_Model::getTemperature() {
 	return BoxerUI_Model::temperature;
 }
@@ -13,13 +12,19 @@ void BoxerUI_Model::setTemperature(double temperature) {
 void BoxerUI_Model::setBattery(double battery) {
 	this->BoxerUI_Model::battery = battery;
 }
+void BoxerUI_Model::inputHandler(){//InputType input_type=InputType::None) {
+	
+	//ImGui::Begin("##input");
+	
+	input.inputHandler();
 
+	//ImGui::End();
+}
 
-// void cameraStreamProc(cv::Mat frames[]) {
-// //Call to socket function to receive frame buffers, send to model for processing
-// frames[BUFFER_SIZE];
-// // while ()
+void BoxerUI_Model::cameraStreamProc()
+{//Collect frames from network here and add send to controller to add onto frame buffers in CameraStream::streamCamera()
+	
 
-// }
+}
 
 

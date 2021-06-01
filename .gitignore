@@ -7,7 +7,7 @@ BoxerUI/imgui.ini
 BoxerUI/libs/cereal/*
 
 #Imgui
-BoxerUI/libs/imgui/* 
+BoxerUI/libs/imgui/*
 !/*BoxerUI/libs/imgui/*.cpp
 !/*BoxerUI/libs/imgui/*.h
 
