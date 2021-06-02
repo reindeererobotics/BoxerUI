@@ -221,7 +221,7 @@ int main(int, char**)
 		ImGui::NewFrame();
 		
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoCloseButton);
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar);
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
