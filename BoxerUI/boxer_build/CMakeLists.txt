@@ -6,7 +6,6 @@ project(BoxerUI)
 find_package(OpenCV REQUIRED core videoio OPTIONAL_COMPONENTS highgui imgproc)#optionally include highgui & imgproc modules. Each module corresponds to a directory as indicated in the header.
     set(BUILD_SHARED_LIBS OFF)
     set(OpenCV_STATIC ON)#just to make sure
-    # set(OpenCV_DIR "/usr/local/include/")
 
 find_package(OpenGL REQUIRED)
     # find_package(glfw3 3.3.2 REQUIRED) #for shared library linking. Use "sudo apt-get install libglfw3-dev" to download the shared lib
@@ -17,19 +16,31 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 #Source dir and files variables
-set(PROJECT_DIR "/home/username/Documents/BoxerUI/BoxerUI/header")
-set(IMGUI_DIR "${PROJECT_DIR}/imgui/" )
-    set(IMGUI_SOURCES  "${IMGUI_DIR}imgui.cpp" "${IMGUI_DIR}imgui_demo.cpp" "${IMGUI_DIR}imgui_draw.cpp" "${IMGUI_DIR}imgui_tables.cpp" 
-    "${IMGUI_DIR}imgui_widgets.cpp")
+set(WORKSPACE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")#This is the dir to the root of the project. !Important
+set(HEADERS_DIR "${WORKSPACE_DIR}/header")
+set(LIBS_DIR "${WORKSPACE_DIR}/libs")
+set(SOURCES_DIR "${WORKSPACE_DIR}/src")
 
-set(IMGUI_BACKENDS_DIR "${IMGUI_DIR}backends/")
+
+# Set path variable to sources that will be used rather than collecting all the backend sources including ones not in use
+set(IMGUI_BACKENDS_DIR "${LIBS_DIR}/imgui/backends/")
     set(IMGUI_BACKENDS_SOURCES "${IMGUI_BACKENDS_DIR}imgui_impl_glfw.cpp" "${IMGUI_BACKENDS_DIR}imgui_impl_opengl3.cpp")
-set(IMGUI_EXAMPLES_LIBS_SOURCES "${IMGUI_DIR}examples/libs/gl3w/GL/gl3w.c" )
-set(IMPLOT_DIR "${PROJECT_DIR}/implot/")
-    set(IMPLOT_SOURCES "${IMPLOT_DIR}implot.cpp" "${IMPLOT_DIR}implot_demo.cpp" "${IMPLOT_DIR}implot_items.cpp")
 
-set(SOURCE "/home/username/Documents/BoxerUI/BoxerUI/src/main.cpp" "${IMGUI_SOURCES}" "${IMGUI_BACKENDS_SOURCES}" "${IMPLOT_SOURCES}" 
-"${IMGUI_EXAMPLES_LIBS_SOURCES}")
+# Use aux_source_directory() to get all source files in the specified directory and apply to a variable. 
+    # Does not reflect new files. Requires further investigation. 
+aux_source_directory("${HEADERS_DIR}/" BOXERUI_HEADERS) # collects all src files in the header dir
+aux_source_directory("${LIBS_DIR}/imgui/" IMGUI_SOURCES)# collects all src files in the libs/imgui dir. Cannot be impl for backends dir, would attempt at compiling non required
+    aux_source_directory("${LIBS_DIR}/imgui/examples/libs/gl3w/GL" IMGUI_EXAMPLES_LIBS_SOURCES)
+aux_source_directory("${LIBS_DIR}/implot/" IMPLOT_SOURCES)
+aux_source_directory("${SOURCES_DIR}" BOXERUI_SOURCES)
+
+set(SOURCE 
+    "${BOXERUI_HEADERS}" 
+    "${IMGUI_SOURCES}" 
+    "${IMGUI_BACKENDS_SOURCES}"
+    "${IMGUI_EXAMPLES_LIBS_SOURCES}"
+    "${BOXERUI_SOURCES}"
+    "${IMPLOT_SOURCES}")
 
 #Should print the include dir and link libs.
 MESSAGE(STATUS "Include dirs ${OpenCV_INCLUDE_DIRS}")
@@ -41,13 +52,20 @@ include_directories("${IMGUI_DIR}" "${IMGUI_BACKENDS_DIR}" "${IMGUI_DIR}examples
 
 
 add_subdirectory("/home/username/Documents/glfw/" "/home/username/Documents/glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
-# add_subdirectory("/home/username/opencv-master" "/home/username/opencv-build") #Attempt at using setup as for glfw. works haven't figured out how to build static for just modules req, & what the link target is
-# add_library(glfw3 STATIC "${IMGUI_DIR}examples/libs/glfw/include/GLFW/glfw3.h")#uses gl3w file included. might be old. ALso this alternative doesn't work
-#adds the dir for src files when compiling. Allows cmake to find where header files are located
 
-      
+
 #Executable target name and src files
 add_executable(BoxerUI_app "${SOURCE}")
+
+#adds the dir for src files when compiling. Allows cmake to find where header files are located
+target_include_directories(BoxerUI_app PUBLIC 
+    "${HEADERS_DIR}/" 
+    "${LIBS_DIR}/imgui/"
+    "${IMGUI_BACKENDS_DIR}"
+    "${LIBS_DIR}/imgui/examples/libs/gl3w/" 
+    "${LIBS_DIR}/implot/" 
+    "${SOURCES_DIR}")
+
 #Links the libraries to build target set in add_executable command
 target_link_libraries(BoxerUI_app  OpenGL::GL glfw "${OpenCV_LIBS}"  )
 
