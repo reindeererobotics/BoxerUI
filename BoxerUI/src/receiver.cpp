@@ -35,7 +35,7 @@ struct Photo {
 
 int main() {
 
-    char ip[] = "174.91.98.18";
+    char ip[] = "0.0.0.0";
     //int client = connect_socket(1, 8000, ip);
     //int client = accept(clientConnect, NULL, NULL);
 
