@@ -108,7 +108,7 @@ which video capture object we are accessing, and the applications width and heig
 @return No values are returned. This is mearly a test and can be useful later.
 **/
 void CameraStream::initCameraTest(bool* show_camera, float* w, float* h) {
-	return;
+	// return;
 	if (show_camera)
 	{
 		float capture_width, capture_height;
@@ -138,7 +138,7 @@ void CameraStream::initCameraTest(bool* show_camera, float* w, float* h) {
 
 void CameraStream::destroyCamera(int* index) {
 	frames[*index].~Mat();
-	return;
+	// return;
 	
 	//for internal testing purposes only
 	cameras[*index].~VideoCapture();
@@ -197,12 +197,12 @@ void CameraStream::streamCamera(int* camera) {//cv::VideoCapture* cap,cv::Mat* f
 
 void CameraStream::setCamContext(int context = 0) {
 
-	//#ifdef _WIN32
-	//	//context==0?setCameraProp(context, cameras[context],)
-	//	cameras[context].retrieve(frames[context]);
-	//#else
-	//	cameras[context].read(frames[context]);
-	//#endif
+	#ifdef _WIN32
+		//context==0?setCameraProp(context, cameras[context],)
+		cameras[context].retrieve(frames[context]);
+	#else
+		cameras[context].read(frames[context]);
+	#endif
 	dispFrame(&frames[context]);
 }
 

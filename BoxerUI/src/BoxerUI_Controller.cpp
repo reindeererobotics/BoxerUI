@@ -22,7 +22,6 @@ void BoxerUI_Controller::setModelTemperature(double temperatureVal) {
 }
 void BoxerUI_Controller::inputHandlerModel() { 
 	boxerModel.inputHandler(); 
-	
 }
 
 void BoxerUI_Controller::cameraPayloadRecv() {
@@ -31,8 +30,8 @@ void BoxerUI_Controller::cameraPayloadRecv() {
 }
 void BoxerUI_Controller::decomposePayload(Json::Value jsonPayload) {
 	// converts json to model data attributes
-	boxerModel.setBattery(jsonPayload["Battery"].asDouble());
-	boxerModel.setTemperature(jsonPayload["Temperature"].asDouble());
+	boxerModel.setBattery(3);//jsonPayload["Battery"].asDouble());
+	boxerModel.setTemperature(5);//jsonPayload["Temperature"].asDouble());
 }
 void BoxerUI_Controller::displayIndexWindow(bool* boxer_analytics) {//,int ui_width,int ui_height) {		
 	boxerView.indexwindow(boxer_analytics);// , ui_width, ui_height);
@@ -60,7 +59,7 @@ void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,
 }
 void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
 	//Retrieve from network(boxerModel) then send to view to display
-	boxerModel.cameraStreamProc();
+	//boxerModel.cameraStreamProc();
 	
 	//For internal testing purposes only
 	camera_stream.initCameraTest(show_camera, w, h);
