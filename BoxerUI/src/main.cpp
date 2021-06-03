@@ -100,16 +100,16 @@ int main(int, char**)
 
 	//glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 
-	std::string image_path = cv::samples::findFile("../boxer.jpg");
-	cv::Mat img = cv::imread(image_path);// , cv::IMREAD_COLOR);
+	// std::string image_path = cv::samples::findFile("../boxer.jpg");
+	// cv::Mat img = cv::imread(image_path);// , cv::IMREAD_COLOR);
 
 
-	GLFWimage images[2];
-	images[0].pixels = img.ptr();// load_icon("my_icon.png");
-	images[0].height = 48;
-	images[0].width = 48;
-	//images[1] = load_icon("my_icon_small.png");
-	glfwSetWindowIcon(window, 1, images);
+	// GLFWimage images[2];
+	// images[0].pixels = img.ptr();// load_icon("my_icon.png");
+	// images[0].height = 48;
+	// images[0].width = 48;
+	// //images[1] = load_icon("my_icon_small.png");
+	// glfwSetWindowIcon(window, 1, images);
 
 
 	if (window == NULL)

@@ -2,7 +2,7 @@
 .vscode/*
 Debug/
 
-BoxerUI/imgui.ini
+
 
 BoxerUI/libs/cereal/*
 
@@ -30,11 +30,14 @@ BoxerUI/libs/imgui/examples/libs/glfw/COPYING.txt
 BoxerUI/libs/implot/LICENSE
 BoxerUI/libs/implot/README.md
 
-build/*
+
 # !/*build/BoxerUI_app
 
-Boxer_Install.sh
-boxer_install.zip
-install_boxerUI.txt
-# BoxerUI/src/Boxer_FW/*
-# !/*BoxerUI/src/Boxer_FW/src/BoxerUI/camera_stream.cpp
+# GLFW
+glfw
+glfw-build/
+
+BoxerUI/src/camera_stream.cpp
+
+build/*
+BoxerUI/imgui.ini

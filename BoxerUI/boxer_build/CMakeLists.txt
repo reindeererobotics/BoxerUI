@@ -21,13 +21,12 @@ set(HEADERS_DIR "${WORKSPACE_DIR}/header")
 set(LIBS_DIR "${WORKSPACE_DIR}/libs")
 set(SOURCES_DIR "${WORKSPACE_DIR}/src")
 
-
 # Set path variable to sources that will be used rather than collecting all the backend sources including ones not in use
 set(IMGUI_BACKENDS_DIR "${LIBS_DIR}/imgui/backends/")
     set(IMGUI_BACKENDS_SOURCES "${IMGUI_BACKENDS_DIR}imgui_impl_glfw.cpp" "${IMGUI_BACKENDS_DIR}imgui_impl_opengl3.cpp")
 
 # Use aux_source_directory() to get all source files in the specified directory and apply to a variable. 
-    # Does not reflect new files. Requires further investigation. 
+    # Does not easily reflect new files. Requires further investigation
 aux_source_directory("${HEADERS_DIR}/" BOXERUI_HEADERS) # collects all src files in the header dir
 aux_source_directory("${LIBS_DIR}/imgui/" IMGUI_SOURCES)# collects all src files in the libs/imgui dir. Cannot be impl for backends dir, would attempt at compiling non required
     aux_source_directory("${LIBS_DIR}/imgui/examples/libs/gl3w/GL" IMGUI_EXAMPLES_LIBS_SOURCES)
@@ -46,12 +45,7 @@ set(SOURCE
 MESSAGE(STATUS "Include dirs ${OpenCV_INCLUDE_DIRS}")
 MESSAGE(STATUS "LINK LIBRARIES ${OpenCV_LIBS}")
 
-
-include_directories("${IMGUI_DIR}" "${IMGUI_BACKENDS_DIR}" "${IMGUI_DIR}examples/libs/gl3w/" "${IMPLOT_DIR}" "${OpenCV_INCLUDE_DIRS}")
-# "/home/username/opencv-master/modules/"    # "/usr/local/include/opencv4/"
-
-
-add_subdirectory("/home/username/Documents/glfw/" "/home/username/Documents/glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../glfw/" "${CMAKE_CURRENT_SOURCE_DIR}/../../glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
 
 
 #Executable target name and src files
