@@ -100,7 +100,7 @@ int main(int, char**)
 
 	//glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 
-	std::string image_path = cv::samples::findFile("C:/Users/Shenanigans/Documents/BoxerUI Project/BoxerUI/BoxerUI/boxer.jpg");
+	std::string image_path = cv::samples::findFile("../boxer.jpg");
 	cv::Mat img = cv::imread(image_path);// , cv::IMREAD_COLOR);
 
 
