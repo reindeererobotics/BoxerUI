@@ -237,7 +237,7 @@ int main(int, char **)
 				boxerController.navView();
 				//if(cap.grab())
 				{
-					if ((pid = fork()) == 0 && !cam_stream_process)
+					// if ((pid = fork()) == 0 && !cam_stream_process)
 					{
 						cam_stream_process = true;
 						ImGui::Begin("OpenGL/OpenCV Camera Test###camstream");
@@ -271,7 +271,7 @@ int main(int, char **)
 						}
 						ImGui::End();
 					}
-					wait(NULL);
+					// wait(NULL);
 				}
 				//else { cout << "Could not grab frame" << endl; }
 			}
