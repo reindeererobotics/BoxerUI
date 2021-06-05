@@ -4,7 +4,7 @@ Debug/
 
 
 
-BoxerUI/libs/cereal/*
+BoxerUI/libs/cereal/
 
 #Imgui
 BoxerUI/libs/imgui/*
@@ -41,3 +41,10 @@ BoxerUI/src/camera_stream.cpp
 
 build/*
 BoxerUI/imgui.ini
+# BoxerUI/src/Boxer_FW/*
+# !/*BoxerUI/src/Boxer_FW/src/BoxerUI/camera_stream.cpp
+
+boxer_install.zip
+install_boxerUI.txt
+Boxer_Install.sh
+Makefile
