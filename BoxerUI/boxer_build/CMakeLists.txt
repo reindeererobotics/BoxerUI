@@ -45,7 +45,7 @@ set(SOURCE
 MESSAGE(STATUS "Include dirs ${OpenCV_INCLUDE_DIRS}")
 MESSAGE(STATUS "LINK LIBRARIES ${OpenCV_LIBS}")
 
-add_subdirectory("/home/username/Documents/glfw/" "/home/username/Documents/glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../glfw/" "${CMAKE_CURRENT_SOURCE_DIR}/../../glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
 
 
 #Executable target name and src files
