@@ -1,66 +1,74 @@
-#pragma once
+#include <opencv2/highgui/highgui.hpp>
 
 #include "socketLibrary.h"
-#include <cereal/archives/xml.hpp>
-#include <iostream>
+
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/vector.hpp>
+
 #include <string>
+#include <vector>
 
-#ifdef _WIN32
-/* See http://stackoverflow.com/questions/12765743/getaddrinfo-on-win32 */
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501  /* Windows XP. */
-#endif
-#include <winsock2.h>
-#include <Ws2tcpip.h>
-#else
-/* Assume that any non-Windows platform uses POSIX-style sockets instead. */
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
-#include <unistd.h> /* Needed for close() */
-#endif
+void output(std::vector<char> data, int size) {
 
-using namespace std;
-
-struct Photo {
-    int elevation;
-    int humidity;
-    unsigned char name[6];
-
-    template <class Archive>
-    void serialize(Archive& ar) {
-        ar(elevation, humidity, name);
+    int i = 0;
+    while(i < size) {
+        std::cout<<data[i]<<'\n';
+        i+=1;
     }
-};
+}
 
 int main() {
+    int network_socket_2 = listen_socket(1, 8999, "0.0.0.0");
+    int client_socket = accept(network_socket_2, NULL, NULL); //block communications unless a connection is requested
 
-    char ip[] = "0.0.0.0";
-    //int client = connect_socket(1, 8000, ip);
-    //int client = accept(clientConnect, NULL, NULL);
+    int rows;
+    int cols;
+    cv::MatStep stp;
+    recv(client_socket, &rows, sizeof(int), 0);
+    recv(client_socket, &cols, sizeof(int), 0);
 
-#ifdef _WIN32
-    SOCKET client = connect_socket(1, 8000, ip);  //IP, protocal, blah
-    //SOCKET server_connect_socket = connect_socket(1, 9000, "0.0.0.0");;  //IP, protocal, blah
-#else
-    int client = connect_socket(1, 8000, ip)
-#endif // _WIN32
-        char temp[96];
-    char *msg=temp;
-    recv(client, msg, 95, 0);
+    std::cout<<"Received rows cols: "<<rows<<" "<<cols<<'\n';
 
-    std::cout << msg << endl;
-std:stringstream message;
-    message << msg;
+    int size;
+    std::stringstream ss;
 
-    Photo john;
-    Photo* ptr = &john;
+    while(true) {
 
-    {
-        cereal::XMLInputArchive archive2(message);
-        archive2.loadBinaryValue(ptr, sizeof(int) * 2 + sizeof(char) * 7, "names");
+        recv(client_socket, &size, sizeof(int), 0);
+        char cstr[size];
+        recv(client_socket, cstr, size, 0);
+        std::cout<<"recieved data\n";
+
+        int count = 0;
+        while(count < size) {
+        ss << cstr[count];
+        count += 1;
+        }
+        std::cout<<ss.str()<<"\n\n";
+
+        std::vector<unsigned short> vec;
+        {
+            cereal::BinaryInputArchive archive(ss);
+            archive(CEREAL_NVP(vec));
+        }
+        std::cout<<"serealized\n"<<ss.str()<<'\n';
+        ss.str("");
+
+
+        cv::Mat new_frame = cv::Mat(rows, cols, CV_16UC1);
+        memcpy(new_frame.data, vec.data(), vec.size() * sizeof(unsigned short));
+
+      cv::Mat current_frame = cv::Mat(720, 1280, CV_16UC1);
+      resize(new_frame, current_frame, cv::Size(), 100, 100);
+
+
+        //Thought this was working at some pint yesterdY??
+        std::cout<<"trying to show \n";
+        cv::imshow("view", current_frame); 
+        std::cout<<"showed image\n";
+
+        // Display frame for 30 milliseconds
+        cv::waitKey(220);
+        cv::destroyWindow("view");
     }
-
-    cereal::XMLOutputArchive archive3(std::cout);
-    archive3(john);
 }
