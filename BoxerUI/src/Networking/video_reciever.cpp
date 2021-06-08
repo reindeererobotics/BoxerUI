@@ -22,7 +22,7 @@ void output(std::vector<char> data, int size) {
 
 int main() {
 
-    int client_socket = connect_socket(1, 8000, "184.146.119.106");
+    int client_socket = connect_socket(1, 8000, "0.0.0.0");
 
     int rows;
     int cols;
