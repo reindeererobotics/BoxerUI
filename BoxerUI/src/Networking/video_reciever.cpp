@@ -35,6 +35,8 @@ int main() {
     int size;
     std::stringstream ss;
 
+    cv::Mat new_frame = cv::Mat(rows, cols, CV_16UC1);
+    cv::Mat current_frame = cv::Mat(720, 1280, CV_16UC1);
     while(true) {
 
         recv(client_socket, &size, sizeof(int), 0);
@@ -44,8 +46,8 @@ int main() {
 
         int count = 0;
         while(count < size) {
-        ss << cstr[count];
-        count += 1;
+            ss << cstr[count];
+            count += 1;
         }
         std::cout<<ss.str()<<"\n\n";
 
@@ -58,11 +60,9 @@ int main() {
         ss.str("");
 
 
-        cv::Mat new_frame = cv::Mat(rows, cols, CV_16UC1);
         memcpy(new_frame.data, vec.data(), vec.size() * sizeof(unsigned short));
 
-      cv::Mat current_frame = cv::Mat(720, 1280, CV_16UC1);
-      resize(new_frame, current_frame, cv::Size(), 100, 100);
+        resize(new_frame, current_frame, cv::Size(), 100, 100);
 
 
         //Thought this was working at some pint yesterdY??
