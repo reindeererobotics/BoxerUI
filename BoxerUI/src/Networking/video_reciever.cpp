@@ -35,13 +35,14 @@ int main() {
     int size;
     std::stringstream ss;
 
-    cv::Mat new_frame = cv::Mat(rows, cols, CV_16UC1);
-    cv::Mat current_frame = cv::Mat(720, 1280, CV_16UC1);
+    int scale = 1;
+    cv::Mat new_frame = cv::Mat(rows, cols, CV_8UC1);
+    cv::Mat current_frame = cv::Mat(rows * scale, cols * scale, CV_8UC1);
     while(true) {
 
         recv(client_socket, &size, sizeof(int), 0);
         char cstr[size];
-        recv(client_socket, cstr, size, 0);
+        recv(client_socket, cstr, size, MSG_WAITALL);
         std::cout<<"recieved data\n";
 
         int count = 0;
@@ -51,7 +52,7 @@ int main() {
         }
         std::cout<<ss.str()<<"\n\n";
 
-        std::vector<unsigned short> vec;
+        std::vector<unsigned char> vec;
         {
             cereal::BinaryInputArchive archive(ss);
             archive(CEREAL_NVP(vec));
@@ -60,18 +61,18 @@ int main() {
         ss.str("");
 
 
-        memcpy(new_frame.data, vec.data(), vec.size() * sizeof(unsigned short));
+        memcpy(new_frame.data, vec.data(), vec.size() * sizeof(unsigned char));
 
-        resize(new_frame, current_frame, cv::Size(), 100, 100);
+        resize(new_frame, current_frame, cv::Size(), scale, scale);
 
 
         //Thought this was working at some pint yesterdY??
+        cv::cvtColor(current_frame, current_frame, cv::COLOR_BGR2RGBA);
         std::cout<<"trying to show \n";
         cv::imshow("view", current_frame); 
         std::cout<<"showed image\n";
 
         // Display frame for 30 milliseconds
-        cv::waitKey(220);
-        cv::destroyWindow("view");
+        cv::waitKey(180);
     }
 }
