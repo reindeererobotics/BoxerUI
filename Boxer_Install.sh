@@ -1,6 +1,5 @@
 #!/bin/bash
 # Install minimal prerequisites (Ubuntu 18.04 as reference)
-sudo apt install -y g++
 sudo apt update && sudo apt install -y cmake g++ wget unzip
 
 # Download and unpack sources
@@ -10,8 +9,9 @@ unzip opencv.zip
 mkdir -p opencv-build && cd opencv-build
 
 # Configure
-cmake ../opencv-master/ -DBUILD_LIST=calib3d,core,features2d,flann,highgui,imgcodecs,imgproc,ts,videoio -DBUILD_TESTS=OFF -DBUILD_opencv_python2=OFF -DBUILD_opencv_python3=OFF -DWITH_OPENEXR=OFF -DWITH_1394=OFF -DWITH_EIGEN=OFF -DWITH_OPENGL=ON -DBUILD_SHARED_LIBS=OFF -DWITH_FFMPEG=OFF .
+# cmake ../opencv-master/ -DBUILD_TESTS=OFF -DBUILD_opencv_python2=OFF -DBUILD_opencv_python3=OFF -DWITH_OPENEXR=OFF -DWITH_1394=OFF -DWITH_EIGEN=OFF -DWITH_OPENGL=ON -DBUILD_SHARED_LIBS=OFF -DWITH_FFMPEG=OFF .
 # cmake ../opencv-master/ -DBUILD_LIST=calib3d,core,features2d,flann,highgui,imgcodecs,imgproc,ts,videoio .
+cmake ../opencv-master/ -DBUILD_LIST=calib3d,core,features2d,flann,highgui,imgcodecs,imgproc,ts,videoio -DBUILD_TESTS=OFF -DBUILD_opencv_python2=OFF -DBUILD_opencv_python3=OFF -DWITH_OPENEXR=OFF -DWITH_1394=OFF -DWITH_EIGEN=OFF -DWITH_OPENGL=ON -DBUILD_SHARED_LIBS=OFF -DWITH_FFMPEG=OFF .
 
 # print all options
 cmake -L
@@ -23,7 +23,6 @@ cmake -LA
 # Build
 make -j4
 # sudo apt-get install libglfw3-dev
-
 
 mkdir build
 git clone https://github.com/glfw/glfw.git

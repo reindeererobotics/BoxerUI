@@ -116,7 +116,7 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat *disp_frame) //, GLuint* image_te
 which video capture object we are accessing, and the applications width and height
 @return No values are returned. This is mearly a test and can be useful later.
 **/
-void CameraStream::initCameraTest(bool *show_camera, float *w, float *h)
+void CameraStream::initCamera(bool *show_camera, float *w, float *h)
 {
 	// return;
 	if (show_camera)
@@ -333,7 +333,7 @@ void CameraStream::initCamera()
 			{
 				//Camera stream process
 				printf("Camera process id: %d\n", getpid()); //Child process
-				initCameraTest(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
+				initCamera(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
 
 				//switch camera in drop down
 				const char *list_cameras[] = {"1", "2", "3", "4"};
