@@ -3,15 +3,10 @@
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 #include "Boxer.h"
-//#include "CustomComponents_View.h"//has imgui.h & imgui_internals.h
 //#include "Inputs.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <stdio.h>
-// #include <sys/types.h>
 
-#include <stdlib.h>
-#include <unistd.h>
 #include "BoxerUI_Controller.h"
 //#include "TextTheme.h"
 
@@ -189,11 +184,11 @@ int main(int, char **)
 
 	// Our state
 	//bool show_demo_window = true;
-	static int item_current = 0;
-	static bool show_boxer_windows = false, show_camera = false, show_index_window = true, cam_stream_process = false;
+	//static int item_current = 0;
+	static bool show_boxer_windows = false, show_camera = false, show_index_window = true;
 	bool p_open = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	pid_t pid;
+	//pid_t pid;
 	//Initialize Boxer controller object.
 	//BoxerUI_Model boxerModel = BoxerUI_Model();
 	//BoxerUI_View boxerView;
@@ -220,11 +215,11 @@ int main(int, char **)
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			// if (show_index_window) {
-			//// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);
-			// 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
-			// }
-			// else
+			if (show_index_window)
+			{
+				boxerController.displayIndexWindow(&show_index_window);
+			}
+			else
 			{
 				//SetNextWindowViewport();
 
@@ -235,45 +230,8 @@ int main(int, char **)
 				boxerController.plotView();
 
 				boxerController.navView();
-				//if(cap.grab())
-				{
-					if ((pid = fork()) == 0 && !cam_stream_process)
-					{
-						cam_stream_process = true;
-						ImGui::Begin("OpenGL/OpenCV Camera Test###camstream");
 
-						if (ImGui::Button("Show Camera"))
-						{
-							show_camera = !show_camera;
-							boxerController.initCameraView(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
-						}
-
-						//switch camera in drop down
-						const char *list_cameras[] = {"1", "2", "3", "4"};
-
-						if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)))
-						{
-							// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
-							//boxerController.destroyCameraView(&item_current); //if the camera is currently streaming
-							//show_camera = true;
-							std::cout << "item_current: " << item_current << std::endl;
-						}
-						// capture_camera = item_current;
-						ImGui::SameLine();
-						HelpMarker(
-							"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
-							"and demonstration of various flags.\n");
-						//TODO: place camera in process
-
-						if (show_camera) //||item_current>=0)
-						{
-							boxerController.streamCameraView(&item_current);
-						}
-						ImGui::End();
-					}
-					// wait(NULL);
-				}
-				//else { cout << "Could not grab frame" << endl; }
+				boxerController.cameraView();
 			}
 		}
 

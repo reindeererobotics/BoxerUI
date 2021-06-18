@@ -53,19 +53,21 @@ void BoxerUI_Controller::navView() {
 	boxerView.sideNav();
 }
 
-void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,bool* freeze_frame, cv::Mat* frame, GLuint* my_frame_texture) {
+void BoxerUI_Controller::cameraView(){camera_stream.initCamera();}
 
-	camera_stream.streamCamera(camera);// cap, freeze_frame, frame, my_frame_texture);
-}
-void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
-	//Retrieve from network(boxerModel) then send to view to display
-	//boxerModel.cameraStreamProc();
+// void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
+// 	//Retrieve from network(boxerModel) then send to view to display
+// 	//boxerModel.cameraStreamProc();
 	
-	//For internal testing purposes only
-	camera_stream.initCameraTest(show_camera, w, h);
-}
-void BoxerUI_Controller::destroyCameraView(int* current_cam) {
-	camera_stream.CameraStream::destroyCamera(current_cam);
-}
+// 	//For internal testing purposes only
+// 	camera_stream.initCameraTest(show_camera, w, h);
+// }
+// void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,bool* freeze_frame, cv::Mat* frame, GLuint* my_frame_texture) {
+
+// 	camera_stream.streamCamera(camera);// cap, freeze_frame, frame, my_frame_texture);
+// }
+// void BoxerUI_Controller::destroyCameraView(int* current_cam) {
+// 	camera_stream.CameraStream::destroyCamera(current_cam);
+// }
 
 
