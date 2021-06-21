@@ -39,9 +39,9 @@ std::string serealizeFrame(cv::Mat new_frame, std::vector<unsigned char> compres
 }
 
 //i32 i32 -> u1
-struct sockaddr_in frameOverhead(int rows, int cols, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
+struct sockaddr_in sendFrameOverhead(int rows, int cols, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
+    socklen_t clientaddrLength, serveraddrLength;
 
-    socklen_t clientaddrLength;
 
     bool activity = false;
     while(activity == false)
@@ -63,7 +63,33 @@ struct sockaddr_in frameOverhead(int rows, int cols, struct sockaddr_in serverad
     return clientaddr;
 }
 
+
+struct FrameStructure {
+    int rows = 0;
+    int cols = 0;
+};
+
+struct FrameStructure recvFrameOverhead(int sockfd, struct sockaddr_in serveraddr) {
+    socklen_t clientaddrLength, serveraddrLength;
+    struct FrameStructure Overhead;
+
+    bool activity = true;
+    status = sendto(sockfd, &activity, sizeof(bool), 0, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+    if(status < 0)
+        perror("send failed");
+    std::cout<<"sent activity\n";
+
+    recvfrom(sockfd, &Overhead.rows, sizeof(int), 0, (struct sockaddr*)&serveraddr, &serveraddrLength);
+    recvfrom(sockfd, &Overhead.cols, sizeof(int), 0, (struct sockaddr*)&serveraddr, &serveraddrLength);
+
+    std::cout<<"\nReceived rows cols: "<<Overhead.rows<<" "<<Overhead.cols<<'\n';
+    std::cout<<"size of frame "<<Overhead.rows * Overhead.cols<<'\n';
+
+    return Overhead;
+}
+
 void sendFrame(cv::Mat new_frame, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
+    socklen_t clientaddrLength, serveraddrLength;
 
     std::vector<unsigned char> encode_vec = encodeFrame(new_frame, 0);
     std::string str = serealizeFrame(new_frame, encode_vec);
@@ -87,6 +113,27 @@ void sendFrame(cv::Mat new_frame, struct sockaddr_in serveraddr, struct sockaddr
     }
 }
 
+cv::Mat recvFrame(int sockfd, struct sockaddr_in serveraddr) {
+    socklen_t clientaddrLength, serveraddrLength;
+    int size;
+
+    std::cout<<"Starting to recieve\n";
+    status = recvfrom(sockfd, &size, sizeof(int), 0, (struct sockaddr*)&serveraddr, &serveraddrLength);
+    if(status < 0)
+        perror("recv error");
+
+    char cstr[size];
+    std::cout<<"Size of frame "<<size<<'\n';
+    status = recvfrom(sockfd, cstr, size, MSG_WAITALL, (struct sockaddr*)&serveraddr, &serveraddrLength);
+    if(status < 0)
+        perror("recv error");
+    std::cout<<"recieved data\n";
+
+
+    std::vector<unsigned char> vec = deserializeFrame(cstr, size);
+
+    return decodeFrame(vec);
+}
 
 //Socket Automation
 //
@@ -185,4 +232,4 @@ int connect_socket(int a, int b, const char * c) {
    close(network_socket_2); //closing connection
    return 0;
    }
-*/
+   */
