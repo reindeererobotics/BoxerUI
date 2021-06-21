@@ -1,24 +1,95 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef _WIN32
-/* See http://stackoverflow.com/questions/12765743/getaddrinfo-on-win32 */
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501  /* Windows XP. */
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#endif
-#include <winsock2.h>
-#include <Ws2tcpip.h>
-#else
-/* Assume that any non-Windows platform uses POSIX-style sockets instead. */
-#include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
-#include <unistd.h> /* Needed for close() */
-#endif
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+
+#include "frame_computation.h"
+
+#include <opencv2/highgui/highgui.hpp>
+
+int status;
+
+//Mat -> string
+std::string serealizeFrame(cv::Mat new_frame, std::vector<unsigned char> compressed_frame) {
+    std::vector<unsigned char> vec;
+    if(compressed_frame.size() != 0){
+        std::cout<<"Seriliased jpg/png encoding\n";
+        vec = compressed_frame;
+    } else {
+        std::vector<unsigned char> frameVec(new_frame.begin<unsigned char>(), new_frame.end<unsigned char>());
+        vec = frameVec;
+    }
+
+    std::stringstream ss;
+    {
+        cereal::BinaryOutputArchive archive(ss);
+        archive(CEREAL_NVP(vec));
+    }
+
+    return ss.str();
+
+}
+
+//i32 i32 -> u1
+struct sockaddr_in frameOverhead(int rows, int cols, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
+
+    socklen_t clientaddrLength;
+
+    bool activity = false;
+    while(activity == false)
+        status = recvfrom(sockfd, &activity, sizeof(bool), 0, (struct sockaddr*)&clientaddr, &clientaddrLength);
+    if(status < 0)
+        perror("recv error");
+
+    std::cout<<activity<<'\n';
+
+    status = sendto(sockfd, &rows, sizeof(int), 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
+    if(status < 0)
+        perror("semd error");
+    status = sendto(sockfd, &cols, sizeof(int), 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
+    if(status < 0)
+        perror("send error");
+
+    std::cout<<"Sent row col stp: "<<rows<<" "<<cols<<'\n';
+
+    return clientaddr;
+}
+
+void sendFrame(cv::Mat new_frame, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
+
+    std::vector<unsigned char> encode_vec = encodeFrame(new_frame, 0);
+    std::string str = serealizeFrame(new_frame, encode_vec);
+
+    int size = str.length();
+
+    const char* cstr = str.c_str();
+
+    std::cout<<"size of frame is "<<size<<'\n';
+    status = sendto(sockfd, &size, sizeof(int), 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
+    if(status < 0) {
+        perror("Perameter <size> failed to send..");
+        exit(0);
+    }
+
+    std::cout<<"Size of frame "<<size<<'\n';
+    status = sendto(sockfd, cstr, size, 0, (struct sockaddr*)&clientaddr, sizeof(clientaddr));
+    if(status < 0) {
+        perror("Perameter <cstr> failed to send..");
+        exit(0);
+    }
+}
+
+
+//Socket Automation
+//
 struct initialize {
     struct sockaddr_in sockets;
     int network_socket;
@@ -54,7 +125,7 @@ int listen_socket(int a, int b, const char * c) {
 
     bind(network_socket, (struct sockaddr*) &server_address, sizeof(server_address)); //reserves port for server on machine
 
-    listen(network_socket, 10); //listen for clients to connect
+    listen(network_socket, 1); //listen for clients to connect
 
     return network_socket;
 }
