@@ -15,7 +15,7 @@ std::vector<unsigned char> encodeFrame(cv::Mat new_frame, int encode_style) {
 
     cv::imencode(extensions[encode_style], new_frame, buf, encodings[encode_style]);
 
-        return buf;
+    return buf;
 }
 
 cv::Mat decodeFrame(std::vector<unsigned char> buf) {
@@ -26,4 +26,22 @@ cv::Mat decodeFrame(std::vector<unsigned char> buf) {
     cv::Mat decoded_frame = imdecode(rawData, cv::IMREAD_COLOR);
 
     return decoded_frame;
+}
+
+std::vector<unsigned char> deserializeFrame(char cstr[], int size) {
+    std::stringstream ss;
+
+    int count = 0;
+    while(count < size) {
+        ss << cstr[count];
+        count += 1;
+    }
+    std::vector<unsigned char> vec;
+    {
+        cereal::BinaryInputArchive archive(ss);
+        archive(CEREAL_NVP(vec));
+    }
+    ss.str("");
+
+    return vec;
 }
