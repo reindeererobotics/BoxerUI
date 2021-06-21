@@ -18,4 +18,12 @@ std::vector<unsigned char> encodeFrame(cv::Mat new_frame, int encode_style) {
         return buf;
 }
 
-//decode();
+cv::Mat decodeFrame(std::vector<unsigned char> buf) {
+
+    unsigned char* array = &buf[0];
+
+    cv::Mat rawData(1, buf.size(), CV_8UC1, array);
+    cv::Mat decoded_frame = imdecode(rawData, cv::IMREAD_COLOR);
+
+    return decoded_frame;
+}
