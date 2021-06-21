@@ -1,4 +1,4 @@
-#include "Inputs.h"
+#include "Inputs_Model.h"
 #include <iostream>
 using namespace std;
 
@@ -28,7 +28,7 @@ void Inputs::inputHandler() {
 }
 void Inputs::keyboardInputHandler() {
 	//cout << "input_type" << endl;
-	ImGui::CreateContext();
+	//ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;

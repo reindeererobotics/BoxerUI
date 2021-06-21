@@ -20,7 +20,7 @@ void output(std::vector<char> data, int size) {
     }
 }
 
-int main() {
+int main() {//refactor to payloadRecv();
 
     int client_socket = connect_socket(1, 8000, "0.0.0.0");
 

@@ -20,13 +20,16 @@ void BoxerUI_Controller::setModelBattery(double batteryVal) {
 void BoxerUI_Controller::setModelTemperature(double temperatureVal) {
 	boxerModel.setTemperature(temperatureVal);
 }
-void BoxerUI_Controller::inputHandlerModel() { 
-	boxerModel.inputHandler(); 
+void BoxerUI_Controller::inputHandlerModel() {
+	boxerModel.inputHandler();
 }
 
 void BoxerUI_Controller::cameraPayloadRecv() {
 	//TODO: Call to socket function to receive frame buffers, send to model for processing
-	// boxerModel.cameraStreamProc();
+
+	//camera_stream.setCamContext();
+	boxerModel.cameraStreamProc();
+
 }
 void BoxerUI_Controller::decomposePayload(Json::Value jsonPayload) {
 	// converts json to model data attributes
@@ -48,24 +51,19 @@ void BoxerUI_Controller::updateBSView() {
 void BoxerUI_Controller::plotView() {
 	//boxerSocket.payloadRecv(4, *"payload", 0);
 	boxerView.plotStream();
-} 
+}
 void BoxerUI_Controller::navView() {
 	boxerView.sideNav();
 }
 
-void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,bool* freeze_frame, cv::Mat* frame, GLuint* my_frame_texture) {
+void BoxerUI_Controller::indexView() {
+	boxerView.indexView();
+}
 
-	camera_stream.streamCamera(camera);// cap, freeze_frame, frame, my_frame_texture);
-}
-void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
-	//Retrieve from network(boxerModel) then send to view to display
-	boxerModel.cameraStreamProc();
-	
-	//For internal testing purposes only
-	camera_stream.initCameraTest(show_camera, w, h);
-}
-void BoxerUI_Controller::destroyCameraView(int* current_cam) {
-	camera_stream.CameraStream::destroyCamera(current_cam);
+void BoxerUI_Controller::cameraView() { 
+	camera_stream.initCamera(*(boxerModel.cameraStreamProc()));
+	//For internal testing only
+	//camera_stream.initCamera(); 
 }
 
 

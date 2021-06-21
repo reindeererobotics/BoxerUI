@@ -170,8 +170,7 @@
     <ClCompile Include="src\BoxerUI_Model.cpp" />
     <ClCompile Include="src\BoxerUI_View.cpp" />
     <ClCompile Include="src\CameraStream_View.cpp" />
-    <ClCompile Include="src\CustomComponents_View.cpp" />
-    <ClCompile Include="src\Inputs.cpp" />
+    <ClCompile Include="src\Inputs_Model.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,8 +179,7 @@
     <ClInclude Include="header\BoxerUI_Model.h" />
     <ClInclude Include="header\BoxerUI_View.h" />
     <ClInclude Include="header\CameraStream_View.h" />
-    <ClInclude Include="header\CustomComponents_View.h" />
-    <ClInclude Include="header\Inputs.h" />
+    <ClInclude Include="header\Inputs_Model.h" />
     <ClInclude Include="header\TextTheme.h" />
     <ClInclude Include="libs\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="libs\imgui\backends\imgui_impl_opengl3.h" />

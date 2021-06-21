@@ -1,19 +1,14 @@
 #pragma once
 
-#include "CustomComponents_View.h"
 #include "implot.h"
-//#include <iostream>
-//#include "TextTheme.h"
-#ifndef _INPUTS_H
-//#define _INPUTS_H
-#include "Inputs.h"
-#endif
+#include <iostream>
+#include "Inputs_Model.h"
+//#include "BoxerUI_Controller.h"
 
 
 
 class BoxerUI_View
 {
-private:
 	
 public:
 	static void appFrameRate();
@@ -25,7 +20,7 @@ public:
 	static void sideNav();
 
 	static bool settings();
-
-	
+	void indexView();
+protected:
+	static void HelpMarker(const char* desc);
 };
-//extern void HelpMarker(const char* desc);

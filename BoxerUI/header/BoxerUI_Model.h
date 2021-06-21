@@ -1,19 +1,20 @@
 #pragma once
-#ifndef _INPUTS_H
-//#define _INPUTS_H
-#include "Inputs.h"
-#endif
 
 #include "Boxer.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+//#include "BoxerUI_Controller.h"
+
+#ifndef _INPUTS_H
+//#define _INPUTS_H
+#include "Inputs_Model.h"
+#endif
+
 class BoxerUI_Model
 {
-	
-	/*ImGuiIO& io = ImGui::GetIO();
-	ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", 18.0f);*/
+
 private:
 	double temperature, battery;// , ultrasonic;
 
@@ -23,5 +24,9 @@ public:
 	void setTemperature(double temperature);
 	void setBattery(double battery);
 	void inputHandler();
-	void cameraStreamProc();
+	//cv::Mat cameraStreamProc();
+	uchar* cameraStreamProc(); 
+
+protected:
+	void print(const char* text);
 };
