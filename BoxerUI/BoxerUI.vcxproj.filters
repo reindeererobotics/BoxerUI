@@ -81,9 +81,6 @@
     <ClCompile Include="src\CameraStream_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Boxer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BoxerUI_Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

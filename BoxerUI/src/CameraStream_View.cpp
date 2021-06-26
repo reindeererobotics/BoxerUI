@@ -19,9 +19,6 @@ void CameraStream::dispFrame(cv::Mat *frame)
 
 		disp_frame.release();
 	}
-
-	/*BindCVMat2GLTexture(frame);
-	frame->release();*/
 }
 
 void CameraStream::BindCVMat2GLTexture(cv::Mat *disp_frame) //, GLuint* image_texture)
@@ -235,7 +232,8 @@ void CameraStream::streamCamera(int *camera)
 		//cameras[*camera].retrieve(frames[FREEZE_FRAME_IMG]);
 	}
 
-	{ //Main "viewport"/context stream
+	
+	{//Main "viewport"/context stream
 		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
 		freeze_frame ? freezeFrame() : setCamContext(*camera);
 		ImGui::EndChild();
@@ -307,7 +305,6 @@ void CameraStream::swapCamViews()
 		ImGui::PushID(n);
 		if (n != 0)
 			ImGui::SameLine();
-		//ImGui::Button(viewCameras[n], ImVec2(60, 60));
 		//streamCamera(&cameras[n],&frames[n]);
 
 		// Our buttons are both drag sources and drag targets here!
@@ -344,7 +341,7 @@ void CameraStream::swapCamViews()
 	}
 }
 
-void CameraStream::initCamera(uchar mat_data)
+void CameraStream::initCamera(uchar mat_data=0)
 {
 	static bool show_camera=false;//, cam_stream_process = true;
 	static int item_current = 0;
@@ -411,77 +408,4 @@ void CameraStream::initCamera(uchar mat_data)
 	//return EXIT_SUCCESS;
 }
 
-void CameraStream::initCamera()
-{
-	static bool show_camera=false;//, cam_stream_process = true;
-	static int item_current = 0;
 
-	{
-		ImGui::Begin("OpenGL/OpenCV Camera Test###camstream");
-
-		
-		//printf("Child process starts with PID = %d\n", (int)getpid());
-		if (ImGui::Button("Show Camera"))
-		{
-			show_camera = !show_camera;
-		}
-		if (show_camera)
-		{
-			if ((pid = fork()) < 0)
-			{
-				//It may fail -- super rare
-				perror("Fork failed");
-				//return EXIT_FAILURE;
-			}
-			else if (pid > 0)
-			{
-				//If it returns a positive number, you're in the parent process and pid holds the pid of the child
-
-				printf("Boxer Main process id: %d\n", getpid());
-				printf("Camera process pid in mainis %d\n", pid);
-				// if (!cam_stream_process)
-				// {
-				// 	kill(pid, SIGKILL);
-				// }
-			}
-			else
-			{
-				//Camera stream process
-				printf("Camera process id: %d\n", getpid()); //Child process
-				initCamera(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
-
-				//switch camera in drop down
-				const char *list_cameras[] = {"1", "2", "3", "4"};
-
-				if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)))
-				{
-					// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
-					//boxerController.destroyCameraView(&item_current); //if the camera is currently streaming
-					//show_camera = true;
-					std::cout << "item_current: " << item_current << std::endl;
-				}
-				// capture_camera = item_current;
-				ImGui::SameLine();
-				HelpMarker(
-					"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
-					"and demonstration of various flags.\n");
-
-				// if (show_camera)
-				{
-					streamCamera(&item_current);
-				}
-				// else
-				//
-			}
-		}
-		else if (show_camera)
-		{
-			kill(pid,SIGTSTP);
-		}
-		
-
-		ImGui::End();
-	}
-
-	//return EXIT_SUCCESS;
-}
