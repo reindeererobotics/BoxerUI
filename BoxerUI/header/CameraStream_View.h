@@ -28,18 +28,13 @@
 
 class CameraStream: public BoxerUI_View// public BoxerUI_Controller
 {
-	bool freeze_frame = false, enhance = false;
+
+private:
+
+bool freeze_frame = false, enhance = false;
 	cv::VideoCapture cameras[NUM_CAMERAS];
 	cv::Mat frames[NUM_CAMERAS + 1]; //Last frame in array is dedicated to store freeze frame
-	uchar frames_data[NUM_CAMERAS + 1]; //Last frame in array is dedicated to store freeze frame
 
-#if _WIN32
-#else 
-pid_t pid;
-#endif // !_WIN32
-	
-	
-private:
 	void dispFrame(cv::Mat *frame);
 
 	void BindCVMat2GLTexture(cv::Mat *disp_frame);
@@ -48,17 +43,16 @@ private:
 	void destroyCamera(int *index);
 
 	void setCameraPropTest(int *camera, cv::VideoCapture *capture, float *w, float *h);
-
-	//for internal testing only
-	//void setCamContext(int context);
 	
 	void streamCamera(int* camera);
+	
+	void setCamContext(int context);
 	
 	void freezeFrame();
 
 	void swapCamViews();
 public:
-	void setCamContext(int context);
-	void initCamera(uchar mat_data);
+	static bool show_camera;// = false;
+	bool initCamera(cv::Mat mat_data);
 	void initCamera();// For internal purposes
 };

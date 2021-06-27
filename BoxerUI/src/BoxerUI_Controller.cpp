@@ -1,12 +1,6 @@
 #include "BoxerUI_Controller.h"
 
-
-//BoxerUI_Sockets boxerSocket;
-
-/*BoxerUI_Controller(BoxerUI_View boxerView, BoxerUI_Model boxerModel) {
-	this->boxerModel = boxerModel;
-	this->boxerView = boxerView;
-}*/
+bool CameraStream::show_camera = false;
 
 double BoxerUI_Controller::getModelBattery() {
 	return boxerModel.getBattery();
@@ -58,10 +52,16 @@ void BoxerUI_Controller::navView() {
 
 void BoxerUI_Controller::indexView() {
 	boxerView.indexView();
+	
 }
 
 void BoxerUI_Controller::cameraView() { 
-	camera_stream.initCamera(*(boxerModel.cameraStreamProc()));
+	cv::Mat payload_frame;
+	
+	camera_stream.initCamera((camera_stream.show_camera ? boxerModel.cameraStreamProc():payload_frame));
+
+	payload_frame.~Mat();
+	
 	//For internal testing only
 	//camera_stream.initCamera(); 
 }

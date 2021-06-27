@@ -37,6 +37,4 @@ public:
 	void cameraView();
 	void indexView();
 	void cameraPayloadRecv();
-protected:
-
 };

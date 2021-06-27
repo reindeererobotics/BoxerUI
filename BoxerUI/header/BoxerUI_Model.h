@@ -1,11 +1,19 @@
 #pragma once
 
 #include "Boxer.h"
-
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-//#include "BoxerUI_Controller.h"
+#ifdef _WIN32
+
+#include <Windows.h>
+#include <iostream>
+#else
+#include <stdio.h>
+#include <pthread.h>
+
+#endif // headers for threads
+
 
 #ifndef _INPUTS_H
 //#define _INPUTS_H
@@ -17,6 +25,7 @@ class BoxerUI_Model
 
 private:
 	double temperature, battery;// , ultrasonic;
+	cv::Mat cameraPayloadRecv();
 
 public:
 	double getTemperature();
@@ -25,7 +34,7 @@ public:
 	void setBattery(double battery);
 	void inputHandler();
 	//cv::Mat cameraStreamProc();
-	uchar* cameraStreamProc(); 
+	cv::Mat cameraStreamProc(); 
 
 protected:
 	void print(const char* text);

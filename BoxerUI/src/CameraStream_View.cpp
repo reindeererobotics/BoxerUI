@@ -1,6 +1,6 @@
 #include "CameraStream_View.h"
 
-void CameraStream::dispFrame(cv::Mat *frame)
+void CameraStream::dispFrame(cv::Mat* frame)
 {
 	//creates a buffer of 5 frames before binding cv::Mat type to GLTexture
 	cv::Mat frames_buf[BUFFER_SIZE];
@@ -21,9 +21,9 @@ void CameraStream::dispFrame(cv::Mat *frame)
 	}
 }
 
-void CameraStream::BindCVMat2GLTexture(cv::Mat *disp_frame) //, GLuint* image_texture)
+void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame) //, GLuint* image_texture)
 {
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	GLuint image_texture;
 	if ((*disp_frame).empty())
 	{
@@ -46,18 +46,18 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat *disp_frame) //, GLuint* image_te
 
 		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.cols, image.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.ptr());
 		glTexImage2D(GL_TEXTURE_2D,		  // Type of texture
-					 0,					  // Pyramid level (for mip-mapping) - 0 is the top level
-					 GL_RGB,			  // colour format to convert to
-					 (*disp_frame).cols,  // Image width
-					 (*disp_frame).rows,  // Image height
-					 0,					  // Border width in pixels (can either be 1 or 0)
-					 GL_RGBA,			  // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
-					 GL_UNSIGNED_BYTE,	  // Image data type
-					 (*disp_frame).data); // The actual image data itself
+			0,					  // Pyramid level (for mip-mapping) - 0 is the top level
+			GL_RGB,			  // colour format to convert to
+			(*disp_frame).cols,  // Image width
+			(*disp_frame).rows,  // Image height
+			0,					  // Border width in pixels (can either be 1 or 0)
+			GL_RGBA,			  // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
+			GL_UNSIGNED_BYTE,	  // Image data type
+			(*disp_frame).data); // The actual image data itself
 		ImGui::Text("pointer = %p", image_texture);
 		ImGui::Text("size = %d x %d", (*disp_frame).cols, (*disp_frame).rows);
 
-		ImTextureID my_tex_id = (void *)(intptr_t)image_texture;
+		ImTextureID my_tex_id = (void*)(intptr_t)image_texture;
 		float my_tex_w = (float)io.Fonts->TexWidth;
 		float my_tex_h = (float)io.Fonts->TexHeight;
 		{
@@ -141,7 +141,7 @@ void CameraStream::initCamera()
 		{
 			//Camera stream process
 			//printf("Camera process id: %d\n", getpid()); //Child process
-			
+
 			float capture_width, capture_height;
 			for (int i = 0; i < NUM_CAMERAS; i++)
 			{
@@ -163,7 +163,7 @@ void CameraStream::initCamera()
 			if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)))
 			{
 				// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
-				
+
 				std::cout << "item_current: " << item_current << std::endl;
 			}
 			// capture_camera = item_current;
@@ -189,12 +189,12 @@ void CameraStream::initCamera()
 			destroyCamera(&i);
 		}
 	}
-	
+
 	ImGui::End();
 	//ImGui::NewFrame();
 }
 
-void CameraStream::destroyCamera(int *index)
+void CameraStream::destroyCamera(int* index)
 {
 	frames[*index].~Mat();
 	// return;
@@ -203,13 +203,13 @@ void CameraStream::destroyCamera(int *index)
 	cameras[*index].~VideoCapture();
 }
 
-void CameraStream::setCameraPropTest(int *camera, cv::VideoCapture *capture, float *w, float *h)
+void CameraStream::setCameraPropTest(int* camera, cv::VideoCapture* capture, float* w, float* h)
 {
 	//This method establishes the properties of each individual camera based on its initialization from initCamera() method
 	if (!(*capture).isOpened())
 	{
 		std::cout << "Camera not opened" << std::endl;
-		
+
 	}
 	else
 	{
@@ -221,7 +221,7 @@ void CameraStream::setCameraPropTest(int *camera, cv::VideoCapture *capture, flo
 	}
 }
 
-void CameraStream::streamCamera(int *camera)
+void CameraStream::streamCamera(int* camera)
 { //cv::VideoCapture* cap,cv::Mat* frame) {//stream the data and bind to unique Mat objects
 
 	if (ImGui::Button("Freeze Frame"))
@@ -232,7 +232,7 @@ void CameraStream::streamCamera(int *camera)
 		//cameras[*camera].retrieve(frames[FREEZE_FRAME_IMG]);
 	}
 
-	
+
 	{//Main "viewport"/context stream
 		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
 		freeze_frame ? freezeFrame() : setCamContext(*camera);
@@ -325,10 +325,10 @@ void CameraStream::swapCamViews()
 		}
 		if (ImGui::BeginDragDropTarget())
 		{
-			if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
 			{
 				IM_ASSERT(payload->DataSize == sizeof(int));
-				int payload_n = *(const int *)payload->Data;
+				int payload_n = *(const int*)payload->Data;
 
 				//Swap the camera streams
 				const cv::VideoCapture tmp = cameras[n];
@@ -341,9 +341,9 @@ void CameraStream::swapCamViews()
 	}
 }
 
-void CameraStream::initCamera(uchar mat_data=0)
+bool CameraStream::initCamera(cv::Mat mat_data)
 {
-	static bool show_camera=false;//, cam_stream_process = true;
+	//, cam_stream_process = true;
 	static int item_current = 0;
 
 	{
@@ -374,7 +374,7 @@ void CameraStream::initCamera(uchar mat_data=0)
 				//initCamera(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
 
 				//switch camera in drop down
-				const char *list_cameras[] = {"1", "2", "3", "4"};
+				const char* list_cameras[] = { "1", "2", "3", "4" };
 
 				if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)))
 				{
@@ -391,8 +391,11 @@ void CameraStream::initCamera(uchar mat_data=0)
 
 				// if (show_camera)
 				{
-					*frames = mat_data;
-					streamCamera(&item_current);
+					//TODO Create thread here to process streaming content to window
+					{
+						*frames = mat_data;
+						streamCamera(&item_current);
+					}
 				}
 			}
 		}
@@ -400,12 +403,15 @@ void CameraStream::initCamera(uchar mat_data=0)
 		{
 			kill(pid,SIGTSTP);
 		}*/
-		
+
 
 		ImGui::End();
 	}
 
 	//return EXIT_SUCCESS;
+	return show_camera;
 }
+
+
 
 
