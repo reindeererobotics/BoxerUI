@@ -221,8 +221,8 @@ int main(int, char **)
 			}
 			else
 			{
-				boxerController.indexView();
 				boxerController.cameraView();
+				boxerController.indexView();
 			}
 		}
 

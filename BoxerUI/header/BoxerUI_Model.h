@@ -25,7 +25,7 @@ class BoxerUI_Model
 
 private:
 	double temperature, battery;// , ultrasonic;
-	cv::Mat cameraPayloadRecv();
+	static void* cameraPayloadRecv(void* arg);
 
 public:
 	double getTemperature();
@@ -34,8 +34,12 @@ public:
 	void setBattery(double battery);
 	void inputHandler();
 	//cv::Mat cameraStreamProc();
-	cv::Mat cameraStreamProc(); 
+	std::vector<cv::Mat> cameraStreamProc(bool* is_camera_on); 
 
 protected:
 	void print(const char* text);
+};
+
+struct thread_data{
+	cv::Mat payload;
 };

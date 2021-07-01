@@ -24,7 +24,7 @@
 
 #define BUFFER_SIZE 5
 #define NUM_CAMERAS 4
-#define FREEZE_FRAME_IMG 5
+#define FREEZE_FRAME_IMG (NUM_CAMERAS+1)
 
 class CameraStream: public BoxerUI_View// public BoxerUI_Controller
 {
@@ -32,12 +32,12 @@ class CameraStream: public BoxerUI_View// public BoxerUI_Controller
 private:
 
 bool freeze_frame = false, enhance = false;
-	cv::VideoCapture cameras[NUM_CAMERAS];
-	cv::Mat frames[NUM_CAMERAS + 1]; //Last frame in array is dedicated to store freeze frame
+	std::vector<cv::VideoCapture> cameras=std::vector<cv::VideoCapture>(NUM_CAMERAS);
+	std::vector<cv::Mat> frames=std::vector<cv::Mat>(NUM_CAMERAS + 1); //Last frame in array is dedicated to store freeze frame
 
 	void dispFrame(cv::Mat *frame);
 
-	void BindCVMat2GLTexture(cv::Mat *disp_frame);
+	void BindCVMat2GLTexture(cv::Mat& disp_frame);
 
 	//destroy the frame & cap objects then release from memory
 	void destroyCamera(int *index);
@@ -47,12 +47,12 @@ bool freeze_frame = false, enhance = false;
 	void streamCamera(int* camera);
 	
 	void setCamContext(int context);
-	
+
 	void freezeFrame();
 
 	void swapCamViews();
 public:
 	static bool show_camera;// = false;
-	bool initCamera(cv::Mat mat_data);
+	bool initCamera(std::vector<cv::Mat>& mat_data);
 	void initCamera();// For internal purposes
 };
