@@ -42,7 +42,6 @@ std::string serealizeFrame(cv::Mat new_frame, std::vector<unsigned char> compres
 struct sockaddr_in sendFrameOverhead(int rows, int cols, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
     socklen_t clientaddrLength, serveraddrLength;
 
-
     bool activity = false;
     while(activity == false)
         status = recvfrom(sockfd, &activity, sizeof(bool), 0, (struct sockaddr*)&clientaddr, &clientaddrLength);
