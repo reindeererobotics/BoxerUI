@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <future>
+#include <thread>
 
 //#include "BoxerUI_Sockets.h"
 
@@ -17,6 +19,12 @@ private:
 	BoxerUI_View boxerView;
 	BoxerUI_Model boxerModel;
 	CameraStream camera_stream;
+	 cv::VideoCapture vid= cv::VideoCapture(1+cv::CAP_DSHOW);
+	 cv::Mat temp;
+	//std::vector<std::future<void>> cam_futures;
+	//std::future< std::vector<cv::Mat>> cam_futures;
+	std::future<cv::Mat> cam_futures;
+	// cv::VideoCapture vid = cv::VideoCapture(1);
 
 	//MODEL
 	double getModelBattery();

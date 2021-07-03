@@ -5,7 +5,7 @@
 #include "Inputs_Model.h"
 //#include "BoxerUI_Controller.h"
 
-#define _BOXERUI_TEST
+//#define _BOXERUI_TEST
 
 class BoxerUI_View
 {

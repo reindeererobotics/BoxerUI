@@ -31,7 +31,7 @@ void BoxerUI_Model::inputHandler()
 	input.inputHandler();
 }
 
-void *BoxerUI_Model::cameraPayloadRecv(void *args)
+void* BoxerUI_Model::cameraPayloadRecv(void* args)
 { //TODO Receive frames from socket here and create a buffer for it
 
 	cv::Mat iptr;
@@ -49,18 +49,19 @@ void *BoxerUI_Model::cameraPayloadRecv(void *args)
 			vid.retrieve(iptr);
 		}
 		vid.~VideoCapture();
-		*(cv::Mat *)args = iptr;
+		*(cv::Mat*)args = iptr;
 	}
 
 	//pthread_exit(NULL);
 	return args;
 }
 
-std::vector<cv::Mat> BoxerUI_Model::cameraStreamProc(bool *is_camera_on)
+std::vector<cv::Mat> BoxerUI_Model::cameraStreamProc(bool* is_camera_on)
 { //Collect frames from network here and add send to controller to add onto frame buffers in CameraStream::streamCamera()
+	std::vector<cv::Mat> payload = std::vector<cv::Mat>(5);
 
 #ifdef _WIN32
-	HANDLE hThread;
+	/*HANDLE hThread;
 	DWORD ThreadID;
 
 	hThread = CreateThread(NULL, 0, camProcThread, NULL, 0, &ThreadID);
@@ -70,16 +71,16 @@ std::vector<cv::Mat> BoxerUI_Model::cameraStreamProc(bool *is_camera_on)
 	}
 
 	std::cout << "Thread Creation Successful" << std::endl;
-	std::cout << "Thread ID: " << ThreadID << std::endl;
+	std::cout << "Thread ID: " << ThreadID << std::endl;*/
 #else
-	std::vector<cv::Mat> payload;
+
 
 	cv::Mat args;
-	void *return_val;
+	void* return_val;
 	pthread_t thread_id;
 
 	pthread_attr_t attr;
-	void *status;
+	void* status;
 
 	//Initialize and set thread joinable
 	pthread_attr_init(&attr);
@@ -89,8 +90,8 @@ std::vector<cv::Mat> BoxerUI_Model::cameraStreamProc(bool *is_camera_on)
 #endif // _WIN32
 
 #ifdef _WIN32
-	BoxerUI_Model::cameraPayloadRecv(); //do some work in windows thread and close the thread
-	CloseHandle(hThread);
+	//BoxerUI_Model::cameraPayloadRecv(); //do some work in windows thread and close the thread
+	//CloseHandle(hThread);
 #else
 	pthread_attr_destroy(&attr);
 	pthread_join(thread_id, &return_val);
@@ -98,10 +99,29 @@ std::vector<cv::Mat> BoxerUI_Model::cameraStreamProc(bool *is_camera_on)
 
 	// payload=*(cv::Mat*)return_val;
 
+
+
+	static bool cap = false;
+	cv::VideoCapture vid;
+	if (is_camera_on)
+	{
+		vid = cv::VideoCapture(1);
+		cap = true;
+	if (vid.isOpened())
+	{
+		//for (int i = 0; i < 5; i++)
+		{
+			std::cout << "Camera Opened" << std::endl;
+			vid.retrieve(payload[0]);
+		}
+		vid.~VideoCapture();
+		//*(cv::Mat *)args = iptr;
+	}
+	}
 	return payload;
 }
 
-void BoxerUI_Model::print(const char *text)
+void BoxerUI_Model::print(const char* text)
 {
 	std::cout << text << std::endl;
 }

@@ -33,7 +33,8 @@ private:
 
 bool freeze_frame = false, enhance = false;
 	std::vector<cv::VideoCapture> cameras=std::vector<cv::VideoCapture>(NUM_CAMERAS);
-	std::vector<cv::Mat> frames=std::vector<cv::Mat>(NUM_CAMERAS + 1); //Last frame in array is dedicated to store freeze frame
+	//std::vector<cv::Mat> frames=std::vector<cv::Mat>(NUM_CAMERAS + 1); //Last frame in array is dedicated to store freeze frame
+	cv::Mat frames;// = std::vector<cv::Mat>(NUM_CAMERAS + 1); //Last frame in array is dedicated to store freeze frame
 
 	void dispFrame(cv::Mat *frame);
 
@@ -53,6 +54,7 @@ bool freeze_frame = false, enhance = false;
 	void swapCamViews();
 public:
 	static bool show_camera;// = false;
-	bool initCamera(std::vector<cv::Mat>& mat_data);
+	//bool initCamera(std::vector<cv::Mat>& mat_data);
+	bool initCamera(cv::Mat& mat_data);
 	void initCamera();// For internal purposes
 };
