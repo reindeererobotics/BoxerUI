@@ -19,7 +19,7 @@ char* nextToken(char* arry, int size, char token) {
         if(arry[i] == token) {
             std::cout<<"Next Token: "<<&arry[i+1]<<"\n";
             return &arry[i + 1];
-    }
+        }
         i+=1;
     }
     perror("Accessing out specified size");
@@ -48,53 +48,35 @@ int search_table(char* name) {
 //
 
 int main() {
-//   char device_name[30] = "\0Ricky Bobby\00.0.0.0\08000";
-//   char other_name[30] = "\0Magic Man\00.0.0.0:8000";
-//   char other_part_name[10] = "Magic Man";
-//
-//   int j = 0;
-//   while(j < 15) {
-//       if(j > 7) {
-//           lookup_table.insert(lookup_table.begin() + j, other_name);
-//           std::cout<<"Populating table\n";
-//           j += 1;
-//       } else{
-//           lookup_table.insert(lookup_table.begin() + j, device_name);
-//           std::cout<<"Populating table\n";
-//           j += 1;
-//       }
-//   }
-//
-//   int g = 0;
-//   while(g < lookup_table.size()) {
-//       printf("Table Index: %d Table Name: %s\n", g, lookup_table[g] + 1);
-//       g+=1;
-//   }
-//
-//   std::cout<<"printing name\n";
-//   int index = search_table(other_part_name);
-//   if(index == -1) {
-//       std::cout<<"Not in lookup table";
-//       exit(1);
-//   }
-//
-//   g = 0;
-//   while(g < lookup_table.size()) {
-//       printf("Table Index: %d Table Name: %s\n", g, lookup_table[g] + 1);
-//       g+=1;
-//   }
-//
-//   printf("Index in table: %d\n", index);
-//   printf("Name searching for: %s Name found: %s\n", other_name + 1, lookup_table[index] + 1);
-//
-    char arry[30] = "\0Aaron\0 192.168.2.3\08003";
-    char arry2[30] = "\0John\0 123.543.5.1\08920";
-    char arry3[30] = "\0Mike\0 345.654.3.6\08769";
+    char arry[30] = "\0 Aaron\0 192.168.2.3\0 8003";
+    char arry2[30] = "\0 John\0 1.0.0.0\0 8920";
+    char arry3[30] = "\0 Mike\0 124.154.3.6\0 8769";
 
     struct Node node;
     node.addToTable(arry);
     node.addToTable(arry2);
     node.addToTable(arry3);
 
-    node.outputTable();
+    char sample_name[20] = "Mike";
+    int index = node.search_table(sample_name);
+
+    printf("\n\nSearch result for Mike: \n");
+    printf("Name: %s\n", node.tableName(index));
+    printf("Ip: %s\n", node.tableIp(index));
+    printf("Port: %s\n\n", node.tablePort(index));
+
+    //node.outputTable();
+
+    unsigned char name[16] = "Aaron";
+    char ip[30] = "192.168.2.3";
+    int port = 8005;
+
+    node.name = name;
+    node.setPersonnelAddress(port, ip);
+    node.sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    //node.outputName();
+
+    node.outputAddress(node.tableToAddress(1));
+
 }

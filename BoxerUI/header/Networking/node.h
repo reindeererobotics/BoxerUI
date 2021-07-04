@@ -14,13 +14,18 @@ struct Node {
     //int node_port = 0;
 
     socklen_t sock_length;
-    const int sockfd = NULL;
+    int sockfd = NULL;
     sockaddr_in device_address;
-    //sockaddr_in  server_address;
+    sockaddr_in  personnel_address;
     //const int global_port = 0;
     unsigned char* name;
-    //const unsigned char personnal_address[20] = {"0.0.0.0:8001"};
 
+    void setPersonnelAddress(int port, const char* ip) {
+        personnel_address.sin_family = AF_INET;
+        personnel_address.sin_port = htons(port);
+        personnel_address.sin_addr.s_addr = inet_addr(ip);
+        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    }
 
     char* nextToken(char* arry, int size, char token, int tokens) {
         int i = 0;
@@ -29,7 +34,7 @@ struct Node {
             if(arry[i] == token) {
                 j+=1;
                 if(j == tokens) {
-                    return &arry[i + 1];
+                    return &arry[i + 2];
                 }
             }
             i+=1;
@@ -54,18 +59,6 @@ struct Node {
     //converts a name from a lookup table to a address from its ip and 
     //port
 
-    void outputTable() {
-        int size = lookup_table.size();
-        int counter = 0;
-        while(counter < size) {
-            std::cout<<"Device: "<<counter<<'\n';
-            std::cout<<"Name: "<<nextToken(lookup_table[counter], 30, '\0', 1)<<'\n';
-            std::cout<<"Ip: "<<nextToken(lookup_table[counter], 30, '\0', 2)<<'\n';
-            std::cout<<"Port: "<<nextToken(lookup_table[counter], 30, '\0', 3)<<"\n\n\n";
-            counter += 1;
-        }
-
-    }
 
     void addToTable(char* name_to_add) {
         lookup_table.push_back(name_to_add);
@@ -86,7 +79,27 @@ struct Node {
         return (-1);
     }
 
-    void tableToAddress(std::string name){
+    char* tableName(int index) {
+        return nextToken(lookup_table[index], 30, '\0', 1);
+    }
+
+    char* tableIp(int index) {
+        return nextToken(lookup_table[index], 30, '\0', 2);
+    }
+
+    char* tablePort(int index) {
+        return nextToken(lookup_table[index], 30, '\0', 3);
+    }
+
+    sockaddr_in tableToAddress(int index){
+        std::string port_str(nextToken(lookup_table[index], 30, '\0', 3), nextToken(lookup_table[index], 30, '\0', 3) + 5);
+
+        sockaddr_in Address;
+        Address.sin_family = AF_INET;
+        Address.sin_port = htons(std::stoi(port_str));
+        Address.sin_addr.s_addr = inet_addr(nextToken(lookup_table[index], 30, '\0', 2));
+
+        return Address;
     }
 
     //connects to a specific device which is one of the options in 
@@ -102,6 +115,27 @@ struct Node {
     void listen() {
     }
 
+    //internal use only
+    //
+    //
+    void outputTable() {
+        int size = lookup_table.size();
+        int counter = 0;
+        while(counter < size) {
+            std::cout<<"Device: "<<counter<<'\n';
+            std::cout<<"Name: "<<nextToken(lookup_table[counter], 30, '\0', 1)<<'\n';
+            std::cout<<"Ip: "<<nextToken(lookup_table[counter], 30, '\0', 2)<<'\n';
+            std::cout<<"Port: "<<nextToken(lookup_table[counter], 30, '\0', 3)<<"\n\n\n";
+            counter += 1;
+        }
+    }
+
+    void outputName() {
+        std::cout<<"Personnel Name: "<<name<<'\n';
+    }
+    void outputAddress(sockaddr_in addr) {
+        printf("Address> Port: %d Ip: %s\n", ntohs(addr.sin_port), inet_ntoa(addr.sin_addr));
+    }
 
 };
 
