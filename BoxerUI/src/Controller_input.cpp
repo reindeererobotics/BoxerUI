@@ -18,7 +18,7 @@ int main(void)
         return -1;
     }
     
-    // Create a windowed mode window and its OpenGL context
+    // Create a windowed mode window and its OpenGL context.
     
     window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Controller Input", NULL, NULL);
 
@@ -52,11 +52,11 @@ int main(void)
             cout << endl;
             cout << endl;
             cout << endl;
-            cout <<endl;
-            cout <<endl;
-            cout <<endl;
-            cout <<endl;
-            cout <<endl;
+            cout << endl;
+            cout << endl;
+            cout << endl;
+            cout << endl;
+            cout << endl;
             
             
             cout << "Left Stick X Axis: " << axes[0] << endl; // range -1-1
