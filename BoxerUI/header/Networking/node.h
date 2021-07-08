@@ -48,10 +48,15 @@ struct Node {
 
     sockaddr_in tableToAddress(int index);
 
-    void connectTo();
+    void connectTo(int index, int instruction);
 
     void listen();
 
+    void streamCamera(struct soackaddr_in device) {
+    }
+
+    //Internal Testing
+    //
     void outputTable();
 
     void outputName();

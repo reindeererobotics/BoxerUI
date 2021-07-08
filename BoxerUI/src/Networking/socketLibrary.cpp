@@ -11,7 +11,7 @@
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
 
-#include "frame_computation.h"
+#include "frame_computation.cpp"
 
 #include <opencv2/highgui/highgui.hpp>
 
