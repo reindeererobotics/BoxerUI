@@ -52,7 +52,7 @@ struct Node {
 
     void listen();
 
-    void streamCamera(int fd, socklen_t sock_l, struct sockaddr_in device);
+    static void streamCamera(int fd, socklen_t sock_l, struct sockaddr_in device);
 
     //Internal Testing
     //

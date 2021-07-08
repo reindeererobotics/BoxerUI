@@ -114,7 +114,7 @@ void Node::connectTo(int index, int instruction) {
     //Internal testing
     //
     if(instruction == 5) {
-        std::thread threadObj(streamCamera, sockfd, sock_length, device);
+        std::thread threadObj((streamCamera()), sockfd, sock_length, device);
 
         while(true) {
             printf("Main thread wiating\n");
