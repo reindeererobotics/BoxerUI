@@ -1,33 +1,31 @@
-#include <vector>
-#include <string>
+/**
+ *  @file   node.cpp
+ *  @brief  Backend Comunication Interface
+ *  @author Aaron Rohrer
+ *  @date   2021-07-1 
+ ***********************************************/
+
+#include "../../header/Networking/node.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-struct Node {
-    bool life = false;
-    std::vector<char*> lookup_table; // name:0.0.0.0:8001
-    //bool listening = false;
-    //int node_count = 0;
-    //int node_port = 0;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstring>
 
-    socklen_t sock_length;
-    int sockfd = NULL;
-    sockaddr_in device_address;
-    sockaddr_in  personnel_address;
-    //const int global_port = 0;
-    unsigned char* name;
 
-    void setPersonnelAddress(int port, const char* ip) {
+    void Node::setPersonnelAddress(int port, const char* ip, int transport) {
         personnel_address.sin_family = AF_INET;
         personnel_address.sin_port = htons(port);
         personnel_address.sin_addr.s_addr = inet_addr(ip);
-        sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+        sockfd = transport;
     }
 
-    char* nextToken(char* arry, int size, char token, int tokens) {
+    char* Node::nextToken(char* arry, int size, char token, int tokens) {
         int i = 0;
         int j = 0;
         while(i < size) {
@@ -43,7 +41,7 @@ struct Node {
         exit(0);
     }
 
-    void deviceAphiliate() {
+    void Node::deviceAphiliate() {
         int verifaction = 77;
         unsigned char initial_message[17]; // @(byte) + name(16 byte)        const unsigned char verifaction = 77;
 
@@ -60,11 +58,11 @@ struct Node {
     //port
 
 
-    void addToTable(char* name_to_add) {
+    void Node::addToTable(char* name_to_add) {
         lookup_table.push_back(name_to_add);
     }
 
-    int search_table(char* name) {
+    int Node::search_table(char* name) {
 
         int i = 0;
         while(i < lookup_table.size()) {
@@ -79,19 +77,19 @@ struct Node {
         return (-1);
     }
 
-    char* tableName(int index) {
+    char* Node::tableName(int index) {
         return nextToken(lookup_table[index], 30, '\0', 1);
     }
 
-    char* tableIp(int index) {
+    char* Node::tableIp(int index) {
         return nextToken(lookup_table[index], 30, '\0', 2);
     }
 
-    char* tablePort(int index) {
+    char* Node::tablePort(int index) {
         return nextToken(lookup_table[index], 30, '\0', 3);
     }
 
-    sockaddr_in tableToAddress(int index){
+    sockaddr_in Node::tableToAddress(int index){
         std::string port_str(nextToken(lookup_table[index], 30, '\0', 3), nextToken(lookup_table[index], 30, '\0', 3) + 5);
 
         sockaddr_in Address;
@@ -106,19 +104,19 @@ struct Node {
     //the lookupTable, can not manually enter only what is in lookup 
     //table
     //trade names
-    void connectTo() {
+    void Node::connectTo() {
 
     }
 
     //listen for a device to ask to connect
     ////trade names
-    void listen() {
+    void Node::listen() {
     }
 
     //internal use only
     //
     //
-    void outputTable() {
+    void Node::outputTable() {
         int size = lookup_table.size();
         int counter = 0;
         while(counter < size) {
@@ -130,13 +128,10 @@ struct Node {
         }
     }
 
-    void outputName() {
+    void Node::outputName() {
         std::cout<<"Personnel Name: "<<name<<'\n';
     }
-    void outputAddress(sockaddr_in addr) {
+    void Node::outputAddress(sockaddr_in addr) {
         printf("Address> Port: %d Ip: %s\n", ntohs(addr.sin_port), inet_ntoa(addr.sin_addr));
     }
-
-};
-
 
