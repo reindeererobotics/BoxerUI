@@ -114,7 +114,7 @@ void Node::connectTo(int index, int instruction) {
     //Internal testing
     //
     if(instruction == 5) {
-        std::thread threadObj(streamCamera, device);
+        std::thread threadObj(streamCamera, sockfd, sock_length, device);
 
         while(true) {
             printf("Main thread wiating\n");
@@ -138,11 +138,11 @@ void Node::listen() {
     }
 }
 
-void Node::streamCamera(struct sockaddr_in device) {
+void Node::streamCamera(int fd, socklen_t sock_l, struct sockaddr_in device) {
     int instruction;
 
     while(true) {
-        recvfrom(sockfd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, &sock_length);
+        recvfrom(fd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, &sock_l);
         printf("Instruction back: %d\n", instruction);
     }
 }

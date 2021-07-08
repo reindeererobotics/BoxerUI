@@ -24,11 +24,11 @@ struct Node {
     const unsigned char* name;
 
     /** @brief Mutates the |personnel_address| member to use as the 
-     nodes address which other nodes will use to comunicate with it.
-     @param |int port| is the internal port the node will use to listen on, 
-     |const char* ip| is the internal IP the node will lsiten on.
-     @return This function returns no value, only mutates the 
-     |personnel_address| member.
+      nodes address which other nodes will use to comunicate with it.
+      @param |int port| is the internal port the node will use to listen on, 
+      |const char* ip| is the internal IP the node will lsiten on.
+      @return This function returns no value, only mutates the 
+      |personnel_address| member.
      **/
     void setPersonnelAddress(int port, const char* ip, int transport);
 
@@ -52,8 +52,7 @@ struct Node {
 
     void listen();
 
-    void streamCamera(struct soackaddr_in device) {
-    }
+    void streamCamera(int fd, socklen_t sock_l, struct sockaddr_in device);
 
     //Internal Testing
     //
