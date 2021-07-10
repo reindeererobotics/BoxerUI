@@ -21,8 +21,7 @@ int main() {
     int port = 8001;
     int transport = socket(AF_INET, SOCK_DGRAM, 0);
 
-    node.name = name;
-    node.setPersonnelAddress(port, ip, transport);
+    node.setPersonnelAddress(name, port, ip, transport);
 
     node.listen();
 
