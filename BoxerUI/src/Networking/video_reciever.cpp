@@ -1,6 +1,6 @@
 #include <opencv2/highgui/highgui.hpp>
 
-#include "socketLibrary.h"
+#include "socketLibrary.cpp"
 
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/xml.hpp>

@@ -11,7 +11,7 @@
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
 
-#include "frame_computation.h"
+#include "frame_computation.cpp"
 
 #include <opencv2/highgui/highgui.hpp>
 
@@ -41,7 +41,6 @@ std::string serealizeFrame(cv::Mat new_frame, std::vector<unsigned char> compres
 //i32 i32 -> u1
 struct sockaddr_in sendFrameOverhead(int rows, int cols, struct sockaddr_in serveraddr, struct sockaddr_in clientaddr, int sockfd) {
     socklen_t clientaddrLength, serveraddrLength;
-
 
     bool activity = false;
     while(activity == false)

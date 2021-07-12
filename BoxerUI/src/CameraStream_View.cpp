@@ -1,5 +1,9 @@
 #include "CameraStream_View.h"
 
+bool CameraStream::freeze_frame = false;
+bool CameraStream::enhance = false;
+CameraMap CameraStream::payload_frames = {};
+
 void CameraStream::dispFrame(cv::Mat* frame)
 {
 	//creates a buffer of 5 frames before binding cv::Mat type to GLTexture
@@ -104,7 +108,7 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat& disp_frame) //, GLuint* image_te
 	}
 }
 
-void CameraStream::streamCamera(int* camera)
+bool CameraStream::streamCamera(int* camera)//, bool& freeze_frame)
 { //cv::VideoCapture* cap,cv::Mat* frame) {//stream the data and bind to unique Mat objects
 
 	if (ImGui::Button("Freeze Frame"))
@@ -114,7 +118,7 @@ void CameraStream::streamCamera(int* camera)
 		//TODO: clone the main context frame to freeze frame then display
 		//cameras[*camera].retrieve(frames[FREEZE_FRAME_IMG]);
 	}
-	
+
 	{ //Main "viewport"/context stream
 		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
 		freeze_frame ? freezeFrame() : setCamContext(*camera);
@@ -122,21 +126,22 @@ void CameraStream::streamCamera(int* camera)
 		ImGui::SameLine();
 	}
 
-	//{ //Queue of streams on side child window
-	//	ImGui::BeginChild("childCams", ImVec2(0.0f, 0.0f), true);
-	//	for (int i = 0; i < NUM_CAMERAS; i++)
-	//	{
-	//		if ((*camera) == i)
-	//		{ //i.e. if the current index camera is in context, skip it in iteration and set its context to secondary in the side queue
-	//			continue;
-	//		}
-	//		else
-	//		{
-	//			setCamContext(i);
-	//		} //TODO set the cameras prop so current context stream is appropriatly sized
-	//	}
-	//	ImGui::EndChild();
-	//}
+	{ //Queue of streams on side child window
+		ImGui::BeginChild("childCams", ImVec2(0.0f, 0.0f), true);
+		for (int i = 0; i < NUM_CAMERAS; i++)
+		{
+			if ((*camera) == i)
+			{ //i.e. if the current index camera is in context, skip it in iteration and set its context to secondary in the side queue
+				continue;
+			}
+			else
+			{
+				setCamContext(i);
+			} //TODO set the cameras prop so current context stream is appropriatly sized
+		}
+		ImGui::EndChild();
+	}
+	return true;
 }
 
 void CameraStream::freezeFrame()
@@ -144,7 +149,7 @@ void CameraStream::freezeFrame()
 	std::cout << "Freeze frame: " << freeze_frame << std::endl;
 	//cv::Mat freeze_frame_img;
 	//freeze_frame_img=frame.clone();
-	BindCVMat2GLTexture(frames);// .at(FREEZE_FRAME_IMG)); // , & frame_texture);
+	//BindCVMat2GLTexture(frames);// .at(FREEZE_FRAME_IMG)); // , & frame_texture);
 	static int zoom_vert, zoom_hor = 0, zoom = 3;
 	if (ImGui::Button("Enhance"))
 	{
@@ -167,9 +172,9 @@ void CameraStream::freezeFrame()
 
 void CameraStream::swapCamViews()
 { //TODO: Resume later. This is to allow the dragging and dropping of cam views on the UI to swap them out
-	std::vector<cv::VideoCapture>::iterator camera = cameras.begin();
+	std::vector<cv::VideoCapture>::iterator camera = vid_captures.begin();
 	int n = 0;
-	for (; camera != cameras.end(); ++camera)
+	for (; camera != vid_captures.end(); ++camera)
 	{
 		ImGui::PushID(n);
 		if (n != 0)
@@ -200,9 +205,9 @@ void CameraStream::swapCamViews()
 				int payload_n = *(const int*)payload->Data;
 
 				//Swap the camera streams
-				const cv::VideoCapture tmp = cameras[n];
-				cameras[n] = cameras[payload_n];
-				cameras[payload_n] = tmp;
+				const cv::VideoCapture tmp = vid_captures[n];
+				vid_captures[n] = vid_captures[payload_n];
+				vid_captures[payload_n] = tmp;
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -211,9 +216,24 @@ void CameraStream::swapCamViews()
 	}
 }
 
-bool CameraStream::initCamera(cv::Mat& mat_data)//std::vector<cv::Mat>& mat_data)
+bool CameraStream::initCamera(bool* x)//CameraMap* cam_map)
 {
-	//, cam_stream_process = true;
+	//std::vector<cv::Mat>payload_frame = std::vector<cv::Mat>(5);
+	//std::vector<cv::Mat>payload_frame_recv = std::vector<cv::Mat>(5);
+	//cv::Mat payload_frame_recv;// = std::vector<cv::Mat>(5);
+   //payload_frame.reserve(5);
+	 bool fx = true;
+	//if (x)
+	//{
+	//	//vid = ;
+	//	x = false;
+	//	vid.set(cv::CAP_PROP_FPS, 30.0);
+	//	//vid.set(cv::CAP_PROP_EXPOSURE, 0.1);
+	//	std::cout << vid.get(cv::CAP_PROP_FPS) << std::endl;
+	//	//cv::CAP_PROP_POS_FRAMES: gets a particular frame #. e.g. setting this prop to 5 will get the 5th frame to be saved to a cv::Mat
+
+	//}
+
 	static int item_current = 0;
 
 	{
@@ -244,10 +264,18 @@ bool CameraStream::initCamera(cv::Mat& mat_data)//std::vector<cv::Mat>& mat_data
 				{
 					//TODO Create thread here to process streaming content to window
 					{
-						//frames.assign(mat_data.begin(), mat_data.end());
-
-						mat_data.copyTo(frames);// = mat_data;
-						streamCamera(&item_current);
+						//payload_frames.swap(mat_data.begin(), mat_data.end());
+						//payload_frames.swap(*cam_map);
+						//mat_data.copyTo(frames);// = mat_data;
+						//cam_futures = std::async(std::launch::async, streamCamera, std::move(vid), std::ref(temp));// , std::move(payload_future));
+						//payload_frame_recv = cam_futures.get();
+						if (*x)
+						{
+							//streamCamera(&item_current);
+							//stream = std::async(std::launch::async, streamCamera, std::ref(item_current), std::ref(freeze_frame));
+							//fx=stream.get();//can't call .get() multiple times in runtime
+									//return false;
+						}
 					}
 				}
 			}
@@ -294,12 +322,7 @@ void CameraStream::setCameraPropTest(int* camera, cv::VideoCapture* capture, flo
 	}
 }
 
-/** @brief This method establishes the properties of each individual camera based on its initialization from initCamera() method
 
-@param camera we are receiving stream from (indicated as an integer value),
-which video capture object we are accessing, and the applications width and height
-@return No values are returned. This is mearly a test and can be useful later.
-**/
 void CameraStream::initCamera()
 {
 	//static bool show_camera = false;//, cam_stream_process = true;
@@ -406,9 +429,13 @@ void CameraStream::destroyCamera(int* index)
 void CameraStream::setCamContext(int context = 0)
 {
 
-	//for (cv::Mat& i : frames) //TODO frames shoould hold reference to other frames_buffers
+	for (std::vector<cv::Mat> frames : payload_frames.at(context)) //TODO frames shoould hold reference to other frames_buffers
 	{
-		CameraStream::BindCVMat2GLTexture(frames);
+		for (size_t i = 0; i < frames.size(); i++)
+		{
+
+			CameraStream::BindCVMat2GLTexture(frames[i]);
+		}
 	}
 }
 

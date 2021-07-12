@@ -9,7 +9,7 @@ DWORD WINAPI camProcThread(LPVOID lpParam)
 	return 0;
 }
 #endif // _WIN32
-
+bool BoxerUI_Model::has_frames = false;
 double BoxerUI_Model::getTemperature()
 {
 	return BoxerUI_Model::temperature;
@@ -56,69 +56,64 @@ void* BoxerUI_Model::cameraPayloadRecv(void* args)
 	return args;
 }
 
-std::vector<cv::Mat> BoxerUI_Model::cameraStreamProc(bool* is_camera_on)
+CameraMap BoxerUI_Model::cameraStreamProc(CameraMap& cam_map, std::vector<cv::VideoCapture>& vid, bool& is_camera_on)
 { //Collect frames from network here and add send to controller to add onto frame buffers in CameraStream::streamCamera()
-	std::vector<cv::Mat> payload = std::vector<cv::Mat>(5);
 
-#ifdef _WIN32
-	/*HANDLE hThread;
-	DWORD ThreadID;
-
-	hThread = CreateThread(NULL, 0, camProcThread, NULL, 0, &ThreadID);
-	if (hThread == NULL)
-	{
-		std::cout << "Thread Creation Failed. Error No.: " << GetLastError() << std::endl;
-	}
-
-	std::cout << "Thread Creation Successful" << std::endl;
-	std::cout << "Thread ID: " << ThreadID << std::endl;*/
-#else
-
-
-	cv::Mat args;
-	void* return_val;
-	pthread_t thread_id;
-
-	pthread_attr_t attr;
-	void* status;
-
-	//Initialize and set thread joinable
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-	pthread_create(&thread_id, &attr, cameraPayloadRecv, &args);
-#endif // _WIN32
-
-#ifdef _WIN32
-	//BoxerUI_Model::cameraPayloadRecv(); //do some work in windows thread and close the thread
-	//CloseHandle(hThread);
-#else
-	pthread_attr_destroy(&attr);
-	pthread_join(thread_id, &return_val);
-#endif // _WIN32
-
-	// payload=*(cv::Mat*)return_val;
-
-
-
-	static bool cap = false;
-	cv::VideoCapture vid;
 	if (is_camera_on)
-	{
-		vid = cv::VideoCapture(1);
-		cap = true;
-	if (vid.isOpened())
-	{
-		//for (int i = 0; i < 5; i++)
-		{
-			std::cout << "Camera Opened" << std::endl;
-			vid.retrieve(payload[0]);
+	{//If camera is open populate the payload_frames vector
+
+		//std::vector<cv::Mat>::iterator it = payload_frames.begin();
+			//for (; it != payload_frames.end(); ++it) {
+			//	// do your things
+			//	
+			//}
+
+		int i = 0, j = 0;
+		cv::Mat temp;
+		
+		CameraMap::iterator itr = cam_map.begin();
+
+		for (; itr != cam_map.end(); ++itr) {
+			if (vid[i].isOpened())
+			{
+				for (; j < 5; j++)
+				{
+					std::cout << "Camera Opened" << std::endl;
+					//std::vector<cv::Mat>::iterator frames_itr = frame.begin();
+
+					//for (size_t j = 0; j < 5; i++)
+					{
+						vid[i].retrieve(itr->second[j]);
+						//= temp;
+
+					   //frame.push_back(temp);
+					}
+					//j++;
+					//(vid).retrieve(temp);
+					//load[i]=(temp);
+				}
+				i++;
+				j = 0;
+				std::cout << "Stream Popl" << std::endl;
+			}
+			i = 0;
 		}
-		vid.~VideoCapture();
-		//*(cv::Mat *)args = iptr;
+		has_frames = true;
 	}
+	else {
+		try
+		{
+			for (cv::VideoCapture& var : vid)
+			{
+				var.~VideoCapture();
+			}
+		}
+		catch (const std::exception&)
+		{
+			std::cerr << "Cannot Destroy Camera" << std::endl;
+		}
 	}
-	return payload;
+	return cam_map;
 }
 
 void BoxerUI_Model::print(const char* text)

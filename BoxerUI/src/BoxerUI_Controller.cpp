@@ -107,46 +107,48 @@ cv::Mat procCam(cv::VideoCapture vid, cv::Mat& temp) {//, std::vector<cv::Mat> p
 
 void BoxerUI_Controller::cameraView()
 {
-	std::vector<cv::Mat>payload_frame = std::vector<cv::Mat>(5);
+	//std::vector<std::vector<cv::Mat>>payload_frames = std::vector<std::vector<cv::Mat>>(5);
 	//std::vector<cv::Mat>payload_frame_recv = std::vector<cv::Mat>(5);
-	cv::Mat payload_frame_recv;// = std::vector<cv::Mat>(5);
+	//cv::Mat payload_frame_recv;// = std::vector<cv::Mat>(5);
    //payload_frame.reserve(5);
 	static bool x = true;
 
-
-
 	if (x)
 	{
-		//vid = ;
 		x = false;
-vid.set(cv::CAP_PROP_FPS, 30.0);
-//vid.set(cv::CAP_PROP_EXPOSURE, 0.1);
-std::cout << vid.get(cv::CAP_PROP_FPS) << std::endl;
-		//cv::CAP_PROP_POS_FRAMES: gets a particular frame #. e.g. setting this prop to 5 will get the 5th frame to be saved to a cv::Mat
+		//camera_stream.payload_frames[1];
 
+		static int i = 0;
+		for (cv::VideoCapture& var : camera_stream.vid_captures)
+		{
+			var = cv::VideoCapture((i == 0 ? 1 : 0) + cv::CAP_DSHOW);
+			i++;
+			//vid.set(cv::CAP_PROP_FPS, 30.0);
+		//vid.set(cv::CAP_PROP_EXPOSURE, 0.1);
+		//std::cout << vid.get(cv::CAP_PROP_FPS) << std::endl;
+		//cv::CAP_PROP_POS_FRAMES: gets a particular frame #. e.g. setting this prop to 5 will get the 5th frame to be saved to a cv::Mat
+		}
+		std::vector<cv::Mat> temp = std::vector<cv::Mat>(5);
+		for (int j = 0; j < 5; j++)
+		{
+			camera_stream.payload_frames[j] = temp;
+		}
 	}
 	if (camera_stream.show_camera)
 	{
-		//x = true;
-		
-
 		//std::promise< std::vector<cv::Mat>> payload_promise;
 		//std::future< std::vector<cv::Mat>> payload_future = payload_promise.get_future();
 
-		cam_futures = std::async(std::launch::async, procCam, std::move(vid), std::ref(temp));// , std::move(payload_future));
-		payload_frame_recv = cam_futures.get();
-		//std::cout << "Camera Opened" << std::endl;
+		camera_stream.cam_futures = std::async(std::launch::async, boxerModel.cameraStreamProc, std::ref(camera_stream.payload_frames), std::ref(camera_stream.vid_captures), std::ref(camera_stream.show_camera));// , std::move(payload_future));
+
 		//payload_promise.set_value(payload_frame);
-		//payload_frame_recv = cam_futures.get();
+		camera_stream.payload_frames= camera_stream.cam_futures.get();
 
-		//std::thread cam_thread(procCam, std::move(payload_frame) , std::move(vid));
-		//cam_thread.join();
 
-		//*(cv::Mat *)args = iptr;
 	}
 
-
-	camera_stream.initCamera(payload_frame_recv);
+	
+	camera_stream.initCamera(&boxerModel.has_frames);// &(boxerModel.camera_model));// camera_stream.payload_frames);
 
 	//payload_frame.~Mat();
 
