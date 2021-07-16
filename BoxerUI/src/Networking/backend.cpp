@@ -17,8 +17,6 @@ namespace Backend {
 
 std::vector<char*> lookup_table;
 int sockfd;
-sockaddr_in device_address;
-sockaddr_in  personnel_address;
 const unsigned char* name;
 
     char* nextToken(char* arry, int size, char token, int tokens) {
@@ -40,6 +38,7 @@ const unsigned char* name;
     sockaddr_in tableToAddress(int index){
         std::string port_str(nextToken(lookup_table[index], 30, '\0', 3), nextToken(lookup_table[index], 30, '\0', 3) + 5);
 
+        printf("Port set %d\n", std::stoi(port_str));
         sockaddr_in Address;
         Address.sin_family = AF_INET;
         Address.sin_port = htons(std::stoi(port_str));
