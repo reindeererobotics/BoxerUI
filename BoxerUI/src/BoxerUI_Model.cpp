@@ -9,7 +9,7 @@ DWORD WINAPI camProcThread(LPVOID lpParam)
 	return 0;
 }
 #endif // _WIN32
-bool BoxerUI_Model::has_frames = false;
+
 double BoxerUI_Model::getTemperature()
 {
 	return BoxerUI_Model::temperature;
@@ -56,63 +56,34 @@ void* BoxerUI_Model::cameraPayloadRecv(void* args)
 	return args;
 }
 
-CameraMap BoxerUI_Model::cameraStreamProc(CameraMap& cam_map, std::vector<cv::VideoCapture>& vid, bool& is_camera_on)
-{ //Collect frames from network here and add send to controller to add onto frame buffers in CameraStream::streamCamera()
+
+CameraMap BoxerUI_Model::cameraStreamProc(std::shared_future<CameraMap> f, std::vector<cv::VideoCapture>& vid, bool& is_camera_on)
+{ // Collect frames from network here and add send to controller to add onto frame buffers in CameraStream::streamCamera()
+	CameraMap cam_map = f.get();
 
 	if (is_camera_on)
 	{//If camera is open populate the payload_frames vector
+		auto start = std::chrono::high_resolution_clock::now();
 
-		//std::vector<cv::Mat>::iterator it = payload_frames.begin();
-			//for (; it != payload_frames.end(); ++it) {
-			//	// do your things
-			//	
-			//}
-
-		int i = 0, j = 0;
-		cv::Mat temp;
-		
-		CameraMap::iterator itr = cam_map.begin();
-
-		for (; itr != cam_map.end(); ++itr) {
-			if (vid[i].isOpened())
-			{
-				for (; j < 5; j++)
-				{
-					std::cout << "Camera Opened" << std::endl;
-					//std::vector<cv::Mat>::iterator frames_itr = frame.begin();
-
-					//for (size_t j = 0; j < 5; i++)
-					{
-						vid[i].retrieve(itr->second[j]);
-						//= temp;
-
-					   //frame.push_back(temp);
-					}
-					//j++;
-					//(vid).retrieve(temp);
-					//load[i]=(temp);
-				}
-				i++;
-				j = 0;
-				std::cout << "Stream Popl" << std::endl;
-			}
-			i = 0;
-		}
-		has_frames = true;
-	}
-	else {
-		try
+		for (int j = 0; j < 5; j++)
 		{
-			for (cv::VideoCapture& var : vid)
+			if ((vid)[j].isOpened())
 			{
-				var.~VideoCapture();
+				std::cout << "Camera Opened" << std::endl;
+
+				(vid)[j].retrieve(cam_map[j][0]);
 			}
+
 		}
-		catch (const std::exception&)
-		{
-			std::cerr << "Cannot Destroy Camera" << std::endl;
-		}
+
+		auto stop = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+		// To get the value of duration use the count()
+		// member function on the duration object
+		std::cout << "In model: " << duration.count() << std::endl;
 	}
+
 	return cam_map;
 }
 
