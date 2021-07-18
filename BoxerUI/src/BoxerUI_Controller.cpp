@@ -67,8 +67,6 @@ void BoxerUI_Controller::indexView()
 	boxerView.indexView();
 }
 
-// std::mutex cam_mutex;
-
 cv::Mat procCam(cv::VideoCapture vid, cv::Mat &temp)
 { //, std::vector<cv::Mat> payload) {
 
@@ -107,18 +105,37 @@ void BoxerUI_Controller::cameraView()
 {
 	static bool x = true;
 
+	std::promise<CameraMap> map_promise;
+	std::future<CameraMap> map_future = map_promise.get_future();
+	;
+	std::shared_future<CameraMap> shared_map_future = map_future.share();
+
 	if (x)
 	{
 		x = false;
-
 		serveraddr.sin_family = AF_INET;
 		serveraddr.sin_port = htons(8000);
 		serveraddr.sin_addr.s_addr = inet_addr("184.146.119.106");
 
-		struct FrameStructure Overhead = recvFrameOverhead(sockfd, serveraddr);
-		int rows = Overhead.rows;
-		int cols = Overhead.cols;
+	}
+
+	if (camera_stream.show_camera)
+	{
+		camera_stream.cam_futures = std::async(std::launch::async, boxerModel.cameraStreamProc, shared_map_future, std::ref(camera_stream.vid_captures), std::ref(camera_stream.show_camera));
+		map_promise.set_value(camera_stream.payload_frames);
+		camera_stream.payload_frames = camera_stream.cam_futures.get();
+	}
+
+	//auto start = std::chrono::high_resolution_clock::now();
+
+	struct FrameStructure Overhead = recvFrameOverhead(sockfd, serveraddr);
+	int rows = Overhead.rows;
+	int cols = Overhead.cols;
 	cv::Mat temp = recvFrame(sockfd, serveraddr);
-	cv::Mat* temp2=&temp;
-	camera_stream.initCamera(temp2); 
+	cv::Mat *temp2 = &temp;
+	camera_stream.initCamera(temp2);
+
+	//auto stop = std::chrono::high_resolution_clock::now();
+	//auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+	//std::cout << duration.count() << std::endl;
 }

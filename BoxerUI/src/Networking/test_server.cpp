@@ -13,12 +13,10 @@
 int main() {
     struct Node node;
 
-
-    //Seeting information for Node
-    //
-    unsigned char name[16] = "Aaron";
+    //Setting personnel information
+    unsigned char name[16] = "Robot";
     char ip[30] = "0.0.0.0";
-    int port = 8001;
+    int port = 8005;
     int transport = socket(AF_INET, SOCK_DGRAM, 0);
 
     node.setPersonnelAddress(name, port, ip, transport);

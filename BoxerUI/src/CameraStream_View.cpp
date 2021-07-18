@@ -19,24 +19,23 @@ void CameraStream::dispFrame(cv::Mat* frame)
 		cv::Mat disp_frame = cv::Mat(100, 100, CV_64FC1);
 
 		disp_frame = frames_buf[i];
-		BindCVMat2GLTexture(disp_frame); // , & my_frame_texture);
+		BindCVMat2GLTexture(&disp_frame); // , & my_frame_texture);
 
 		disp_frame.release();
 	}
 }
 
-void CameraStream::BindCVMat2GLTexture(cv::Mat& disp_frame) //, GLuint* image_texture)
+void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)
 {
 	ImGuiIO& io = ImGui::GetIO();
 	GLuint image_texture;
-	if ((disp_frame).empty())
+	if ((*disp_frame).empty())
 	{
 		std::cout << "image empty" << std::endl;
 	}
 	else
 	{
-		//cv::Mat x = cv::Mat(100, 100, CV_32FC2);
-		cv::cvtColor(disp_frame, disp_frame, cv::COLOR_BGR2RGBA);
+		cv::cvtColor(*disp_frame, *disp_frame, cv::COLOR_BGR2RGBA);
 
 		glGenTextures(1, &image_texture);
 		glBindTexture(GL_TEXTURE_2D, image_texture);
@@ -47,35 +46,35 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat& disp_frame) //, GLuint* image_te
 		// Set texture clamping method
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_READ_COLOR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_READ_COLOR);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.cols, image.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.ptr());
+
 		glTexImage2D(GL_TEXTURE_2D,		 // Type of texture
 			0,					 // Pyramid level (for mip-mapping) - 0 is the top level
-			GL_RGB,			 // colour format to convert to
-			(disp_frame).cols,	 // Image width
-			(disp_frame).rows,	 // Image height
+			GL_RGBA,			 // colour format to convert to
+			(*disp_frame).cols,	 // Image width
+			(*disp_frame).rows,	 // Image height
 			0,					 // Border width in pixels (can either be 1 or 0)
 			GL_RGBA,			 // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
 			GL_UNSIGNED_BYTE,	 // Image data type
-			(disp_frame).data); // The actual image data itself
+			(*disp_frame).data); // The actual image data itself
 		ImGui::Text("pointer = %p", image_texture);
-		ImGui::Text("size = %d x %d", (disp_frame).cols, (disp_frame).rows);
+		ImGui::Text("size = %d x %d", (*disp_frame).cols, (*disp_frame).rows);
 
-		ImTextureID my_tex_id = (void*)(intptr_t)image_texture;
+		ImTextureID my_tex_id = reinterpret_cast<void*>(static_cast<intptr_t>(image_texture));
 		float my_tex_w = (float)io.Fonts->TexWidth;
 		float my_tex_h = (float)io.Fonts->TexHeight;
 		{
-			ImGui::Text("%.0fx%.0f", (disp_frame).cols, (float)(disp_frame).rows);
+			ImGui::Text("%.0fx%.0f", (*disp_frame).cols, (float)(*disp_frame).rows);
 			ImVec2 pos = ImGui::GetCursorScreenPos();
 			ImVec2 uv_min = ImVec2(0.0f, 0.0f);																						   // Top-left
 			ImVec2 uv_max = ImVec2(1.0f, 1.0f);																						   // Lower-right
 			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);																		   // No tint
 			ImVec4 border_col = ImVec4(1.0f, 1.0f, 1.0f, 0.5f);																		   // 50% opaque white
-			ImGui::Image(my_tex_id, ImVec2((float)(disp_frame).cols, (float)(disp_frame).rows), uv_min, uv_max, tint_col, border_col); //reinterpret_cast<ImTextureID*>(my_frame_texture)
+			ImGui::Image(my_tex_id, ImVec2((float)(*disp_frame).cols, (float)(*disp_frame).rows), uv_min, uv_max, tint_col, border_col); //reinterpret_cast<ImTextureID*>(my_frame_texture)
 
-			//ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), uv_min, uv_max, tint_col, border_col);
 			if (ImGui::IsItemHovered())
-			{
+			{//Tooltip feature that will allow zooming in on mouse hover
 				ImGui::BeginTooltip();
 				float region_sz = 32.0f;
 				float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
@@ -85,22 +84,22 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat& disp_frame) //, GLuint* image_te
 				{
 					region_x = 0.0f;
 				}
-				else if (region_x > (disp_frame).cols - region_sz)
+				else if (region_x > (*disp_frame).cols - region_sz)
 				{
-					region_x = (disp_frame).cols - region_sz;
+					region_x = (*disp_frame).cols - region_sz;
 				}
 				if (region_y < 0.0f)
 				{
 					region_y = 0.0f;
 				}
-				else if (region_y > (float)(disp_frame).rows - region_sz)
+				else if (region_y > (float)(*disp_frame).rows - region_sz)
 				{
-					region_y = (float)(disp_frame).rows - region_sz;
+					region_y = (float)(*disp_frame).rows - region_sz;
 				}
 				ImGui::Text("Min: (%.2f, %.2f)", region_x, region_y);
 				ImGui::Text("Max: (%.2f, %.2f)", region_x + region_sz, region_y + region_sz);
-				ImVec2 uv0 = ImVec2((region_x) / (disp_frame).cols, (region_y) / (float)(disp_frame).rows);
-				ImVec2 uv1 = ImVec2((region_x + region_sz) / (disp_frame).cols, (region_y + region_sz) / (float)(disp_frame).rows);
+				ImVec2 uv0 = ImVec2((region_x) / (*disp_frame).cols, (region_y) / (float)(*disp_frame).rows);
+				ImVec2 uv1 = ImVec2((region_x + region_sz) / (*disp_frame).cols, (region_y + region_sz) / (float)(*disp_frame).rows);
 				ImGui::Image(my_tex_id, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1, tint_col, border_col);
 				ImGui::EndTooltip();
 			}
@@ -108,8 +107,8 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat& disp_frame) //, GLuint* image_te
 	}
 }
 
-bool CameraStream::streamCamera(int* camera)//, bool& freeze_frame)
-{ //cv::VideoCapture* cap,cv::Mat* frame) {//stream the data and bind to unique Mat objects
+bool CameraStream::streamCamera(int* camera)
+{
 
 	if (ImGui::Button("Freeze Frame"))
 	{ //if freeze frame is clicked. capture the current frame...
@@ -121,7 +120,7 @@ bool CameraStream::streamCamera(int* camera)//, bool& freeze_frame)
 
 	{ //Main "viewport"/context stream
 		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
-		freeze_frame ? freezeFrame() : setCamContext(*camera);
+		freeze_frame ? freezeFrame() : setCamContext();
 		ImGui::EndChild();
 		ImGui::SameLine();
 	}
@@ -149,7 +148,7 @@ void CameraStream::freezeFrame()
 	std::cout << "Freeze frame: " << freeze_frame << std::endl;
 	//cv::Mat freeze_frame_img;
 	//freeze_frame_img=frame.clone();
-	//BindCVMat2GLTexture(frames);// .at(FREEZE_FRAME_IMG)); // , & frame_texture);
+	//BindCVMat2GLTexture(frames);// .at(FREEZE_FRAME_IMG));
 	static int zoom_vert, zoom_hor = 0, zoom = 3;
 	if (ImGui::Button("Enhance"))
 	{
@@ -186,15 +185,6 @@ void CameraStream::swapCamViews()
 		{
 			// Set payload to carry the index of our item (could be anything)
 			ImGui::SetDragDropPayload("DND_DEMO_CELL", &n, sizeof(cv::VideoCapture));
-
-			// Display preview (could be anything, e.g. when dragging an image we could decide to display
-			// the filename and a small preview of the image, etc.)
-			//if (mode == Mode_Copy) { ImGui::Text("Copy %s", names[n]); }
-			//if (mode == Mode_Move) { ImGui::Text("Move %s", names[n]); }
-			//if (mode == Mode_Swap) { ImGui::Text("Swap %s", names[n]); }
-
-			//n == 0 ? cameraContext() :
-
 			ImGui::EndDragDropSource();
 		}
 		if (ImGui::BeginDragDropTarget())
@@ -216,7 +206,7 @@ void CameraStream::swapCamViews()
 	}
 }
 
-bool CameraStream::initCamera(cv::Mat* data)//CameraMap* cam_map)
+void CameraStream::initCamera(cv::Mat* data)
 {
 	 bool fx = true;
 	 CameraStream::frame=*data;
@@ -231,43 +221,28 @@ bool CameraStream::initCamera(cv::Mat* data)//CameraMap* cam_map)
 
 		if (show_camera)
 		{
+			//switch camera in drop down
+			const char* list_cameras[] = { "1", "2", "3", "4" };
+
+			if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)))
 			{
-				//switch camera in drop down
-				const char* list_cameras[] = { "1", "2", "3", "4" };
-
-				if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)))
-				{
-					// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
-					//show_camera = true;
-					std::cout << "item_current: " << item_current << std::endl;
-				}
-				// capture_camera = item_current;
-				ImGui::SameLine();
-				HelpMarker(
-					"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
-					"and demonstration of various flags.\n");
-
-				// if (show_camera)
-				{
-					//TODO Create thread here to process streaming content to window
-					{
-						{
-							streamCamera(&item_current);
-							//stream = std::async(std::launch::async, streamCamera, std::ref(item_current), std::ref(freeze_frame));
-							//fx=stream.get();//can't call .get() multiple times in runtime
-									//return false;
-						}
-					}
-				}
+				// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
+				std::cout << "item_current: " << item_current << std::endl;
 			}
+			ImGui::SameLine();
+			HelpMarker(
+				"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
+				"and demonstration of various flags.\n");
+
+			//TODO Create thread here to process streaming content to window
+			//std::async(std::launch::async, &CameraStream::streamCamera, std::ref(item_current), std::ref(freeze_frame));
+			//auto f=std::async(std::launch::async, [] {return CameraStream::streamCamera(item_current, freeze_frame); });
+			//f.get();
+			streamCamera(&item_current);
 		}
 		ImGui::End();
 	}
-
-	//return EXIT_SUCCESS;
-	return show_camera;
 }
-
 
 
 #ifdef _BOXERUI_TEST
@@ -302,7 +277,6 @@ void CameraStream::setCameraPropTest(int* camera, cv::VideoCapture* capture, flo
 		(*capture).set(4, *h); //fram height
 	}
 }
-
 
 void CameraStream::initCamera()
 {
@@ -407,17 +381,10 @@ void CameraStream::destroyCamera(int* index)
 }
 
 #else
-void CameraStream::setCamContext(int context = 0)
+void CameraStream::setCamContext(int context)
 {
-
-	//for (std::vector<cv::Mat> frames : payload_frames.at(context)) //TODO frames shoould hold reference to other frames_buffers
-	{
-		//for (size_t i = 0; i < frames.size(); i++)
-		{
-
-			CameraStream::BindCVMat2GLTexture(CameraStream::frame);
-		}
-	}
+	BindCVMat2GLTexture(&payload_frames[context][context]);
+	payload_frames[context][context].~Mat();
 }
 
 #endif

@@ -5,10 +5,12 @@
  *  @date   2021-07-1 
  ***********************************************/
 
+#include <unistd.h>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cstring>
+#include <sys/epoll.h>
 #include <thread>
 
 #include <sys/types.h>
@@ -24,22 +26,23 @@
 void Node::setPersonnelAddress(unsigned char* name, int port, const char* ip, int transport) {
     Backend::name = name;
 
-    Backend::personnel_address.sin_family = AF_INET;
-    Backend::personnel_address.sin_port = htons(port);
-    Backend::personnel_address.sin_addr.s_addr = inet_addr(ip);
+    personnel_address.sin_family = AF_INET;
+    personnel_address.sin_port = htons(port);
+    personnel_address.sin_addr.s_addr = INADDR_ANY;
     Backend::sockfd = transport;
+    printf("sockfd: %d\n", transport);
 
-    bind(Backend::sockfd, (struct sockaddr*)&Backend::personnel_address, sizeof(Backend::personnel_address));
+    bind(transport, (struct sockaddr*)&personnel_address, sizeof(personnel_address));
 }
 
 void Node::deviceAphiliate() {
     int verifaction = 77;
     unsigned char initial_message[17]; // @(byte) + name(16 byte)        const unsigned char verifaction = 77;
 
-    int status = recvfrom(Backend::sockfd, &initial_message, sizeof(initial_message), 0, (struct sockaddr*)&Backend::device_address, &sock_length);
+    int status = recvfrom(Backend::sockfd, &initial_message, sizeof(initial_message), 0, (struct sockaddr*)&device_address, &sock_length);
 
     if(status >= 0) {
-        sendto(Backend::sockfd, &verifaction, sizeof(verifaction), 0, (struct sockaddr*)&Backend::device_address, sizeof(Backend::device_address));
+        sendto(Backend::sockfd, &verifaction, sizeof(verifaction), 0, (struct sockaddr*)&device_address, sizeof(device_address));
         Backend::name = &initial_message[1];
 
     }
@@ -61,48 +64,58 @@ void Node::addToTable(char* name_to_add) {
 //trade names
 void Node::connectTo(int index, int instruction) {
     sockaddr_in device = Backend::tableToAddress(index);
-    //sendto(Backend::sockfd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, sizeof(device));
+    while(true)
+    sendto(Backend::sockfd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, sizeof(device));
 
-    std::thread threadObj(streamCamera, Backend::sockfd, sock_length, device, instruction);
-    threadObj.join();
 }
 
 //listen for a device to ask to connect
 ////trade names
-void Node::listen() {
-    int instruction;
-    sockaddr_in device;
+
+struct epoll_event epollInit(int fd) {
+    struct epoll_event event;
+    event.events = EPOLLIN; // | EPOLLEXCLUSIVE;
+    event.data.fd = fd;
+
+    return event;
+}
+
+void listenStream(socklen_t sock_l, int t_thread) {
+    struct sockaddr_in device;
+
     int fd = Backend::sockfd;
+    struct epoll_event events[1];
+    events[0] = epollInit(fd);
+    int epfd = epoll_create1(0);
+    int res = epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &events[0]);
 
-    int status;
+    int data;
+    while(true) {
+        epoll_wait(epfd, events, 1, -1);
+        recvfrom(fd, &data, sizeof(data), MSG_DONTWAIT, (struct sockaddr*)&device, &sock_l);
+        //read(events[0].data.fd, &data, sizeof(data));
 
-    status = recvfrom(fd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, &sock_length);
-    if(status < 0) {
-        perror("Error recieving \n");
-    }
-    printf("Value: %d\n", instruction);
-    status = sendto(fd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, sizeof(device));
-    if(status < 0) {
-        perror("Error sending\n");
+        printf("Data recieved: %d, from thread %d\n", data, t_thread);
     }
 }
 
-void Node::streamCamera(int fd, socklen_t sock_l, struct sockaddr_in device, int data) {
-    //printf("Thread running\n");
+void Node::listen() {
+   std::thread thread1(listenStream, sock_length, 1);
+   thread1.detach();
 
-    int status;
+   std::thread thread2(listenStream, sock_length, 2);
+   thread2.detach();
 
-        status = sendto(fd, &data, sizeof(data), 0, (struct sockaddr*)&device, sizeof(device));
-    if(status < 0) {
-        perror("Error sending\n");
-    }
-        int instruction;
-        status = recvfrom(fd, &instruction, sizeof(instruction), 0, (struct sockaddr*)&device, &sock_length);
-    if(status < 0) {
-        perror("Error recieving \n");
-    }
-        printf("Value: %d", instruction);
+   std::thread thread3(listenStream, sock_length, 3);
+   thread3.detach();
+   while(true) {}
 }
+
+
+void initStream(int fd, socklen_t sock_l, struct sockaddr_in device, int data) {
+
+}
+
 
 //internal use only
 //
