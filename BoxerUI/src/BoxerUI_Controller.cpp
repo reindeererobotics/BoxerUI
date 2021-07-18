@@ -115,7 +115,7 @@ void BoxerUI_Controller::cameraView()
 		x = false;
 		serveraddr.sin_family = AF_INET;
 		serveraddr.sin_port = htons(8000);
-		serveraddr.sin_addr.s_addr = inet_addr("184.146.119.106");
+		serveraddr.sin_addr.s_addr = inet_addr("0.0.0.0");
 
 	}
 
