@@ -5,18 +5,21 @@ project(BoxerUI)
 
 find_package(OpenCV REQUIRED core videoio OPTIONAL_COMPONENTS highgui imgproc)#optionally include highgui & imgproc modules. Each module corresponds to a directory as indicated in the header.
     set(BUILD_SHARED_LIBS OFF)
-    set(OpenCV_STATIC ON)#just to make sure
+    set(OpenCV_STATIC ON)#just to make sure 
 
 find_package(OpenGL REQUIRED)
     # find_package(glfw3 3.3.2 REQUIRED) #for shared library linking. Use "sudo apt-get install libglfw3-dev" to download the shared lib
 
+    # set(THREADS_PREFER_PTHREAD_FLAG ON)
+    # find_package(Threads REQUIRED)
+
 #The 3 following lines ask not to build glfw docs, tests, & examples
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE) 
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 #Source dir and files variables
-set(WORKSPACE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../")#This is the dir to the root of the project. !Important
+set(WORKSPACE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/BoxerUI/")#This is the dir to the root of the project. !Important
 set(HEADERS_DIR "${WORKSPACE_DIR}/header")
 set(LIBS_DIR "${WORKSPACE_DIR}/libs")
 set(SOURCES_DIR "${WORKSPACE_DIR}/src")
@@ -45,7 +48,7 @@ set(SOURCE
 MESSAGE(STATUS "Include dirs ${OpenCV_INCLUDE_DIRS}")
 MESSAGE(STATUS "LINK LIBRARIES ${OpenCV_LIBS}")
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../glfw/" "${CMAKE_CURRENT_SOURCE_DIR}/../../glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/glfw/" "${CMAKE_CURRENT_SOURCE_DIR}/glfw-build/")# Runs the CMakeLists.txt in source_dir and places the output in binary_dir
 
 
 #Executable target name and src files
@@ -61,7 +64,7 @@ target_include_directories(BoxerUI_app PUBLIC
     "${SOURCES_DIR}")
 
 #Links the libraries to build target set in add_executable command
-target_link_libraries(BoxerUI_app  OpenGL::GL glfw "${OpenCV_LIBS}"  )
+target_link_libraries(BoxerUI_app  OpenGL::GL glfw "${OpenCV_LIBS}")# Threads::Threads )
 
 #To link glfw statically:
     #1. clone the repo into a directory <glfw_dir>: "git clone https://github.com/glfw/glfw.git"

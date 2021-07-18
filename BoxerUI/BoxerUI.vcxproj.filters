@@ -81,16 +81,10 @@
     <ClCompile Include="src\CameraStream_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CustomComponents_View.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Inputs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Boxer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\BoxerUI_Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Inputs_Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,13 +140,10 @@
     <ClInclude Include="header\TextTheme.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="header\CustomComponents_View.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\Inputs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="header\BoxerUI_Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\Inputs_Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,11 +1,16 @@
 #pragma once
 #include "Boxer.h"
-#include "CustomComponents_View.h"
+#include <BoxerUI_View.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp> //Note: no need to include these headers in the working file. These will be handled automatically by linker
 
 #include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
+
+#include <future>
+
+#include <map>
+#include <vector>
 
 #ifdef _WIN32
 
@@ -17,6 +22,8 @@
 #include <signal.h>
 #endif
 
+using CameraMap = std::map <int, std::vector<cv::Mat >>;
+
 //#ifndef CAMERASTREAM_VIEW_H_
 //...
 //#endif // !CAMERASTREAM_VIEW_H_
@@ -24,33 +31,47 @@
 
 #define BUFFER_SIZE 5
 #define NUM_CAMERAS 4
-#define FREEZE_FRAME_IMG 5
+#define FREEZE_FRAME_IMG (NUM_CAMERAS+1)
 
-class CameraStream
+class CameraStream : public BoxerUI_View
 {
-	bool freeze_frame = false, enhance = false;
-	cv::VideoCapture cameras[NUM_CAMERAS];
-	cv::Mat frames[NUM_CAMERAS + 1]; //Last frame in array is dedicated to store freeze frame
-	pid_t pid;
-private:
-	void dispFrame(cv::Mat *frame);
 
-	void BindCVMat2GLTexture(cv::Mat *disp_frame);
-	void initCamera(bool *show_camera, float *w, float *h);// For internal purposes
+private:
+	static bool freeze_frame, enhance;
+
+	void dispFrame(cv::Mat* frame);
+
+	void BindCVMat2GLTexture(cv::Mat* disp_frame);
 
 	//destroy the frame & cap objects then release from memory
 	void destroyCamera(int *index);
 
 	void setCameraPropTest(int *camera, cv::VideoCapture *capture, float *w, float *h);
 
-	void streamCamera(int *camera);
+	 bool streamCamera(int* camera);
 
-	void setCamContext(int context);
+	 void setCamContext(int context=0);
 
-	void freezeFrame();
+	 void freezeFrame();
 
 	void swapCamViews();
 
 public:
-	void initCamera();
+	std::vector<cv::VideoCapture> vid_captures = std::vector<cv::VideoCapture>(5);
+	
+	cv::Mat frame= cv::Mat(100, 100, CV_8UC4);
+
+	static bool show_camera;
+
+	static CameraMap payload_frames;
+	
+	std::future<CameraMap> cam_futures;
+
+	/** @brief This method establishes the properties of each individual camera based on its initialization from initCamera() method
+	@param camera we are receiving stream from (indicated as an integer value),
+	which video capture object we are accessing, and the applications width and height
+	@return No values are returned. This is mearly a test and can be useful later.
+	**/
+	void initCamera(cv::Mat* data);
+
 };

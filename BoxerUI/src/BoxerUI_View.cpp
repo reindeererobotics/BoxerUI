@@ -1,15 +1,8 @@
 #include "BoxerUI_View.h"
 
-
-#include <iostream>
-#include <Inputs.h>
-
-//#include "TextTheme.h"
-
 using namespace ImGui;
 using namespace std;
 
-//ImGuiIO& io = ImGui::GetIO();
 
 void BoxerUI_View::appFrameRate() {
 	{ ImGui::Begin("Application Framerate");                          // Create a window called "Hello, world!" and append into it.
@@ -216,5 +209,25 @@ bool BoxerUI_View::settings() {//settings that will replace the sideNav upon tog
 
 	ImGui::End();
 	return in_settings;
+}
+
+void BoxerUI_View::HelpMarker(const char* desc)
+{
+	ImGui::TextDisabled("(?)");
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::BeginTooltip();
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted(desc);
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+}
+
+void BoxerUI_View::indexView() {
+	sideNav();
+	plotStream();
+	showdemos();
+	appFrameRate();
 }
 
