@@ -216,24 +216,11 @@ void CameraStream::swapCamViews()
 	}
 }
 
-bool CameraStream::initCamera(bool* x)//CameraMap* cam_map)
+bool CameraStream::initCamera(cv::Mat* data)//CameraMap* cam_map)
 {
-	//std::vector<cv::Mat>payload_frame = std::vector<cv::Mat>(5);
-	//std::vector<cv::Mat>payload_frame_recv = std::vector<cv::Mat>(5);
-	//cv::Mat payload_frame_recv;// = std::vector<cv::Mat>(5);
-   //payload_frame.reserve(5);
 	 bool fx = true;
-	//if (x)
-	//{
-	//	//vid = ;
-	//	x = false;
-	//	vid.set(cv::CAP_PROP_FPS, 30.0);
-	//	//vid.set(cv::CAP_PROP_EXPOSURE, 0.1);
-	//	std::cout << vid.get(cv::CAP_PROP_FPS) << std::endl;
-	//	//cv::CAP_PROP_POS_FRAMES: gets a particular frame #. e.g. setting this prop to 5 will get the 5th frame to be saved to a cv::Mat
-
-	//}
-
+	 CameraStream::frame=*data;
+	
 	static int item_current = 0;
 
 	{
@@ -264,14 +251,8 @@ bool CameraStream::initCamera(bool* x)//CameraMap* cam_map)
 				{
 					//TODO Create thread here to process streaming content to window
 					{
-						//payload_frames.swap(mat_data.begin(), mat_data.end());
-						//payload_frames.swap(*cam_map);
-						//mat_data.copyTo(frames);// = mat_data;
-						//cam_futures = std::async(std::launch::async, streamCamera, std::move(vid), std::ref(temp));// , std::move(payload_future));
-						//payload_frame_recv = cam_futures.get();
-						if (*x)
 						{
-							//streamCamera(&item_current);
+							streamCamera(&item_current);
 							//stream = std::async(std::launch::async, streamCamera, std::ref(item_current), std::ref(freeze_frame));
 							//fx=stream.get();//can't call .get() multiple times in runtime
 									//return false;
@@ -429,12 +410,12 @@ void CameraStream::destroyCamera(int* index)
 void CameraStream::setCamContext(int context = 0)
 {
 
-	for (std::vector<cv::Mat> frames : payload_frames.at(context)) //TODO frames shoould hold reference to other frames_buffers
+	//for (std::vector<cv::Mat> frames : payload_frames.at(context)) //TODO frames shoould hold reference to other frames_buffers
 	{
-		for (size_t i = 0; i < frames.size(); i++)
+		//for (size_t i = 0; i < frames.size(); i++)
 		{
 
-			CameraStream::BindCVMat2GLTexture(frames[i]);
+			CameraStream::BindCVMat2GLTexture(CameraStream::frame);
 		}
 	}
 }

@@ -50,24 +50,26 @@ private:
 
 	void dispFrame(cv::Mat* frame);
 
-	static void BindCVMat2GLTexture(cv::Mat& disp_frame);
+	 void BindCVMat2GLTexture(cv::Mat& disp_frame);
 
 	//destroy the frame & cap objects then release from memory
 	void destroyCamera(int* index);
 
 	void setCameraPropTest(int* camera, cv::VideoCapture* capture, float* w, float* h);
 
-	static bool streamCamera(int* camera);// , bool& freeze_frame);
+	 bool streamCamera(int* camera);// , bool& freeze_frame);
 
-	static void setCamContext(int context);
+	 void setCamContext(int context);
 
-	static void freezeFrame();
+	 void freezeFrame();
 
 	void swapCamViews();
 
 	bool got_stream = false;
 	std::future<bool> stream;
+
 public:
+	 cv::Mat frame= cv::Mat(100, 100, CV_8UC4);
 	static bool show_camera;// = false;
 	std::vector<cv::VideoCapture> vid_captures = std::vector<cv::VideoCapture>(5);
 
@@ -83,8 +85,7 @@ static CameraMap payload_frames;
 	which video capture object we are accessing, and the applications width and height
 	@return No values are returned. This is mearly a test and can be useful later.
 	**/
-	bool initCamera(bool* x);// CameraMap* cam_map);// CameraMap& mat_data);// std::vector<std::vector<cv::Mat>>& mat_data);
-	//bool initCamera(cv::Mat& mat_data);
+	bool initCamera(cv::Mat* data);
 
 
 	//void initCamera();// For internal purposes

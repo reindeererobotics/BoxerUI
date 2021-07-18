@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "BoxerUI_View.h"
 #include "BoxerUI_Model.h"
 #include "CameraStream_View.h"
@@ -10,7 +11,9 @@
 #include <string>
 #include <future>
 #include <thread>
-
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 //#include "BoxerUI_Sockets.h"
 
 class BoxerUI_Controller
@@ -19,14 +22,11 @@ private:
 	BoxerUI_View boxerView;
 	BoxerUI_Model boxerModel;
 	CameraStream camera_stream;
-	 //cv::VideoCapture vid= cv::VideoCapture(1+cv::CAP_DSHOW);
-	// cv::Mat temp;
-	//std::vector<std::future<void>> cam_futures;
-	
-	//std::future< std::vector<cv::Mat>> cam_futures;
-	//std::future<cv::Mat> cam_futures;
-	// cv::VideoCapture vid = cv::VideoCapture(1);
+	struct sockaddr_in serveraddr;
+	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
+	cv::Mat current_frame = cv::Mat(100, 100, CV_8UC4);
+	
 	//MODEL
 	double getModelBattery();
 	double getModelTemperature();

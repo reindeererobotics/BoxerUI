@@ -193,8 +193,9 @@ int main(int, char **)
 	//BoxerUI_Model boxerModel = BoxerUI_Model();
 	//BoxerUI_View boxerView;
 	BoxerUI_Controller boxerController = BoxerUI_Controller(); // = BoxerUI_Controller(boxerView, boxerModel);
-	//boxerController.payloadRecv();
+															   //boxerController.payloadRecv();
 
+	
 	// Main loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -240,7 +241,7 @@ int main(int, char **)
 		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			GLFWwindow *backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
