@@ -193,8 +193,9 @@ int main(int, char **)
 	//BoxerUI_Model boxerModel = BoxerUI_Model();
 	//BoxerUI_View boxerView;
 	BoxerUI_Controller boxerController = BoxerUI_Controller(); // = BoxerUI_Controller(boxerView, boxerModel);
-	//boxerController.payloadRecv();
+															   //boxerController.payloadRecv();
 
+	
 	// Main loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -215,23 +216,14 @@ int main(int, char **)
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			if (show_index_window)
+			/*if (show_index_window)
 			{
 				boxerController.displayIndexWindow(&show_index_window);
 			}
-			else
+			else*/
 			{
-				//SetNextWindowViewport();
-
-				boxerController.inputHandlerModel();
-				boxerController.displayFPS();
-				boxerController.demoWindows(); // show_demo_window);
-				boxerController.updateBSView();
-				boxerController.plotView();
-
-				boxerController.navView();
-
 				boxerController.cameraView();
+				boxerController.indexView();
 			}
 		}
 

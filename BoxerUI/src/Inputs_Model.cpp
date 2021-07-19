@@ -1,4 +1,4 @@
-#include "Inputs.h"
+#include "Inputs_Model.h"
 #include <iostream>
 using namespace std;
 
@@ -28,7 +28,7 @@ void Inputs::inputHandler() {
 }
 void Inputs::keyboardInputHandler() {
 	//cout << "input_type" << endl;
-	ImGui::CreateContext();
+	//ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -46,9 +46,9 @@ ImGui::Text("Keys pressed:");
 		for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) {
 			if (ImGui::IsKeyPressed(i)) {
 				
-				cout << io.KeyMap[87]<< endl;
+				//cout << io.KeyMap[87]<< endl;
 				ImGui::SameLine();
-				//ImGui::Text("%d (0x%X)", i, i);
+				ImGui::Text("%d (0x%X)", i, i);
 			}
 		}
 	}
