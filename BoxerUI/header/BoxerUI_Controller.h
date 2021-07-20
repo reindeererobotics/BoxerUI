@@ -18,6 +18,7 @@ private:
 	BoxerUI_View boxerView;
 	BoxerUI_Model boxerModel;
 	CameraStream camera_stream;
+	//InputType input_type;
 
 	//BoxerUI_Sockets boxerSocket;
 public:
@@ -35,7 +36,7 @@ public:
 	void demoWindows();
 	void updateBSView();
 	void plotView();
-	void navView();
+	bool navView();
 
 	void streamCameraView(int* camera);
 	void initCameraView(bool* show_camera, float* w, float* h);

@@ -150,7 +150,7 @@ void BoxerUI_View::indexwindow(bool* boxer_analytics) {//, int ui_window_width, 
 	End();
 }
 
-void BoxerUI_View::sideNav() {
+bool BoxerUI_View::sideNav() {
 	static bool toggle_settings = false;
 
 	ImGui::Begin("##sideNav");
@@ -164,9 +164,12 @@ void BoxerUI_View::sideNav() {
 		toggle_settings = settings();
 
 	ImGui::End();
+	
+	return toggle_settings;
 }
 
 bool BoxerUI_View::settings() {//settings that will replace the sideNav upon toggle
+	ImGuiIO& io = ImGui::GetIO();
 	bool in_settings = true;
 	static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 
@@ -198,8 +201,10 @@ bool BoxerUI_View::settings() {//settings that will replace the sideNav upon tog
 			cout << keyboard << endl;
 			
 
+		keyboard ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : ImGuiConfigFlags_NavEnableGamepad;
 		}
-		keyboard?input_type = InputType::Keyboard:input_type = InputType::None;
+		//keyboard?input_type = InputType::Keyboard:input_type = InputType::None;
+		//ImGuiConfigFlags_NavEnableGamepad = !ImGuiConfigFlags_NavEnableGamepad;
 		/*else{cout << "Keyboard Not Selected" << endl;
 			}*/
 	
@@ -215,6 +220,15 @@ bool BoxerUI_View::settings() {//settings that will replace the sideNav upon tog
 	ImGui::TextColored(ImVec4(1, 1, 0, 1), "Important Stuff");
 
 	ImGui::End();
+	
 	return in_settings;
 }
 
+
+void BoxerUI_View::resetFrame() {
+	//Current frame is discarded and renders a new one upon call.
+	ImGui::EndFrame();
+	ImGui::UpdatePlatformWindows();
+	ImGui::Render();
+	ImGui::NewFrame();
+}

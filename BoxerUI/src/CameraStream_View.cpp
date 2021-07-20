@@ -107,7 +107,7 @@ void CameraStream::BindCVMat2GLTexture(cv::Mat* disp_frame)//, GLuint* image_tex
 which video capture object we are accessing, and the applications width and height
 @return No values are returned. This is mearly a test and can be useful later.
 **/
-void CameraStream::initCameraTest(bool* show_camera, float* w, float* h) {
+void CameraStream::initCamera(bool* show_camera, float* w, float* h) {
 	if (show_camera)
 	{
 		float capture_width, capture_height;
@@ -161,7 +161,7 @@ void CameraStream::setCameraPropTest(int* camera, cv::VideoCapture* capture, flo
 }
 
 void CameraStream::streamCamera(int* camera) {//cv::VideoCapture* cap,cv::Mat* frame) {//stream the data and bind to unique Mat objects
-
+	ImGuiIO& io = ImGui::GetIO();
 	if (Button("Freeze Frame")) {//if freeze frame is clicked. capture the current frame...
 		freeze_frame = !freeze_frame;
 		
@@ -170,10 +170,24 @@ void CameraStream::streamCamera(int* camera) {//cv::VideoCapture* cap,cv::Mat* f
 
 	}
 
-
+	
 	{//Main "viewport"/context stream
-		ImGui::BeginChild("Main_Viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
-		//camera == 0 ?
+		//You can use the "##" or "###" markers to use the same label with different id, or same id with different label.See documentation at the top of this file.
+		ImGui::BeginChild("Camera_Viewport##cam_viewport", ImVec2((ImGui::GetCurrentWindow()->ContentSize.x) * 0.75f, 0.0f), true);
+
+		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootWindow)) {
+			io.WantCaptureKeyboard = false;
+			//input_type = InputType::Gamepad;
+			//Dispatch inputs to Boxer_Inputs
+			std::cout << "Window in focus" << std::endl;
+		}
+		else {
+
+			io.WantCaptureKeyboard = true;
+			//Dispatch Inputs to BoxerUI_Inputs
+			std::cout << "Window not in focus" << std::endl;
+		}
+
 		freeze_frame ? freezeFrame() : setCamContext(*camera);
 		//: setCamContext(*camera);
 		ImGui::EndChild();
@@ -239,7 +253,6 @@ void CameraStream::swapCamViews() {//TODO: Resume later. This is to allow the dr
 		ImGui::PushID(n);
 		if (n != 0)
 			ImGui::SameLine();
-		//ImGui::Button(viewCameras[n], ImVec2(60, 60));
 		//streamCamera(&cameras[n],&frames[n]);
 
 

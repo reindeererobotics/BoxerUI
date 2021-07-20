@@ -146,7 +146,7 @@ int main(int, char**)
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	// Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
@@ -156,7 +156,7 @@ int main(int, char**)
 	//io.ConfigDockingAlwaysTabBar = false;
 	//io.ConfigViewportsNoTaskBarIcon = false;
 	//io.ConfigViewportsNoDefaultParent = false;
-
+	//ImGuiConfigFlags inputs =ImGuiConfigFlags_NavEnableKeyboard;
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsClassic();
@@ -231,22 +231,18 @@ int main(int, char**)
 			// }
 			// else
 			{
-				//SetNextWindowViewport();
-
+				if(!boxerController.navView())
+				{
 				boxerController.inputHandlerModel();
 				boxerController.displayFPS();
 				boxerController.demoWindows(); // show_demo_window);
 				boxerController.updateBSView();
 				boxerController.plotView();
-
-				boxerController.navView();
-				//if(cap.grab())
-				{
 					/*if (pid == 0)
 					{*/
 
+					
 					ImGui::Begin("OpenGL/OpenCV Camera Test###camstream");
-
 					if (ImGui::Button("Show Camera"))
 					{
 						show_camera = !show_camera;

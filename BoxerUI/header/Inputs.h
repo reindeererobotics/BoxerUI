@@ -14,25 +14,20 @@ enum class InputType  {//same as an enum but with a scope
 
 class Inputs
 {
-	//ImGuiIO& io = ImGui::GetIO();
 
 private:
 
-	void keyboardInputHandler();
+	
 	void gamepadInputHandler();
 	void joystickInputHandler();
 	void touchInputHandler();
 	void noInputHandler();
-
-	void endFrame();
-	void beginFrame();
-	//static void keyboardInput();
+	
 public:
-	void inputHandler();
-
+	//void inputHandler();
+void keyboardInputHandler();
 };
- static Inputs input;
-static InputType input_type;
+ //extern // = InputType::None;
 //static ImGuiIO& io = ImGui::GetIO();
 
 

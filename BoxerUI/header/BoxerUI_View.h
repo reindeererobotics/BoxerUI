@@ -22,9 +22,13 @@ public:
 	static void plotStream();
 	static void indexwindow(bool* boxer_analytics);
 
-	static void sideNav();
+	static bool sideNav();
 
 	static bool settings();
+
+protected: 
+	//Do !!NOT!! use within Begin()/BeginChild() window
+	static void resetFrame();
 
 	
 };

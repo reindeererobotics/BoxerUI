@@ -16,7 +16,7 @@ class BoxerUI_Model
 	ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", 18.0f);*/
 private:
 	double temperature, battery;// , ultrasonic;
-
+	Inputs input;
 public:
 	double getTemperature();
 	double getBattery();

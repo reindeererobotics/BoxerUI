@@ -1,5 +1,7 @@
 #pragma once
 #include "Boxer.h"
+#include "Inputs.h"
+#include "BoxerUI_View.h"
 #include "CustomComponents_View.h"
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>//Note: no need to include these headers in the working file. These will be handled automatically by linker
@@ -35,7 +37,7 @@
 #define FREEZE_FRAME_IMG 5
 
 
-class CameraStream
+class CameraStream: public BoxerUI_View
 {
 	bool freeze_frame = false, enhance = false;
 	cv::VideoCapture cameras[NUM_CAMERAS];
@@ -47,7 +49,7 @@ private:
 	void BindCVMat2GLTexture(cv::Mat* disp_frame);
 
 public:
-	void initCameraTest(bool* show_camera, float* w, float* h);
+	void initCamera(bool* show_camera, float* w, float* h);
 
 	//destroy the frame & cap objects then release from memory
 	void destroyCamera(int* index);

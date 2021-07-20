@@ -50,8 +50,8 @@ void BoxerUI_Controller::plotView() {
 	//boxerSocket.payloadRecv(4, *"payload", 0);
 	boxerView.plotStream();
 } 
-void BoxerUI_Controller::navView() {
-	boxerView.sideNav();
+bool BoxerUI_Controller::navView() {
+	return boxerView.sideNav();
 }
 
 void BoxerUI_Controller::streamCameraView(int* camera) {//cv::VideoCapture *cap,bool* freeze_frame, cv::Mat* frame, GLuint* my_frame_texture) {
@@ -63,7 +63,7 @@ void BoxerUI_Controller::initCameraView(bool* show_camera, float* w, float* h) {
 	//boxerModel.cameraStreamProc();
 	
 	//For internal testing purposes only
-	camera_stream.initCameraTest(show_camera, w, h);
+	camera_stream.initCamera(show_camera, w, h);
 }
 void BoxerUI_Controller::destroyCameraView(int* current_cam) {
 	camera_stream.CameraStream::destroyCamera(current_cam);

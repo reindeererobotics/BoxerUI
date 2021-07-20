@@ -16,7 +16,7 @@ void BoxerUI_Model::inputHandler(){//InputType input_type=InputType::None) {
 	
 	//ImGui::Begin("##input");
 	
-	input.inputHandler();
+	input.keyboardInputHandler();
 
 	//ImGui::End();
 }
