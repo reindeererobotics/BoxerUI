@@ -10,44 +10,55 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+
+void addToHeap(char* arry, char value, int max) {
+    int i = 0;
+
+    while(i < max) {
+        arry[i] = value;
+        i+=1;
+    }
+}
+ void printHeap(char* arry, int max) {
+     int i = 0;
+
+     printf("First address is: %d\n", &arry[0]);
+     while(i < max) {
+         printf("%c", arry[i]);
+         i+=1;
+     }
+     printf("\n");
+ }
+
 int main() {
-    struct Node node;
+    char* array = (char*)calloc(1, sizeof(char[5]));
+    addToHeap(array, 'A', 5);
+    printHeap(array, 5);
 
-    char arry[30] = "\0 Aaron\0 192.168.2.3\0 8003";
-    char arry2[30] = "\0 John\0 1.0.0.0\0 8920";
-    char arry3[30] = "\0 Mike\0 124.154.3.6\0 8769";
+    char* array2 = (char*)calloc(1, sizeof(char[5]));
+    addToHeap(array2, 'B', 5);
+    printHeap(array2, 5);
 
-    node.addToTable(arry);
-    node.addToTable(arry2);
-    node.addToTable(arry3);
+    array = (char*)realloc(array, sizeof(char[20]));
+    addToHeap(array, 'C', 20);
+    printHeap(array, 20);
 
-    //Information about device in table
-    //
-    printf("\n\n\n\nInformation about Device in table\n\n");
-    char sample_name[20] = "Mike";
-    int index = node.search_table(sample_name);
+    printHeap(array2, 5);
 
-    printf("Search result for Mike: \n");
-    printf("Name: %s\n", node.tableName(index));
-    printf("Ip: %s\n", node.tableIp(index));
-    printf("Port: %s\n\n", node.tablePort(index));
-    //
 
-    //node.outputTable();
-
-    //Seeting information for Node
-    //
-    unsigned char name[16] = "Aaron";
-    char ip[30] = "192.168.2.3";
-    int port = 8005;
-    int transport = socket(AF_INET, SOCK_STREAM, 0);
-
-    node.name = name;
-    node.setPersonnelAddress(port, ip, transport);
-
-    //node.outputName();
-    //
-
-    node.outputAddress(node.tableToAddress(index));
-
+//  int k = 0;
+//   struct Node node;
+//
+//   char arry[30] = "\0 Robot\0 0.0.0.0\0 8005";
+//   node.addToTable(arry);
+//
+//   printf("Table fn: %s\n", Backend::tableIp(0));
+//
+//   struct sockaddr_in address = Backend::tableToAddress(0);
+//
+//   char identity[30] = "\0 ";
+//   char name[10] = "Ricky";
+//
+//   Backend::addressToChars(identity, name, address);
+//   printf("Full identity:\n%s\n%s\n%s\n", identity + 2, identity + 9, identity + 18);
 }
