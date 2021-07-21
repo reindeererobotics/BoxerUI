@@ -3,17 +3,12 @@
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 #include "Boxer.h"
-//#include "CustomComponents_View.h"//has imgui.h & imgui_internals.h
 //#include "Inputs.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <stdio.h>
-//#include <sys/types.h>
 
 #include "BoxerUI_Controller.h"
 //#include "TextTheme.h"
-
-
 
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -22,21 +17,21 @@
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
 //  You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>            // Initialize with gl3wInit()
+#include <GL/gl3w.h> // Initialize with gl3wInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h>            // Initialize with glewInit()
+#include <GL/glew.h> // Initialize with glewInit()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>          // Initialize with gladLoadGL()
+#include <glad/glad.h> // Initialize with gladLoadGL()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD2)
-#include <glad/gl.h>            // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
+#include <glad/gl.h> // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
-#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/Binding.h>  // Initialize with glbinding::Binding::initialize()
+#define GLFW_INCLUDE_NONE	   // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+#include <glbinding/Binding.h> // Initialize with glbinding::Binding::initialize()
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
-#define GLFW_INCLUDE_NONE       // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
-#include <glbinding/glbinding.h>// Initialize with glbinding::initialize()
+#define GLFW_INCLUDE_NONE		 // GLFW including OpenGL headers causes ambiguity or multiple definition errors.
+#include <glbinding/glbinding.h> // Initialize with glbinding::initialize()
 #include <glbinding/gl/gl.h>
 using namespace gl;
 #else
@@ -53,35 +48,35 @@ using namespace gl;
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-static void glfw_error_callback(int error, const char* description)
+static void glfw_error_callback(int error, const char *description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-int main(int, char**)
+int main(int, char **)
 {
 	// Setup window
 	glfwSetErrorCallback(glfw_error_callback);
 	if (!glfwInit())
 		return 1;
 
-	// Decide GL+GLSL versions
+		// Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 	// GL ES 2.0 + GLSL 100
-	const char* glsl_version = "#version 100";
+	const char *glsl_version = "#version 100";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 #elif defined(__APPLE__)
 	// GL 3.2 + GLSL 150
-	const char* glsl_version = "#version 150";
+	const char *glsl_version = "#version 150";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);		   // Required on Mac
 #else
 	// GL 3.0 + GLSL 130
-	const char* glsl_version = "#version 130";
+	const char *glsl_version = "#version 130";
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 	glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
@@ -92,25 +87,23 @@ int main(int, char**)
 
 	// Create window with graphics context
 	int ui_window_width = 1280, ui_window_height = 720;
-	GLFWwindow* window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
+	GLFWwindow *window = glfwCreateWindow(ui_window_width, ui_window_height, "Reheindeer Robotics - BoxerUI", NULL, NULL);
 	glfwGetWindowSize(window, &ui_window_width, &ui_window_height);
 
-	GLFWmonitor* monitor = glfwGetWindowMonitor(window);
+	GLFWmonitor *monitor = glfwGetWindowMonitor(window);
 	//const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 	//glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 
-	std::string image_path = cv::samples::findFile("C:/Users/Shenanigans/Documents/BoxerUI Project/BoxerUI/BoxerUI/boxer.jpg");
-	cv::Mat img = cv::imread(image_path);// , cv::IMREAD_COLOR);
+	// std::string image_path = cv::samples::findFile("../boxer.jpg");
+	// cv::Mat img = cv::imread(image_path);// , cv::IMREAD_COLOR);
 
-
-	GLFWimage images[2];
-	images[0].pixels = img.ptr();// load_icon("my_icon.png");
-	images[0].height = 48;
-	images[0].width = 48;
-	//images[1] = load_icon("my_icon_small.png");
-	glfwSetWindowIcon(window, 1, images);
-
+	// GLFWimage images[2];
+	// images[0].pixels = img.ptr();// load_icon("my_icon.png");
+	// images[0].height = 48;
+	// images[0].width = 48;
+	// //images[1] = load_icon("my_icon_small.png");
+	// glfwSetWindowIcon(window, 1, images);
 
 	if (window == NULL)
 		return 1;
@@ -131,7 +124,8 @@ int main(int, char**)
 	glbinding::Binding::initialize();
 #elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
 	bool err = false;
-	glbinding::initialize([](const char* name) { return (glbinding::ProcAddress)glfwGetProcAddress(name); });
+	glbinding::initialize([](const char *name)
+						  { return (glbinding::ProcAddress)glfwGetProcAddress(name); });
 #else
 	bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
 #endif
@@ -144,7 +138,7 @@ int main(int, char**)
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
+	ImGuiIO &io = ImGui::GetIO();
 	(void)io;
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -152,7 +146,7 @@ int main(int, char**)
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 	//io.ConfigViewportsNoAutoMerge = false;
 	//io.ConfigDockingWithShift = true;
-	//io.ConfigFlags |=ImGuiConfigFlags_shift	
+	//io.ConfigFlags |=ImGuiConfigFlags_shift
 	//io.ConfigDockingAlwaysTabBar = false;
 	//io.ConfigViewportsNoTaskBarIcon = false;
 	//io.ConfigViewportsNoDefaultParent = false;
@@ -162,12 +156,11 @@ int main(int, char**)
 	//ImGui::StyleColorsClassic();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
+	ImGuiStyle &style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-
 	}
 
 	// Setup Platform/Renderer backends
@@ -191,19 +184,18 @@ int main(int, char**)
 
 	// Our state
 	//bool show_demo_window = true;
-	static int item_current = 0;
-	bool show_boxer_windows = false, show_camera = false,show_index_window = true;
+	//static int item_current = 0;
+	static bool show_boxer_windows = false, show_camera = false, show_index_window = true;
 	bool p_open = true;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+	//pid_t pid;
 	//Initialize Boxer controller object.
 	//BoxerUI_Model boxerModel = BoxerUI_Model();
 	//BoxerUI_View boxerView;
-	BoxerUI_Controller boxerController = BoxerUI_Controller();// = BoxerUI_Controller(boxerView, boxerModel);
-	//boxerController.payloadRecv();
+	BoxerUI_Controller boxerController = BoxerUI_Controller(); // = BoxerUI_Controller(boxerView, boxerModel);
+															   //boxerController.payloadRecv();
 
-
-
+	
 	// Main loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -219,63 +211,19 @@ int main(int, char**)
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		
 
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar | ImGuiDockNodeFlags_NoCloseButton);
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_AutoHideTabBar);
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
 
 		{
-			// if (show_index_window) {
-			//// 	//SetNextWindowSize(ImVec2(ui_window_width/4, ui_window_height/4), ImGuiCond_Always);
-			// 	boxerController.displayIndexWindow( show_index_window);// , ui_window_width, ui_window_height);
-			// }
-			// else
+			/*if (show_index_window)
 			{
-				if(!boxerController.navView())
-				{
-				boxerController.inputHandlerModel();
-				boxerController.displayFPS();
-				boxerController.demoWindows(); // show_demo_window);
-				boxerController.updateBSView();
-				boxerController.plotView();
-					/*if (pid == 0)
-					{*/
-
-					
-					ImGui::Begin("OpenGL/OpenCV Camera Test###camstream");
-					if (ImGui::Button("Show Camera"))
-					{
-						show_camera = !show_camera;
-						boxerController.initCameraView(&show_camera, &ImGui::GetCurrentWindow()->ContentSize.x, &ImGui::GetCurrentWindow()->ContentSize.y);
-					}
-
-					//switch camera in drop down
-					const char* list_cameras[] = { "1", "2","3","4" };
-					
-					if (ImGui::Combo("List of Cameras", &item_current, list_cameras, IM_ARRAYSIZE(list_cameras)) ) {
-						// if current item changes in the dropdown. the main context stream is swapped with the item_current stream in the queue
-						//boxerController.destroyCameraView(&item_current); //if the camera is currently streaming
-						//show_camera = true;
-						std::cout <<"item_current: "<< item_current << std::endl;
-					}
-					// capture_camera = item_current;
-					ImGui::SameLine(); 
-					HelpMarker(
-						"Refer to the \"Combo\" section below for an explanation of the full BeginCombo/EndCombo API, "
-						"and demonstration of various flags.\n");
-						//TODO: place camera in process
-
-					if (show_camera)//||item_current>=0)
-					{
-						boxerController.streamCameraView(&item_current);
-						
-					}
-					ImGui::End();
-
-					
-					//}
-				}
-				//else { cout << "Could not grab frame" << endl; }
+				boxerController.displayIndexWindow(&show_index_window);
+			}
+			else*/
+			{
+				boxerController.cameraView();
+				boxerController.indexView();
 			}
 		}
 
@@ -293,7 +241,7 @@ int main(int, char**)
 		//  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			GLFWwindow *backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);

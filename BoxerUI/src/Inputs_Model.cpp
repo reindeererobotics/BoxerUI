@@ -1,4 +1,4 @@
-#include "Inputs.h"
+#include "Inputs_Model.h"
 #include <iostream>
 using namespace std;
 

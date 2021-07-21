@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "BoxerUI_View.h"
 #include "BoxerUI_Model.h"
 #include "CameraStream_View.h"
@@ -8,9 +9,18 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <future>
+#include <thread>
+#include <chrono>
+#include <algorithm>
 
+#ifdef _WIN32
 
-//#include "BoxerUI_Sockets.h"
+#else
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#endif
 
 class BoxerUI_Controller
 {
@@ -18,32 +28,32 @@ private:
 	BoxerUI_View boxerView;
 	BoxerUI_Model boxerModel;
 	CameraStream camera_stream;
-	//InputType input_type;
+#ifndef _WIN32
+struct sockaddr_in serveraddr;
+	int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+#endif // !_WIN32
 
-	//BoxerUI_Sockets boxerSocket;
-public:
+	
 
+	cv::Mat current_frame = cv::Mat(100, 100, CV_8UC4);
+	
+	//MODEL
 	double getModelBattery();
 	double getModelTemperature();
 	void setModelBattery(double batteryVal);
 	void setModelTemperature(double temperatureVal);
-	void inputHandlerModel();
-
-	void cameraPayloadRecv();
 	void decomposePayload(Json::Value jsonPayload);
-	void displayIndexWindow(bool* boxer_analytics);
+	void inputHandlerModel();//INPUT_MODEL
+	
+	//VIEW
 	void displayFPS();
 	void demoWindows();
 	void updateBSView();
 	void plotView();
-	bool navView();
-
-	void streamCameraView(int* camera);
-	void initCameraView(bool* show_camera, float* w, float* h);
-	void destroyCameraView(int* current_cam);
-
+	void navView();
+public:
+	void displayIndexWindow(bool *boxer_analytics);
+	void cameraView();
+	void indexView();
+	void cameraPayloadRecv();
 };
-//BoxerUI_Controller boxerController = BoxerUI_Controller();
-
-
-
