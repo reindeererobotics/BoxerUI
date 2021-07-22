@@ -1,26 +1,34 @@
 #pragma once
+#include "Boxer.h"
 
 //extern ImGuiIO& io;
 //ImGuiIO& io = ImGui::GetIO();
 
 
-enum TextTheme {
-	Title=20,
+enum class TextStyle {
+	Title = 55,
 	Subtitle,
 	Body,
 	Caption,
-	Custom=12
+	Custom
 };
 
-void titleStyle(ImFont* title_style, float font_size=Title, const ImFontConfig* font_cfg = NULL, const ImWchar* glyph_ranges = NULL) {
-	const char* font_type = "resource\\fonts\\PantonDemo-Black.otf"; 
-	//title_style = io.Fonts->AddFontFromFileTTF(font_type, font_size);
-}
+class TextTheme
+{
 
-void customStyle(ImFontConfig config, float font_size=Custom) {//TODO: Complete building a default fontstyle model
 
-	config.OversampleH = 2;
-	config.OversampleV = 1;
-	config.GlyphExtraSpacing.x = 1.0f;
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("font.ttf", font_size, &config);
-}
+	//ImFont* font2 = io.Fonts->AddFontFromFileTTF("anotherfont.otf", size_pixels);
+public:
+
+	void title(const char* text, int* size, ImFont* font);
+
+	void titleStyle(ImFont* title_style, float font_size, const ImFontConfig* font_cfg , const ImWchar* glyph_ranges);
+
+	void customStyle(ImFontConfig config, int font_size);
+
+};
+static TextTheme texttheme;
+
+
+
+

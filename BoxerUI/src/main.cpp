@@ -6,9 +6,15 @@
 //#include "Inputs.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <stdio.h>
+//#include <sys/types.h>
+#include "imconfig.h"
 
 #include "BoxerUI_Controller.h"
-//#include "TextTheme.h"
+#include "TextTheme.h"
+#include "resource/icons/IconFontCppHeaders/IconsFontAwesome5Brands.h"
+#include "resource/icons/IconFontCppHeaders/IconsMaterialDesign.h"
+
 
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
@@ -40,7 +46,7 @@ using namespace gl;
 
 // Include glfw3.h after our OpenGL definitions
 #include <GLFW/glfw3.h>
-
+#define NUM_FONTS 4
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
 // Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
@@ -51,6 +57,32 @@ using namespace gl;
 static void glfw_error_callback(int error, const char *description)
 {
 	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+void setFonts(ImFont* fonts) {
+
+	//fonts->AddFontDefault();
+	static const char* font_names[NUM_FONTS] = {
+		"resource\\fonts\\Poppins-Regular.ttf","resource\\icons\\Font Awesome 5 Brands - Regular - 400.otf",
+		"resource\\icons\\MaterialIcons-Regular.ttf",
+		"resource\\fonts\\PantonDemo-Black.otf",
+		
+	};
+
+	const ImWchar icon_ranges[] = { ICON_MIN_FAB,ICON_MAX_FAB,ICON_MIN_MD,ICON_MAX_MD, 0 };
+	ImFontConfig config;
+	config.MergeMode = true;
+	//config.PixelSnapH = true;
+	config.GlyphMinAdvanceX = 13.0f;
+
+	for (size_t i = 0; IM_ARRAYSIZE(font_names); i++)
+	{
+		std::cout << font_names[i] << std::endl;
+		i < 2 ? fonts->ContainerAtlas->AddFontFromFileTTF(font_names[i], 18.0f, &config, icon_ranges) :
+			fonts->ContainerAtlas->AddFontFromFileTTF(font_names[i], i == 2 ? 55.0f : 25);//F
+		 IM_ASSERT(fonts != NULL);
+	}
+
+	fonts->ContainerAtlas->Build();
 }
 
 int main(int, char **)
@@ -174,7 +206,58 @@ int main(int, char **)
 	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
 	// - Read 'docs/FONTS.md' for more instructions and details.
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-	//io.Fonts->AddFontDefault();
+
+
+
+	//fonts.AddFontFromFileTTF("resource\\fonts\\Poppins-Regular.ttf", 14.0f, 0, fonts.GetGlyphRangesDefault());
+	//fonts.AddFontDefault();
+
+	io.Fonts->AddFontDefault();
+	ImFont* x=io.Fonts->AddFontDefault();
+	ImFontAtlas* fonts={};
+	setFonts(x);
+	// = io.Fonts->Fonts->AddFontDefault();
+	//x->ContainerAtlas=fonts;// = io.Fonts->Fonts->AddFontDefault();
+	//x->ContainerAtlas = &fonts;
+	//fonts->Fonts[0] = ;
+	{
+		//TODO create an array that will read the contents of the resource/fonts and add to an ImFont array
+	//ImFont* fonts[NUM_FONTS];
+	//static const char* font_names[NUM_FONTS] = { "PantonDemo-Black.otf", "Poppins-Regular.ttf" };
+	//const char* font_names[2] = { "PantonDemo-Black.otf", "Poppins-Regular.ttf" };
+
+
+
+	//for (size_t i = 0; i < 2; i++)
+	//{
+	//	char font_path[100] = "resource\\fonts\\";
+	//	strcat_s(font_path, font_names[i]);
+	//	//d::cout << font_path << std::endl;
+	//	//intf("%s", font_path);
+	//	// git rm -r --cached BoxerUI/libs/imgui/
+	//	fonts[i] = io.Fonts->AddFontFromFileTTF(font_path, 55);
+	//}
+	}
+	//fonts = io.Fonts[0]->AddFont();
+	//_fonts.AddFontFromFileTTF("Fonts\fontawesome-webfont.ttf", 14.0f, &icons_config, icons_ranges);
+	//_fonts.GetTexDataAsRGBA32;
+	//io.Fonts->AddFontFromFileTTF("resource\\icons\\Font Awesome 5 Brands-Regular-400.otf", 18.0f, &config, icon_ranges);
+	//io.Fonts->AddFontFromFileTTF("resource\\icons\\MaterialIcons-Regular.ttf", 18.0f, &config, icon_ranges);
+	//io.Fonts->AddFontFromFileTTF("resource\\fonts\\PantonDemo-Black.otf", 55.0f);// , & config, icon_ranges);// , io.Fonts->GetGlyphRangesDefault());
+	//io.Fonts->AddFontFromFileTTF("resource\\fonts\\Poppins-Regular.ttf", 35.0f);// , & config, icon_ranges);// , io.Fonts->GetGlyphRangesDefault());
+	//io.Fonts->GetTexDataAsRGBA32(&pixel_data, &width, &height, &bytes_per_pixel);
+
+	//setFonts(fonts);
+	//io.Fonts = x->ContainerAtlas;
+	//io.Fonts->Build();
+	//font->ContainerAtlas->AddFontFromFileTTF("resource\\fonts\\PantonDemo-Black.otf", 13.0f, &config);// , io.Fonts->GetGlyphRangesDefault());
+	//font->ContainerAtlas->AddFontFromFileTTF("resource\\icons\\Font Awesome 5 Brands-Regular-400.otf", 13.0f, &config , icon_ranges);
+	//font->ContainerAtlas->Build();
+	//font.GetTexDataAsRGBA32(&pixel_data, &width, &height, &bytes_per_pixel);
+	//fonts.AddFont(&config);
+	//font->ContainerAtlas->Fonts[0].;
+	//io.Fonts->Fonts[0];
+
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
 	//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
@@ -222,6 +305,14 @@ int main(int, char **)
 			}
 			else*/
 			{
+				//SetNextWindowViewport();
+				ImGui::ShowStyleEditor();
+				//ImFont* x = ImGui::GetFont();
+				//ImGui::PushFont(x);
+				//ImGui::Text("Settings");
+				//ImGui::PopFont();
+
+				boxerController.inputHandlerModel();
 				boxerController.cameraView();
 				boxerController.indexView();
 			}

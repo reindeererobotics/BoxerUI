@@ -1,5 +1,12 @@
 #include "BoxerUI_View.h"
 
+
+#include <iostream>
+
+#include "TextTheme.h"
+#include "resource/icons/IconFontCppHeaders/IconsFontAwesome5Brands.h"
+#include "resource/icons/IconFontCppHeaders/IconsMaterialDesign.h"
+
 using namespace ImGui;
 using namespace std;
 
@@ -134,27 +141,95 @@ void BoxerUI_View::indexwindow(bool* boxer_analytics) {//, int ui_window_width, 
 	ImGui::SetNextWindowPos(viewport->WorkPos);
 	ImGui::SetNextWindowSize(viewport->WorkSize);
 
+	ImGui::SetNextWindowViewport(viewport->ID);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+	const ImVec2 x = ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y);
+
+
+	//ImGui::SetWindowPos(ImVec2(GetCurrentWindow()->Pos.x,GetCurrentWindow()->Pos.y));
+
+	//const ImVec2 pos = ImVec2(ImGui::GetCurrentWindow()->ContentSize.x *0.5, ImGui::GetCurrentWindow()->ContentSize.y*0.5);
+	//ImGui::GetMainViewport()->Pos.x;
+	//ImGui::GetMainViewport()->Size.x;
+	//ImGui::GetWindowSize()->Size.x;
+	//ImGui::GetWindowViewPort()->Size.x;
+	//cout << ImGui::GetCurrentWindow()->Size.x << endl << ImGui::GetCurrentWindow()->Size.y;
+
+
 	Begin("Index", &p_open, flags);//, indexFlags);
+	const ImVec2 pos = ImVec2(viewport->WorkPos.x + (viewport->WorkSize.x * 0.15), viewport->WorkPos.y + (viewport->WorkSize.y * 0.15));
+	ImGui::SetNextWindowPos(pos);// pos);
+	//ImGui::SetNextWindowPos);
+	//ImGui::SetNextWindowPos(x, ImGuiCond_FirstUseEver);
+	//ImGui::SameLine(ImGui::GetWindowWidth() / 2);
+	ImGui::BeginChild("identification", ImVec2(0.0f, 0.0f), false);// , ImGuiWindowFlags_AlwaysAutoResize);
+
+	PushFont(ImGui::GetFont()->ContainerAtlas->Fonts[1]);
 	Text("Boxr");
-	if (Button("Open boxer analytics", ImVec2(200, 100))) {
+	PopFont();
+
+	ImGuiInputTextFlags signin_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_NoUndoRedo;
+	static char username[64], password[64];
+	ImGui::InputTextWithHint("Username", "Username", username, IM_ARRAYSIZE(username), signin_flags);
+	ImGui::SameLine(); HelpMarker("Enter your credentials here");
+	//cout << IsItemEdited() ? "True" : "False";
+	ImGui::InputTextWithHint("Password", "Password", password, IM_ARRAYSIZE(password), signin_flags |= ImGuiInputTextFlags_Password);
+	//ImGui::InputText("password (clear)", password, IM_ARRAYSIZE(password));
+
+	Spacing();
+	if (Button("Login", ImVec2(65, 30))) {
 		*boxer_analytics = false;
 		cout << *boxer_analytics << endl;
 	}
+	SameLine(185);
+	//Indent(80.0f);
+	if (Button("Register", ImVec2(65, 30))) {
+		//*boxer_analytics = false;
+		cout << *boxer_analytics << endl;
+	}
+	EndChild();
 	End();
 }
 
 bool BoxerUI_View::sideNav() {
 	static bool toggle_settings = false;
 
+	//ImGui::EndFrame();
+	//ImGui::Render();
+	//if (ImGuiConfigFlags_ViewportsEnable) {
+	//ImGui::UpdatePlatformWindows();
+	
+	//ImGui::RenderPlatformWindowsDefault();
+	//}
+	//ImGui::NewFrame();
+
 	ImGui::Begin("##sideNav");
 	//See FAQ regarding ID for swapping items. Keyboard
 	//ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
 
 
-	//Settings
-	if (ImGui::Button("Toggle Settings##settings")) { toggle_settings = !toggle_settings; }
-	if (toggle_settings)
-		toggle_settings = settings();
+
+	{
+		//Settings
+		if (ImGui::Button(ICON_MD_SETTINGS "##settings")) { toggle_settings = !toggle_settings; }
+		if (toggle_settings)
+			toggle_settings = settings();
+		//ImGui::Rect()
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		draw_list->AddCircle(ImVec2(22, 22), 44.0f, ImU32());
+		ImGui::Separator();
+	}
+
+	{
+		static float temp_size = ImGui::GetFontSize() * 2;
+		//PushFont(ImGui::GetFont()->ContainerAtlas->Fonts[2]);
+		 
+		ImGui::Text("%s##Home", ICON_MD_HOME);
+		//PopFont();
+	}
+
 
 	ImGui::End();
 	
@@ -171,11 +246,24 @@ bool BoxerUI_View::settings() {//settings that will replace the sideNav upon tog
 	ImGui::SetNextWindowSize(viewport->WorkSize);
 
 
-
-	ImGui::Begin("Settings", 0, flags);
-	//See FAQ regarding ID for swapping items. Keyboard
 	//ImFont* font1 = io.Fonts->AddFontFromFileTTF("font.ttf", size_pixels);
-	//ArrowButton("return")
+	 /*
+	ImGuiIO& io = ImGui::GetIO();*/
+	ImFont* font1 = ImGui::GetFont();// = io.Fonts->Fonts[0];
+
+	int size_font = 55;
+	//BoxerUI_View::boxerUI_fonts[1]->IsLoaded();
+	ImGui::Begin("Settings", 0, flags);
+
+	ImGui::PushFont(font1->ContainerAtlas->Fonts[1]);//BoxerUI_View::boxerUI_font);
+	ImGui::Text("Settings");
+	ImGui::PopFont();
+	//BoxerUI_View::boxerUI_fonts[2].b
+	ImGui::Text("%s among %d items", ICON_FA_GOOGLE_WALLET, 2);
+	ImGui::Button(ICON_FA_BUFFER " Search");
+	//texttheme.title("Settings", &size_font, font);
+
+
 
 
 	ImGui::AlignTextToFramePadding();
@@ -186,26 +274,34 @@ bool BoxerUI_View::settings() {//settings that will replace the sideNav upon tog
 	HelpMarker("Set values here");
 	static bool keyboard = false;
 
-	
-		//static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
-		if (ImGui::Checkbox("Keyboard",&keyboard))// &flags, ImGuiItemStatusFlags_Focused))
-		{
-			//keyboard = !keyboard;
-			cout << keyboard << endl;
-			
+	ImGui::PushFont(font1->ContainerAtlas->Fonts[2]);//BoxerUI_View::boxerUI_font);
+	ImGui::Text("Inputs");
+	ImGui::PopFont();
+
+	//static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
+	if (ImGui::Checkbox("Keyboard", &keyboard))// &flags, ImGuiItemStatusFlags_Focused))
+	{
+		//keyboard = !keyboard;
+		cout << keyboard << endl;
+
+
+	}
+	//keyboard ? input_type = InputType::Keyboard : input_type = InputType::None;
+	/*else{cout << "Keyboard Not Selected" << endl;
+		}*/
 
 		keyboard ? io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard : ImGuiConfigFlags_NavEnableGamepad;
-		}
+		
 		//keyboard?input_type = InputType::Keyboard:input_type = InputType::None;
 		//ImGuiConfigFlags_NavEnableGamepad = !ImGuiConfigFlags_NavEnableGamepad;
 		/*else{cout << "Keyboard Not Selected" << endl;
 			}*/
 	
 
-	// Edit a color (stored as ~4 floats)
-	//ImGui::ColorEdit4("Color", my_color);
+		// Edit a color (stored as ~4 floats)
+		//ImGui::ColorEdit4("Color", my_color);
 
-	// Plot some values
+		// Plot some values
 	const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
 	ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
 
